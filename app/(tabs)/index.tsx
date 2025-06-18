@@ -14,6 +14,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { userData } from '@/constants/data';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
@@ -202,6 +203,7 @@ export default function HomeTab() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('Shoulders');
+  const insets = useSafeAreaInsets();
 
   const styles = StyleSheet.create({
     container: {
@@ -211,6 +213,7 @@ export default function HomeTab() {
     scrollContent: {
       padding: Spacing.lg,
       paddingTop: Spacing.xl,
+      paddingBottom: insets.bottom + 120, // Add padding for sticky tab bar
     },
     header: {
       flexDirection: 'row',
@@ -375,7 +378,7 @@ export default function HomeTab() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

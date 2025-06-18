@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, Filter, MapPin, Users, Star, Trending } from 'lucide-react-native';
+import { Search, Filter, MapPin, Users, Star } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
