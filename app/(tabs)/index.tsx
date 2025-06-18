@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/contexts/ThemeContext';
+import { router } from 'expo-router';
 
 // Remove all external icon imports and LinearGradient for now
 const { width } = Dimensions.get('window');
@@ -610,7 +611,11 @@ export default function HomeTab() {
               </Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.notificationButton}>
+          <TouchableOpacity 
+            style={styles.notificationButton}
+            onPress={() => router.push('/notifications')}
+            activeOpacity={0.7}
+          >
             <SimpleIcon name="B" size={24} color={colors.text} />
             <View style={{
               position: 'absolute',
