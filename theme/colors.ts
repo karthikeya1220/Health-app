@@ -23,185 +23,230 @@ const DSColors = {
   backgroundLight: '#f9fafb',
 };
 
-// Pastel Theme Definitions
+// Vibrant Gen Z Pastel Theme Definitions
 export const pastelThemes = {
-  softEnergy: {
+  neonVibes: {
     light: {
-      primary: '#D1E9F6', // Neo Coral for buttons
-      primaryLight: '#FFD6C0', // Pastel Peach
-      primaryDark: '#FF9580',
-      secondary: '#F6EACB', // Lavender Mist
-      accent: '#F1D3CE', // Soft Mint
-      background: '#EECAD5', // Pastel Peach background
+      primary: '#FF6B9D', // Hot Pink
+      primaryLight: '#FFE1E6', // Soft Pink background
+      primaryDark: '#E55A87',
+      secondary: '#C471ED', // Purple
+      accent: '#12D8FA', // Electric Blue
+      background: '#FFE1E6', // Soft Pink background
       surface: '#FFFFFF',
       card: '#FFFFFF',
-      text: '#444444', // Charcoal Gray
+      text: '#2D2D2D', // Dark Gray
       textSecondary: '#666666',
       textTertiary: '#888888',
-      success: '#CFFFE5',
-      error: '#FFB4A2',
-      warning: '#FFD6C0',
-      info: '#D9C8FF',
+      success: '#06FFA5', // Neon Green
+      error: '#FF6B9D',
+      warning: '#FFD93D', // Electric Yellow
+      info: '#12D8FA',
       border: '#E0E0E0',
       divider: '#F0F0F0',
-      overlay: 'rgba(68, 68, 68, 0.4)',
-      shadow: 'rgba(68, 68, 68, 0.1)',
+      overlay: 'rgba(45, 45, 45, 0.4)',
+      shadow: 'rgba(45, 45, 45, 0.1)',
     },
     dark: {
-      primary: '#FFB4A2',
-      primaryLight: '#FFD6C0',
-      primaryDark: '#FF8A6B',
-      secondary: '#D9C8FF',
-      accent: '#CFFFE5',
-      background: '#2A2A2A',
-      surface: '#3A3A3A',
-      card: '#404040',
-      text: '#FFFFFF',
-      textSecondary: '#CCCCCC',
-      textTertiary: '#999999',
-      success: '#CFFFE5',
-      error: '#FFB4A2',
-      warning: '#FFD6C0',
-      info: '#D9C8FF',
-      border: '#555555',
-      divider: '#666666',
-      overlay: 'rgba(0, 0, 0, 0.6)',
-      shadow: 'rgba(0, 0, 0, 0.3)',
-    }
-  },
-
-  calmZenPop: {
-    light: {
-      primary: '#F9D6E6', // Blush Pink for buttons
-      primaryLight: '#C7E9F1', // Pale Sky Blue
-      primaryDark: '#F5B8D1',
-      secondary: '#E4DAF5', // Muted Lilac
-      accent: '#DFFFD6', // Pale Lime
-      background: '#C7E9F1', // Pale Sky Blue background
-      surface: '#FFFFFF',
-      card: '#FFFFFF',
-      text: '#444444',
-      textSecondary: '#666666',
-      textTertiary: '#888888',
-      success: '#DFFFD6',
-      error: '#F9D6E6',
-      warning: '#F5D971',
-      info: '#C7E9F1',
-      border: '#E0E0E0',
-      divider: '#F0F0F0',
-      overlay: 'rgba(68, 68, 68, 0.4)',
-      shadow: 'rgba(68, 68, 68, 0.1)',
-    },
-    dark: {
-      primary: '#F9D6E6',
-      primaryLight: '#C7E9F1',
-      primaryDark: '#F2ABC4',
-      secondary: '#E4DAF5',
-      accent: '#DFFFD6',
-      background: '#2A2A2A',
-      surface: '#3A3A3A',
-      card: '#404040',
-      text: '#FFFFFF',
-      textSecondary: '#CCCCCC',
-      textTertiary: '#999999',
-      success: '#DFFFD6',
-      error: '#F9D6E6',
-      warning: '#F5D971',
-      info: '#C7E9F1',
-      border: '#555555',
-      divider: '#666666',
-      overlay: 'rgba(0, 0, 0, 0.6)',
-      shadow: 'rgba(0, 0, 0, 0.3)',
-    }
-  },
-
-  retroFresh: {
-    light: {
-      primary: '#FFB4A2', // Neo Coral for buttons
-      primaryLight: '#FFF9C4', // Pastel Yellow
-      primaryDark: '#FF9580',
-      secondary: '#AEC6CF', // Powder Blue
-      accent: '#D0E7D2', // Sage Green
-      background: '#FFF9C4', // Pastel Yellow background
-      surface: '#FFFFFF',
-      card: '#FFFFFF',
-      text: '#1A1A1A', // Off-Black
-      textSecondary: '#444444',
-      textTertiary: '#666666',
-      success: '#D0E7D2',
-      error: '#FFB4A2',
-      warning: '#FFF9C4',
-      info: '#AEC6CF',
-      border: '#E0E0E0',
-      divider: '#F0F0F0',
-      overlay: 'rgba(26, 26, 26, 0.4)',
-      shadow: 'rgba(26, 26, 26, 0.1)',
-    },
-    dark: {
-      primary: '#FFB4A2',
-      primaryLight: '#FFF9C4',
-      primaryDark: '#FF8A6B',
-      secondary: '#AEC6CF',
-      accent: '#D0E7D2',
+      primary: '#FF6B9D',
+      primaryLight: '#FF8FAF',
+      primaryDark: '#E55A87',
+      secondary: '#C471ED',
+      accent: '#12D8FA',
       background: '#1A1A1A',
       surface: '#2A2A2A',
       card: '#333333',
       text: '#FFFFFF',
       textSecondary: '#CCCCCC',
       textTertiary: '#999999',
-      success: '#D0E7D2',
-      error: '#FFB4A2',
-      warning: '#FFF9C4',
-      info: '#AEC6CF',
-      border: '#555555',
-      divider: '#666666',
+      success: '#06FFA5',
+      error: '#FF6B9D',
+      warning: '#FFD93D',
+      info: '#12D8FA',
+      border: '#444444',
+      divider: '#555555',
       overlay: 'rgba(0, 0, 0, 0.6)',
       shadow: 'rgba(0, 0, 0, 0.3)',
     }
   },
 
-  sportyMinimal: {
+  cyberpunkGlow: {
     light: {
-      primary: '#FAD4D4', // Dusty Rose for buttons
-      primaryLight: '#C0F0E8', // Muted Aqua
-      primaryDark: '#F7B4B4',
-      secondary: '#C9D1FF', // Pastel Indigo
-      accent: '#C0F0E8', // Muted Aqua accent
-      background: '#C0F0E8', // Muted Aqua background
+      primary: '#00D9FF', // Cyber Blue
+      primaryLight: '#E0F8FF', // Ice Blue background
+      primaryDark: '#00B8D9',
+      secondary: '#FF0080', // Cyber Pink
+      accent: '#39FF14', // Matrix Green
+      background: '#E0F8FF', // Ice Blue background
       surface: '#FFFFFF',
       card: '#FFFFFF',
-      text: '#1A1A1A', // Off-Black
+      text: '#1A1A1A',
       textSecondary: '#444444',
       textTertiary: '#666666',
-      success: '#C0F0E8',
-      error: '#FAD4D4',
-      warning: '#FFE4B5',
-      info: '#C9D1FF',
+      success: '#39FF14',
+      error: '#FF0080',
+      warning: '#FFF700', // Electric Yellow
+      info: '#00D9FF',
       border: '#E0E0E0',
       divider: '#F0F0F0',
       overlay: 'rgba(26, 26, 26, 0.4)',
       shadow: 'rgba(26, 26, 26, 0.1)',
     },
     dark: {
-      primary: '#FAD4D4',
-      primaryLight: '#C0F0E8',
-      primaryDark: '#F2A4A4',
-      secondary: '#C9D1FF',
-      accent: '#C0F0E8',
+      primary: '#00D9FF',
+      primaryLight: '#33E0FF',
+      primaryDark: '#00B8D9',
+      secondary: '#FF0080',
+      accent: '#39FF14',
+      background: '#0A0A0A',
+      surface: '#1A1A1A',
+      card: '#222222',
+      text: '#FFFFFF',
+      textSecondary: '#CCCCCC',
+      textTertiary: '#999999',
+      success: '#39FF14',
+      error: '#FF0080',
+      warning: '#FFF700',
+      info: '#00D9FF',
+      border: '#333333',
+      divider: '#444444',
+      overlay: 'rgba(0, 0, 0, 0.7)',
+      shadow: 'rgba(0, 255, 217, 0.2)',
+    }
+  },
+
+  sunsetDream: {
+    light: {
+      primary: '#FF6B35', // Vibrant Orange
+      primaryLight: '#FFF0E6', // Peach background
+      primaryDark: '#E55A2B',
+      secondary: '#FF9A9E', // Coral Pink
+      accent: '#A8E6CF', // Mint Green
+      background: '#FFF0E6', // Peach background
+      surface: '#FFFFFF',
+      card: '#FFFFFF',
+      text: '#2D2D2D',
+      textSecondary: '#555555',
+      textTertiary: '#777777',
+      success: '#A8E6CF',
+      error: '#FF6B35',
+      warning: '#FFD93D',
+      info: '#88D8C0', // Turquoise
+      border: '#E0E0E0',
+      divider: '#F0F0F0',
+      overlay: 'rgba(45, 45, 45, 0.4)',
+      shadow: 'rgba(45, 45, 45, 0.1)',
+    },
+    dark: {
+      primary: '#FF6B35',
+      primaryLight: '#FF8A5B',
+      primaryDark: '#E55A2B',
+      secondary: '#FF9A9E',
+      accent: '#A8E6CF',
       background: '#1A1A1A',
       surface: '#2A2A2A',
       card: '#333333',
       text: '#FFFFFF',
       textSecondary: '#CCCCCC',
       textTertiary: '#999999',
-      success: '#C0F0E8',
-      error: '#FAD4D4',
-      warning: '#FFE4B5',
-      info: '#C9D1FF',
-      border: '#555555',
-      divider: '#666666',
+      success: '#A8E6CF',
+      error: '#FF6B35',
+      warning: '#FFD93D',
+      info: '#88D8C0',
+      border: '#444444',
+      divider: '#555555',
       overlay: 'rgba(0, 0, 0, 0.6)',
-      shadow: 'rgba(0, 0, 0, 0.3)',
+      shadow: 'rgba(255, 107, 53, 0.2)',
+    }
+  },
+
+  galaxyPop: {
+    light: {
+      primary: '#7B68EE', // Medium Slate Blue
+      primaryLight: '#F0EFFF', // Lavender Mist background
+      primaryDark: '#6A5ACD',
+      secondary: '#FF69B4', // Hot Pink
+      accent: '#00CED1', // Dark Turquoise
+      background: '#F0EFFF', // Lavender Mist background
+      surface: '#FFFFFF',
+      card: '#FFFFFF',
+      text: '#2D2D2D',
+      textSecondary: '#555555',
+      textTertiary: '#777777',
+      success: '#32CD32', // Lime Green
+      error: '#FF69B4',
+      warning: '#FFD700', // Gold
+      info: '#00CED1',
+      border: '#E0E0E0',
+      divider: '#F0F0F0',
+      overlay: 'rgba(45, 45, 45, 0.4)',
+      shadow: 'rgba(45, 45, 45, 0.1)',
+    },
+    dark: {
+      primary: '#7B68EE',
+      primaryLight: '#9370DB',
+      primaryDark: '#6A5ACD',
+      secondary: '#FF69B4',
+      accent: '#00CED1',
+      background: '#0F0F23', // Deep space blue
+      surface: '#1A1A2E',
+      card: '#25253B',
+      text: '#FFFFFF',
+      textSecondary: '#CCCCCC',
+      textTertiary: '#999999',
+      success: '#32CD32',
+      error: '#FF69B4',
+      warning: '#FFD700',
+      info: '#00CED1',
+      border: '#444444',
+      divider: '#555555',
+      overlay: 'rgba(0, 0, 0, 0.7)',
+      shadow: 'rgba(123, 104, 238, 0.3)',
+    }
+  },
+
+  retroWave: {
+    light: {
+      primary: '#FF0080', // Magenta
+      primaryLight: '#FFE6F2', // Light Pink background
+      primaryDark: '#E6006B',
+      secondary: '#00FFFF', // Cyan
+      accent: '#FFFF00', // Yellow
+      background: '#FFE6F2', // Light Pink background
+      surface: '#FFFFFF',
+      card: '#FFFFFF',
+      text: '#1A1A1A',
+      textSecondary: '#444444',
+      textTertiary: '#666666',
+      success: '#00FF80', // Bright Green
+      error: '#FF0080',
+      warning: '#FFFF00',
+      info: '#00FFFF',
+      border: '#E0E0E0',
+      divider: '#F0F0F0',
+      overlay: 'rgba(26, 26, 26, 0.4)',
+      shadow: 'rgba(26, 26, 26, 0.1)',
+    },
+    dark: {
+      primary: '#FF0080',
+      primaryLight: '#FF3399',
+      primaryDark: '#CC0066',
+      secondary: '#00FFFF',
+      accent: '#FFFF00',
+      background: '#0D0D0D', // Almost black
+      surface: '#1A0A1A', // Dark purple tint
+      card: '#2A1A2A',
+      text: '#FFFFFF',
+      textSecondary: '#CCCCCC',
+      textTertiary: '#999999',
+      success: '#00FF80',
+      error: '#FF0080',
+      warning: '#FFFF00',
+      info: '#00FFFF',
+      border: '#444444',
+      divider: '#555555',
+      overlay: 'rgba(0, 0, 0, 0.8)',
+      shadow: 'rgba(255, 0, 128, 0.3)',
     }
   }
 };
