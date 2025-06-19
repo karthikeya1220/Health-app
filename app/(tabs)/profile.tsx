@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   Settings, Edit, Share, Bell, Lock, Eye, Moon, Sun, Palette, 
   User, Mail, Phone, MapPin, Calendar, Award, Activity, LogOut,
-  ChevronRight, Heart, Star, Trophy
+  ChevronRight, Heart, Star, Trophy, Sparkles, Zap, Coffee, Mountain
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
@@ -14,7 +14,7 @@ import { userData } from '@/constants/data';
 import { router } from 'expo-router';
 
 export default function ProfileTab() {
-  const { colors, theme, themeMode, setThemeMode } = useTheme();
+  const { colors, theme, themeMode, setThemeMode, pastelTheme, setPastelTheme } = useTheme();
   const typography = getTypography(theme === 'dark');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [privateModeEnabled, setPrivateModeEnabled] = useState(false);
@@ -24,6 +24,44 @@ export default function ProfileTab() {
     { label: 'Calories', value: '12.5K', icon: Heart, color: colors.error },
     { label: 'Points', value: '1,544', icon: Star, color: colors.accent },
     { label: 'Rank', value: '#12', icon: Trophy, color: colors.success },
+  ];
+
+  const pastelThemes = [
+    {
+      id: 'default',
+      name: 'Default',
+      description: 'Classic app theme',
+      icon: Settings,
+      colors: ['#6366f1', '#10b981', '#ef4444'],
+    },
+    {
+      id: 'softEnergy',
+      name: 'Soft Energy',
+      description: 'Balanced, fresh, feminine-neutral',
+      icon: Sparkles,
+      colors: ['#FFD6C0', '#CFFFE5', '#D9C8FF'],
+    },
+    {
+      id: 'calmZenPop',
+      name: 'Calm Zen Pop',
+      description: 'Chill and soothing with playful touches',
+      icon: Coffee,
+      colors: ['#C7E9F1', '#F9D6E6', '#E4DAF5'],
+    },
+    {
+      id: 'retroFresh',
+      name: 'Retro Fresh',
+      description: 'Warm, nostalgic, but modern',
+      icon: Zap,
+      colors: ['#FFF9C4', '#FFB4A2', '#AEC6CF'],
+    },
+    {
+      id: 'sportyMinimal',
+      name: 'Sporty Minimal',
+      description: 'Subtle but strong, clean look',
+      icon: Mountain,
+      colors: ['#C0F0E8', '#FAD4D4', '#C9D1FF'],
+    },
   ];
 
   const settingsGroups = [
@@ -52,7 +90,6 @@ export default function ProfileTab() {
           value: privateModeEnabled,
           onToggle: setPrivateModeEnabled
         },
-        { icon: Palette, label: 'Theme', action: () => {} },
       ]
     },
     {
@@ -101,6 +138,11 @@ export default function ProfileTab() {
       paddingHorizontal: Spacing.lg,
       paddingVertical: Spacing.md,
       borderRadius: BorderRadius.full,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 6,
     },
     editButtonText: {
       ...typography.body,
@@ -120,7 +162,7 @@ export default function ProfileTab() {
       borderRadius: BorderRadius.lg,
       padding: Spacing.md,
       alignItems: 'center',
-      shadowColor: colors.text,
+      shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
@@ -159,7 +201,7 @@ export default function ProfileTab() {
       backgroundColor: colors.surface,
       borderRadius: BorderRadius.lg,
       overflow: 'hidden',
-      shadowColor: colors.text,
+      shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
@@ -206,6 +248,11 @@ export default function ProfileTab() {
     themeOptionActive: {
       backgroundColor: colors.primary,
       borderColor: colors.primary,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 6,
     },
     themeOptionText: {
       ...typography.body,
@@ -214,6 +261,66 @@ export default function ProfileTab() {
     },
     themeOptionTextActive: {
       color: colors.surface,
+    },
+    // Pastel Theme Styles
+    pastelThemeGrid: {
+      gap: Spacing.md,
+    },
+    pastelThemeCard: {
+      backgroundColor: colors.surface,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      borderWidth: 2,
+      borderColor: colors.border,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    pastelThemeCardActive: {
+      borderColor: colors.primary,
+      backgroundColor: colors.primary + '10',
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    pastelThemeHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: Spacing.sm,
+    },
+    pastelThemeIconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: Spacing.md,
+    },
+    pastelThemeName: {
+      ...typography.body,
+      color: colors.text,
+      fontWeight: '600',
+    },
+    pastelThemeDescription: {
+      ...typography.caption,
+      color: colors.textSecondary,
+      marginBottom: Spacing.md,
+      lineHeight: 16,
+    },
+    pastelThemeColors: {
+      flexDirection: 'row',
+      gap: Spacing.xs,
+    },
+    pastelThemeColorDot: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.surface,
     },
     logoutButton: {
       backgroundColor: colors.error + '20',
@@ -237,8 +344,9 @@ export default function ProfileTab() {
       key={item.label}
       style={[styles.settingsItem, isLast && styles.settingsItemLast]}
       onPress={item.action}
+      activeOpacity={0.7}
     >
-      <View style={[styles.settingsIcon, { backgroundColor: colors.primaryLight }]}>
+      <View style={[styles.settingsIcon, { backgroundColor: colors.primary + '20' }]}>
         <item.icon size={20} color={colors.primary} />
       </View>
       <Text style={styles.settingsLabel}>{item.label}</Text>
@@ -263,7 +371,7 @@ export default function ProfileTab() {
           <Image source={{ uri: userData.profileImage }} style={styles.profileImage} />
           <Text style={styles.profileName}>{userData.name}</Text>
           <Text style={styles.profileEmail}>{userData.email}</Text>
-          <TouchableOpacity style={styles.editButton}>
+          <TouchableOpacity style={styles.editButton} activeOpacity={0.8}>
             <Edit size={16} color={colors.surface} />
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
@@ -272,7 +380,7 @@ export default function ProfileTab() {
         {/* Stats */}
         <View style={styles.statsContainer}>
           {stats.map((stat, index) => (
-            <TouchableOpacity key={stat.label} style={styles.statCard}>
+            <TouchableOpacity key={stat.label} style={styles.statCard} activeOpacity={0.8}>
               <View style={[styles.statIcon, { backgroundColor: stat.color + '20' }]}>
                 <stat.icon size={20} color={stat.color} />
               </View>
@@ -294,9 +402,9 @@ export default function ProfileTab() {
           </View>
         ))}
 
-        {/* Theme Selector */}
+        {/* Theme Mode Selector */}
         <View style={styles.settingsSection}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
+          <Text style={styles.sectionTitle}>Appearance Mode</Text>
           <View style={styles.themeSelector}>
             <TouchableOpacity
               style={[
@@ -304,6 +412,7 @@ export default function ProfileTab() {
                 themeMode === 'light' && styles.themeOptionActive,
               ]}
               onPress={() => setThemeMode('light')}
+              activeOpacity={0.8}
             >
               <Sun size={16} color={themeMode === 'light' ? colors.surface : colors.text} />
               <Text
@@ -321,6 +430,7 @@ export default function ProfileTab() {
                 themeMode === 'dark' && styles.themeOptionActive,
               ]}
               onPress={() => setThemeMode('dark')}
+              activeOpacity={0.8}
             >
               <Moon size={16} color={themeMode === 'dark' ? colors.surface : colors.text} />
               <Text
@@ -338,6 +448,7 @@ export default function ProfileTab() {
                 themeMode === 'system' && styles.themeOptionActive,
               ]}
               onPress={() => setThemeMode('system')}
+              activeOpacity={0.8}
             >
               <Settings size={16} color={themeMode === 'system' ? colors.surface : colors.text} />
               <Text
@@ -352,8 +463,76 @@ export default function ProfileTab() {
           </View>
         </View>
 
+        {/* Pastel Theme Selector */}
+        <View style={styles.settingsSection}>
+          <Text style={styles.sectionTitle}>Color Themes</Text>
+          <Text style={{
+            ...typography.caption,
+            color: colors.textSecondary,
+            marginBottom: Spacing.md,
+            lineHeight: 18,
+          }}>
+            Choose your preferred color palette. These themes work beautifully in both light and dark modes.
+          </Text>
+          
+          <View style={styles.pastelThemeGrid}>
+            {pastelThemes.map((themeOption) => {
+              const IconComponent = themeOption.icon;
+              const isActive = pastelTheme === themeOption.id;
+              
+              return (
+                <TouchableOpacity
+                  key={themeOption.id}
+                  style={[
+                    styles.pastelThemeCard,
+                    isActive && styles.pastelThemeCardActive,
+                  ]}
+                  onPress={() => setPastelTheme(themeOption.id as any)}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.pastelThemeHeader}>
+                    <View style={[
+                      styles.pastelThemeIconContainer,
+                      {
+                        backgroundColor: isActive ? colors.primary : colors.primary + '20'
+                      }
+                    ]}>
+                      <IconComponent 
+                        size={20} 
+                        color={isActive ? colors.surface : colors.primary}
+                      />
+                    </View>
+                    <Text style={[
+                      styles.pastelThemeName,
+                      isActive && { color: colors.primary }
+                    ]}>
+                      {themeOption.name}
+                    </Text>
+                  </View>
+                  
+                  <Text style={styles.pastelThemeDescription}>
+                    {themeOption.description}
+                  </Text>
+                  
+                  <View style={styles.pastelThemeColors}>
+                    {themeOption.colors.map((color, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          styles.pastelThemeColorDot,
+                          { backgroundColor: color }
+                        ]}
+                      />
+                    ))}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} activeOpacity={0.8}>
           <LogOut size={20} color={colors.error} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
