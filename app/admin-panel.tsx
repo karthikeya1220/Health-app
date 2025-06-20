@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Switch, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Switch, Alert, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, Settings, MoreVertical, UserPlus, UserX, Shield, 
   Crown, Edit, MessageCircle, Phone, Mail, MapPin, Calendar,
-  Star, Trophy, Award, Lock, Unlock, Ban, Eye
+  Star, Trophy, Award, Lock, Unlock, Ban, Eye, ChevronRight
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function AdminPanelScreen() {
   const { colors, theme } = useTheme();
@@ -23,6 +24,25 @@ export default function AdminPanelScreen() {
     moderateContent: true,
     autoApprove: false,
   });
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(-20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   const tabs = [
     { id: 'members', label: 'Members' },
@@ -111,74 +131,90 @@ export default function AdminPanelScreen() {
       [{ text: 'OK' }]
     );
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.background,
     },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
       paddingHorizontal: Spacing.lg,
       paddingTop: Spacing.lg,
-      paddingBottom: Spacing.md,
+      paddingBottom: Spacing.lg,
+      borderBottomLeftRadius: BorderRadius.xl,
+      borderBottomRightRadius: BorderRadius.xl,
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: colors.surface,
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: colors.surface + 'CC',
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: Spacing.md,
-    },
-    headerTitle: {
-      ...typography.h2,
-      color: colors.text,
-      fontWeight: 'bold',
-      flex: 1,
-    },
-    adminBadge: {
-      backgroundColor: colors.primary,
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: 4,
-      borderRadius: BorderRadius.sm,
-    },
-    adminBadgeText: {
-      ...typography.caption,
-      color: colors.surface,
-      fontWeight: '600',
-      fontSize: 10,
-    },
-    tabsContainer: {
-      flexDirection: 'row',
-      backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      margin: Spacing.lg,
-      padding: 4,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 3,
     },
-    tab: {
+    headerTitle: {
+      color: colors.text,
+      fontWeight: 'bold',
+      flex: 1,    },
+    adminBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.xs,
+      borderRadius: BorderRadius.full,
+      gap: 4,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 4,
+    },
+    adminBadgeText: {
+      ...TextStyles.caption,
+      color: colors.surface,
+      fontWeight: '700',
+      fontSize: 11,
+      letterSpacing: 0.5,
+    },
+    tabsContainer: {
+      flexDirection: 'row',
+      backgroundColor: colors.surface,
+      borderRadius: BorderRadius.xl,
+      margin: Spacing.lg,
+      padding: 6,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 6,
+    },    tab: {
       flex: 1,
       alignItems: 'center',
-      paddingVertical: Spacing.sm,
-      borderRadius: BorderRadius.md,
+      paddingVertical: Spacing.md,
+      borderRadius: BorderRadius.lg,
     },
     activeTab: {
       backgroundColor: colors.primary,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 4,
     },
     tabText: {
-      ...typography.body,
+      ...TextStyles.body,
       color: colors.textSecondary,
       fontWeight: '600',
     },
     activeTabText: {
       color: colors.surface,
+      fontWeight: '700',
     },
     content: {
       flex: 1,
@@ -186,14 +222,16 @@ export default function AdminPanelScreen() {
     },
     memberCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.xl,
       padding: Spacing.lg,
       marginBottom: Spacing.md,
       shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 6,
+      borderWidth: 0.5,
+      borderColor: colors.border + '40',
     },
     memberHeader: {
       flexDirection: 'row',
@@ -657,45 +695,58 @@ export default function AdminPanelScreen() {
         return renderMembers();
     }
   };
-
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Admin Panel</Text>
-        <View style={styles.adminBadge}>
-          <Text style={styles.adminBadgeText}>ADMIN</Text>
-        </View>
-      </View>
-
-      {/* Tabs */}
-      <View style={styles.tabsContainer}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab.id}
-            style={[styles.tab, activeTab === tab.id && styles.activeTab]}
-            onPress={() => setActiveTab(tab.id)}
+    <LinearGradient
+      colors={[colors.background, colors.background + 'CC', colors.surface + '66']}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.container}>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* Header */}
+          <LinearGradient
+            colors={[colors.primary + '15', colors.surface]}
+            style={styles.header}
           >
-            <Text style={[
-              styles.tabText,
-              activeTab === tab.id && styles.activeTabText
-            ]}>
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <ArrowLeft size={24} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={[TextStyles.h2, styles.headerTitle]}>Admin Panel</Text>
+            <LinearGradient
+              colors={[colors.error, colors.error + 'DD']}
+              style={styles.adminBadge}
+            >
+              <Crown size={12} color={colors.surface} />
+              <Text style={styles.adminBadgeText}>ADMIN</Text>
+            </LinearGradient>
+          </LinearGradient>
 
-      {/* Content */}
-      <View style={styles.content}>
-        {renderContent()}
-      </View>
-    </SafeAreaView>
+          {/* Tabs */}
+          <View style={styles.tabsContainer}>
+            {tabs.map((tab) => (
+              <TouchableOpacity
+                key={tab.id}
+                style={[styles.tab, activeTab === tab.id && styles.activeTab]}
+                onPress={() => setActiveTab(tab.id)}
+              >
+                <Text style={[
+                  styles.tabText,
+                  activeTab === tab.id && styles.activeTabText
+                ]}>
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Content */}
+          <View style={styles.content}>
+            {renderContent()}
+          </View>
+        </Animated.View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

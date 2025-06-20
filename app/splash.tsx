@@ -2,9 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Activity, Heart, Zap } from 'lucide-react-native';
+import { Activity, Heart, Zap, Target } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
@@ -17,6 +17,7 @@ export default function SplashScreen() {
   const logoOpacityAnim = useRef(new Animated.Value(0)).current;
   const textOpacityAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     // Logo animation
@@ -35,27 +36,34 @@ export default function SplashScreen() {
 
     // Text animation after logo
     setTimeout(() => {
-      Animated.timing(textOpacityAnim, {
-        toValue: 1,
+      Animated.timing(textOpacityAnim, {        toValue: 1,
         duration: 600,
         useNativeDriver: true,
       }).start();
     }, 400);
 
-    // Pulse animation
+    // Enhanced pulse and rotation animations
     const pulseAnimation = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
+          toValue: 1.15,
+          duration: 1200,
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 1000,
+          duration: 1200,
           useNativeDriver: true,
         }),
       ])
+    );
+
+    const rotateAnimation = Animated.loop(
+      Animated.timing(rotateAnim, {
+        toValue: 1,
+        duration: 8000,
+        useNativeDriver: true,
+      })
     );
     pulseAnimation.start();
 
@@ -64,7 +72,6 @@ export default function SplashScreen() {
       router.replace('/login');
     }, 3000);
   }, []);
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -77,49 +84,59 @@ export default function SplashScreen() {
     logoContainer: {
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: 40,
+      marginBottom: 60,
     },
     logoCircle: {
-      width: 120,
-      height: 120,
-      borderRadius: 60,
+      width: 140,
+      height: 140,
+      borderRadius: 70,
       backgroundColor: colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
       shadowColor: colors.primary,
-      shadowOffset: { width: 0, height: 10 },
-      shadowOpacity: 0.3,
-      shadowRadius: 20,
-      elevation: 10,
+      shadowOffset: { width: 0, height: 15 },
+      shadowOpacity: 0.4,
+      shadowRadius: 25,
+      elevation: 15,
+      borderWidth: 4,
+      borderColor: colors.surface + '20',
     },
     iconContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
     },    title: {
-      ...typography.h1,
+      ...TextStyles.h1,
       color: colors.text,
       textAlign: 'center',
-      marginBottom: 8,
+      marginBottom: 12,
+      fontSize: 32,
+      letterSpacing: -1,
     },
     subtitle: {
-      ...typography.body,
+      ...TextStyles.body,
       color: colors.textSecondary,
       textAlign: 'center',
-      fontSize: 16,
+      fontSize: 18,
+      letterSpacing: 0.5,
     },
     loadingDots: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginTop: 40,
+      marginTop: 50,
     },
     dot: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
+      width: 10,
+      height: 10,
+      borderRadius: 5,
       backgroundColor: colors.primary,
-      marginHorizontal: 4,
+      marginHorizontal: 6,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 3,
     },
   });
 

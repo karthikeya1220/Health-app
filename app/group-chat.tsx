@@ -15,13 +15,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, Send, MoreHorizontal, Users, Phone, Video, 
-  Plus, Camera, Mic, Smile, Settings, Info
+  Plus, Camera, Mic, Smile, Settings, Info, ChevronDown
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface GroupMessage {
   id: string;

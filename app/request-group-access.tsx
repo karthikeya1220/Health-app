@@ -1,18 +1,39 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Users, Shield, Clock, CheckCircle, XCircle, Calendar, MapPin } from 'lucide-react-native';
+import { ArrowLeft, Users, Shield, Clock, CheckCircle, XCircle, Calendar, MapPin, Crown, Star } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width } = Dimensions.get('window');
 
 export default function RequestGroupAccessScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
   
   const [isRequesting, setIsRequesting] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, []);
 
   const groupInfo = {
     name: 'Elite Fitness Warriors',
@@ -84,12 +105,17 @@ export default function RequestGroupAccessScreen() {
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: Spacing.md,
-    },
-    headerTitle: {
-      ...typography.h3,
+    },    headerTitle: {
+      ...TextStyles.h3,
       color: colors.text,
-      fontWeight: 'bold',
+      marginBottom: 2,
+    },
+    headerContent: {
       flex: 1,
+    },
+    headerSubtitle: {
+      ...TextStyles.caption,
+      color: colors.textSecondary,
     },
     scrollContent: {
       padding: Spacing.lg,
@@ -291,22 +317,28 @@ export default function RequestGroupAccessScreen() {
       fontStyle: 'italic',
     },
   });
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
+      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+        {/* Enhanced Header with Gradient */}
+        <LinearGradient
+          colors={[colors.surface, colors.background]}
+          style={styles.header}
         >
-          <ArrowLeft size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Request Access</Text>
-      </View>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <ArrowLeft size={24} color={colors.text} />
+          </TouchableOpacity>
+          <View style={styles.headerContent}>
+            <Text style={styles.headerTitle}>Request Access</Text>
+            <Text style={styles.headerSubtitle}>Join an exclusive community</Text>
+          </View>
+        </LinearGradient>
 
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Group Info */}
@@ -402,13 +434,12 @@ export default function RequestGroupAccessScreen() {
             onPress={() => router.back()}
           >
             <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.warningText}>
+          </TouchableOpacity>          <Text style={styles.warningText}>
             Your request will be reviewed by the group admin. This may take 1-3 business days.
           </Text>
         </View>
       </ScrollView>
+      </Animated.View>
     </SafeAreaView>
   );
 }

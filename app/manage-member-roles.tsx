@@ -1,21 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, Crown, Shield, User, Star, ChevronDown, 
   Check, X, MoreHorizontal, UserPlus, UserX 
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ManageMemberRolesScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
   
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(-20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   const roles = [
     {
@@ -129,56 +149,68 @@ export default function ManageMemberRolesScreen() {
   const getCurrentRole = (roleId: string) => {
     return roles.find(role => role.id === roleId);
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.background,
     },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
       paddingHorizontal: Spacing.lg,
       paddingTop: Spacing.lg,
-      paddingBottom: Spacing.md,
+      paddingBottom: Spacing.lg,
+      borderBottomLeftRadius: BorderRadius.xl,
+      borderBottomRightRadius: BorderRadius.xl,
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: colors.surface,
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: colors.surface + 'CC',
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: Spacing.md,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
     },
     headerTitle: {
-      ...typography.h2,
       color: colors.text,
       fontWeight: 'bold',
       flex: 1,
+    },
+    headerIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.primary + '20',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     scrollContent: {
       padding: Spacing.lg,
     },
     section: {
       marginBottom: Spacing.xl,
-    },
-    sectionTitle: {
-      ...typography.h3,
+    },    sectionTitle: {
       color: colors.text,
       fontWeight: 'bold',
       marginBottom: Spacing.lg,
     },
     roleCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.xl,
       padding: Spacing.lg,
       marginBottom: Spacing.md,
       shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 6,
+      borderWidth: 0.5,
+      borderColor: colors.border + '40',
     },
     roleHeader: {
       flexDirection: 'row',
@@ -214,23 +246,24 @@ export default function ManageMemberRolesScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: Spacing.xs,
-    },
-    permissionText: {
-      ...typography.caption,
+    },    permissionText: {
+      ...TextStyles.caption,
       color: colors.textSecondary,
       marginLeft: Spacing.xs,
       flex: 1,
     },
     memberCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.xl,
       padding: Spacing.lg,
       marginBottom: Spacing.md,
       shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 6,
+      borderWidth: 0.5,
+      borderColor: colors.border + '40',
     },
     memberHeader: {
       flexDirection: 'row',
@@ -454,36 +487,48 @@ export default function ManageMemberRolesScreen() {
       </View>
     );
   };
-
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Manage Roles</Text>
-      </View>
+    <LinearGradient
+      colors={[colors.background, colors.background + 'CC', colors.surface + '66']}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.container}>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* Header */}
+          <LinearGradient
+            colors={[colors.primary + '15', colors.surface]}
+            style={styles.header}
+          >
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <ArrowLeft size={24} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={[TextStyles.h2, styles.headerTitle]}>Manage Roles</Text>
+            <View style={styles.headerIcon}>
+              <Shield size={20} color={colors.primary} />
+            </View>
+          </LinearGradient>
 
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Role Explanations */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Role Permissions</Text>
-          {roles.map(renderRoleCard)}
-        </View>
+          <ScrollView 
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Role Explanations */}
+            <View style={styles.section}>
+              <Text style={[TextStyles.h3, styles.sectionTitle]}>Role Permissions</Text>
+              {roles.map(renderRoleCard)}
+            </View>
 
-        {/* Members List */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Group Members</Text>
-          {members.map(renderMemberCard)}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+            {/* Members List */}
+            <View style={styles.section}>
+              <Text style={[TextStyles.h3, styles.sectionTitle]}>Group Members</Text>
+              {members.map(renderMemberCard)}
+            </View>
+          </ScrollView>
+        </Animated.View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
