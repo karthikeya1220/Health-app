@@ -1,888 +1,270 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
-  Animated,
+  StyleSheet,
   StatusBar,
-  Image,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  ArrowLeft, 
-  MoreHorizontal, 
-  Activity as ActivityIcon,
-  Heart,
-  Clock,
-  Footprints,
-  Trophy,
-  Timer as TimerIcon,
-  TrendingUp,
-  Zap
-} from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
-import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-
-const { width, height } = Dimensions.get('window');
-
-// Animated Bar Chart Component
-const AnimatedBarChart = () => {
-  const { colors, theme } = useTheme();
-  const animatedValues = useRef(
-    Array.from({ length: 10 }, () => new Animated.Value(0))
-  ).current;
-
-  const barData = [
-    { height: 40, calories: 320, color: colors.info, label: '2km' },
-    { height: 65, calories: 480, color: colors.success, label: '3km' },
-    { height: 80, calories: 654, color: colors.warning, label: '4km' },
-    { height: 45, calories: 420, color: colors.info, label: '5km' },
-    { height: 90, calories: 780, color: colors.primary, label: '6km' },
-    { height: 70, calories: 600, color: colors.accent, label: '7km' },
-    { height: 85, calories: 720, color: colors.success, label: '8km' },
-    { height: 30, calories: 280, color: colors.warning, label: '9km' },
-    { height: 95, calories: 1233, color: colors.error, label: '10km' },
-    { height: 50, calories: 450, color: colors.info, label: '11km' },
-  ];
-
-  useEffect(() => {
-    const animations = animatedValues.map((animValue, index) =>
-      Animated.timing(animValue, {
-        toValue: barData[index].height,
-        duration: 1500 + index * 100,
-        useNativeDriver: false,
-      })
-    );
-
-    Animated.stagger(100, animations).start();
-  }, []);
-
-  return (
-    <View style={{
-      height: 200,
-      marginVertical: 20,
-      position: 'relative',
-      paddingHorizontal: 10,
-    }}>
-      {/* Animated Background Glow */}
-      <View style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: theme === 'dark' ? colors.primary + '10' : colors.primary + '05',
-        borderRadius: 20,
-      }} />
-
-      {/* Bar Chart Container */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
-        height: 160,
-        paddingHorizontal: 15,
-        paddingTop: 20,
-      }}>
-        {barData.map((bar, index) => (
-          <View key={index} style={{ alignItems: 'center', flex: 1 }}>
-            {/* Animated Bar with Gradient */}
-            <Animated.View
-              style={{
-                width: 12,
-                height: animatedValues[index],
-                borderRadius: 6,
-                marginBottom: 8,
-                overflow: 'hidden',
-                shadowColor: bar.color,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.4,
-                shadowRadius: 8,
-                elevation: 8,
-              }}
-            >
-              <LinearGradient
-                colors={[bar.color, bar.color + '80']}
-                style={{ flex: 1 }}
-              />
-            </Animated.View>
-
-            {/* Calorie Labels with Floating Effect */}
-            {(index === 2 || index === 8) && (
-              <Animated.View
-                style={{
-                  position: 'absolute',
-                  top: -25,
-                  backgroundColor: bar.color + '20',
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: bar.color + '40',
-                }}
-              >
-                <Text style={{
-                  fontSize: 11,
-                  fontWeight: '700',
-                  color: bar.color,
-                }}>
-                  {bar.calories}kcal
-                </Text>
-              </Animated.View>
-            )}
-          </View>
-        ))}
-      </View>
-
-      {/* Distance Labels */}
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 15,
-        marginTop: 10,
-      }}>
-        {['2km', '4km', '6km', '8km', '10km'].map((distance, index) => (
-          <Text key={index} style={{
-            fontSize: 11,
-            color: colors.textSecondary,
-            fontWeight: '600',
-          }}>
-            {distance}
-          </Text>
-        ))}
-      </View>
-
-      {/* Floating Trend Icon */}
-      <View style={{
-        position: 'absolute',
-        top: 15,
-        right: 20,
-        backgroundColor: colors.success + '20',
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <TrendingUp size={16} color={colors.success} />
-      </View>
-    </View>
-  );
-};
-
-// Wavy Progress Chart Component
-const WavyProgressChart = () => {
-  const { colors, theme } = useTheme();
-  const waveAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const waveAnimation = Animated.loop(
-      Animated.timing(waveAnim, {
-        toValue: 1,
-        duration: 3000,
-        useNativeDriver: true,
-      })
-    );
-    waveAnimation.start();
-  }, []);
-
-  const progressData = [
-    { progress: 0.3, color: colors.info, label: '320kcal' },
-    { progress: 0.6, color: colors.warning, label: '654kcal' },
-    { progress: 0.9, color: colors.error, label: '1,233kcal' },
-  ];
-
-  return (
-    <View style={{
-      height: 200,
-      marginVertical: 20,
-      backgroundColor: theme === 'dark' ? colors.surface : colors.background,
-      borderRadius: 25,
-      padding: 20,
-      overflow: 'hidden',
-    }}>
-      {/* Animated Background Waves */}
-      <Animated.View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          opacity: 0.1,
-          transform: [
-            {
-              translateX: waveAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [-50, 50],
-              }),
-            },
-          ],
-        }}
-      >
-        <LinearGradient
-          colors={[colors.primary + '20', colors.accent + '20', colors.info + '20']}
-          style={{ flex: 1 }}
-        />
-      </Animated.View>
-
-      {/* Progress Rings */}
-      {progressData.map((item, index) => (
-        <View key={index} style={{
-          marginBottom: 15,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          {/* Progress Bar */}
-          <View style={{
-            flex: 1,
-            height: 12,
-            backgroundColor: colors.border,
-            borderRadius: 6,
-            marginRight: 15,
-            overflow: 'hidden',
-          }}>
-            <Animated.View
-              style={{
-                height: '100%',
-                width: `${item.progress * 100}%`,
-                borderRadius: 6,
-                overflow: 'hidden',
-              }}
-            >
-              <LinearGradient
-                colors={[item.color, item.color + '80']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{ flex: 1 }}
-              />
-            </Animated.View>
-          </View>
-
-          {/* Calorie Label */}
-          <Text style={{
-            fontSize: 14,
-            fontWeight: '700',
-            color: item.color,
-            minWidth: 70,
-            textAlign: 'right',
-          }}>
-            {item.label}
-          </Text>
-        </View>
-      ))}
-
-      {/* Distance Progress */}
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-        paddingHorizontal: 10,
-      }}>
-        {['Start', '2.5km', '5km', '7.5km', '10km'].map((point, index) => (
-          <View key={index} style={{ alignItems: 'center' }}>
-            <View style={{
-              width: 8,
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: index <= 3 ? colors.primary : colors.border,
-              marginBottom: 5,
-            }} />
-            <Text style={{
-              fontSize: 10,
-              color: colors.textSecondary,
-              fontWeight: '500',
-            }}>
-              {point}
-            </Text>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-};
-
-// Circular Progress Rings Component
-const CircularProgressRings = () => {
-  const { colors } = useTheme();
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const rotateAnimation = Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 8000,
-        useNativeDriver: true,
-      })
-    );
-    rotateAnimation.start();
-  }, []);
-
-  const rings = [
-    { size: 120, progress: 0.9, color: colors.error, strokeWidth: 8 },
-    { size: 90, progress: 0.6, color: colors.warning, strokeWidth: 6 },
-    { size: 60, progress: 0.3, color: colors.info, strokeWidth: 4 },
-  ];
-
-  return (
-    <View style={{
-      height: 200,
-      marginVertical: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
-      <Animated.View
-        style={{
-          transform: [
-            {
-              rotate: rotateAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0deg', '360deg'],
-              }),
-            },
-          ],
-        }}
-      >
-        {rings.map((ring, index) => (
-          <View
-            key={index}
-            style={{
-              position: 'absolute',
-              width: ring.size,
-              height: ring.size,
-              borderRadius: ring.size / 2,
-              borderWidth: ring.strokeWidth,
-              borderColor: ring.color + '30',
-              borderTopColor: ring.color,
-              borderRightColor: ring.color,
-            }}
-          />
-        ))}
-      </Animated.View>
-
-      {/* Center Content */}
-      <View style={{
-        position: 'absolute',
-        alignItems: 'center',
-      }}>
-        <Zap size={24} color={colors.primary} />
-        <Text style={{
-          fontSize: 16,
-          fontWeight: 'bold',
-          color: colors.text,
-          marginTop: 5,
-        }}>
-          1,233
-        </Text>
-        <Text style={{
-          fontSize: 12,
-          color: colors.textSecondary,
-          fontWeight: '500',
-        }}>
-          kcal burned
-        </Text>
-      </View>
-
-      {/* Floating Labels */}
-      <View style={{
-        position: 'absolute',
-        top: 20,
-        left: 20,
-        backgroundColor: colors.info + '20',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 15,
-      }}>
-        <Text style={{
-          fontSize: 11,
-          fontWeight: '600',
-          color: colors.info,
-        }}>
-          320kcal
-        </Text>
-      </View>
-
-      <View style={{
-        position: 'absolute',
-        top: 50,
-        right: 10,
-        backgroundColor: colors.warning + '20',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 15,
-      }}>
-        <Text style={{
-          fontSize: 11,
-          fontWeight: '600',
-          color: colors.warning,
-        }}>
-          654kcal
-        </Text>
-      </View>
-    </View>
-  );
-};
-
-// Animated Counter Component
-const AnimatedCounter = ({ 
-  value, 
-  suffix = '', 
-  duration = 2000,
-  textColor 
-}: {
-  value: number;
-  suffix?: string;
-  duration?: number;
-  textColor: string;
-}) => {
-  const animatedValue = useRef(new Animated.Value(0)).current;
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    const listener = animatedValue.addListener(({ value }) => {
-      setDisplayValue(Math.floor(value));
-    });
-
-    Animated.timing(animatedValue, {
-      toValue: value,
-      duration,
-      useNativeDriver: false,
-    }).start();
-
-    return () => {
-      animatedValue.removeListener(listener);
-    };
-  }, [value]);
-
-  return (
-    <Text style={{
-      fontSize: 32,
-      fontWeight: 'bold',
-      color: textColor,
-    }}>
-      {displayValue.toLocaleString()}{suffix}
-    </Text>
-  );
-};
-
-// Runner Image Component
-const RunnerImage = ({ textColor }: { textColor: string }) => {
-  const { colors } = useTheme();
-  const bounceAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const bounceAnimation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(bounceAnim, {
-          toValue: -10,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    bounceAnimation.start();
-
-    return () => bounceAnimation.stop();
-  }, []);
-
-  return (
-    <Animated.View style={{
-      transform: [{ translateY: bounceAnim }],
-      position: 'absolute',
-      right: 20,
-      bottom: 20,
-      width: 120,
-      height: 140,
-    }}>
-      {/* Runner silhouette placeholder */}
-      <View style={{
-        width: 120,
-        height: 140,
-        backgroundColor: textColor + '20',
-        borderRadius: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <ActivityIcon size={60} color={textColor + '60'} />
-      </View>
-      
-      {/* Shadow/reflection effect */}
-      <View style={{
-        position: 'absolute',
-        bottom: -10,
-        left: 20,
-        right: 20,
-        height: 20,
-        backgroundColor: textColor + '15',
-        borderRadius: 10,
-        transform: [{ scaleX: 0.8 }],
-      }} />
-    </Animated.View>
-  );
-};
+import { TrendingUp, Footprints, Flame, Clock } from 'lucide-react-native';
 
 export default function ActivityPage() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
   const insets = useSafeAreaInsets();
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const [selectedChart, setSelectedChart] = useState(0);
+  const barAnim = useRef(Array.from({ length: 7 }, () => new Animated.Value(0))).current;
 
-  const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.95,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  // Chart selection
-  const charts = [
-    { component: AnimatedBarChart, name: 'Bars' },
-    { component: WavyProgressChart, name: 'Waves' },
-    { component: CircularProgressRings, name: 'Rings' },
+  const barData = [
+    { height: 50, calories: 100, label: 'Wed' },
+    { height: 60, calories: 120, label: 'Thu' },
+    { height: 40, calories: 90, label: 'Fri' },
+    { height: 55, calories: 100, label: 'Sat' },
+    { height: 30, calories: 70, label: 'Sun' },
+    { height: 65, calories: 140, label: 'Mon' },
+    { height: 90, calories: 180, label: 'Tue' },
   ];
 
-  const CurrentChart = charts[selectedChart].component;
+  useEffect(() => {
+    const animations = barAnim.map((animValue, index) =>
+      Animated.timing(animValue, {
+        toValue: barData[index].height,
+        duration: 800 + index * 100,
+        useNativeDriver: false,
+      })
+    );
+    Animated.stagger(100, animations).start();
+  }, []);
 
-  // Theme-aware colors for stats card
-  const statsCardColors = theme === 'dark' 
-    ? {
-        gradientColors: [colors.surface, colors.primaryDark, colors.surface],
-        textColor: colors.text,
-        labelColor: colors.textSecondary,
-        badgeBackground: colors.primary + '40',
-        badgeText: colors.surface,
-      }
-    : {
-        gradientColors: [colors.primary + '30', colors.accent + '25', colors.info + '20'],
-        textColor: colors.text,
-        labelColor: colors.textSecondary,
-        badgeBackground: colors.surface + '90',
-        badgeText: colors.text,
-      };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 20,
-      paddingTop: 16,
-      paddingBottom: 20,
-    },
-    headerButton: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      backgroundColor: colors.surface,
-      justifyContent: 'center',
-      alignItems: 'center',
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 12,
-      elevation: 8,
-    },
-    headerTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.text,
-    },
-    mainCard: {
-      backgroundColor: colors.surface,
-      borderRadius: 40,
-      marginHorizontal: 20,
-      marginBottom: 20,
-      padding: 24,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 12 },
-      shadowOpacity: 0.15,
-      shadowRadius: 24,
-      elevation: 16,
-    },
-    iconContainer: {
-      width: 80,
-      height: 80,
-      borderRadius: 40,
-      backgroundColor: colors.primary + '20',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom: 20,
-      shadowColor: colors.primary,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-      elevation: 8,
-    },
-    runnerIcon: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      backgroundColor: colors.primary,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    titleContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      marginBottom: 20,
-    },
-    title: {
-      fontSize: 36,
-      fontWeight: 'bold',
-      color: colors.text,
-      lineHeight: 42,
-    },
-    calorieLabel: {
-      fontSize: 16,
-      color: colors.error,
-      fontWeight: '600',
-    },
-    chartSelector: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginBottom: 10,
-      gap: 10,
-    },
-    chartButton: {
-      paddingHorizontal: 15,
-      paddingVertical: 8,
-      borderRadius: 20,
-      backgroundColor: colors.border,
-    },
-    chartButtonActive: {
-      backgroundColor: colors.primary,
-    },
-    chartButtonText: {
-      fontSize: 12,
-      fontWeight: '600',
-      color: colors.textSecondary,
-    },
-    chartButtonTextActive: {
-      color: colors.surface,
-    },
-    statsCard: {
-      borderRadius: 30,
-      marginHorizontal: 20,
-      marginBottom: 20,
-      overflow: 'hidden',
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 12 },
-      shadowOpacity: 0.15,
-      shadowRadius: 24,
-      elevation: 16,
-    },
-    statsGradient: {
-      padding: 24,
-      minHeight: 280,
-      position: 'relative',
-    },
-    probadge: {
-      position: 'absolute',
-      top: 24,
-      right: 24,
-      backgroundColor: statsCardColors.badgeBackground,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 20,
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    proBadgeText: {
-      color: statsCardColors.badgeText,
-      fontWeight: 'bold',
-      fontSize: 14,
-      marginLeft: 6,
-    },
-    statItem: {
-      marginBottom: 24,
-    },
-    statHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 8,
-    },
-    statIcon: {
-      marginRight: 12,
-    },
-    statLabel: {
-      fontSize: 16,
-      color: statsCardColors.labelColor,
-      fontWeight: '500',
-    },
-    statValue: {
-      fontSize: 32,
-      fontWeight: 'bold',
-      color: statsCardColors.textColor,
-    },
-    scrollContent: {
-      paddingBottom: insets.bottom + 120,
-    },
-  });
+  const [selectedDay, setSelectedDay] = useState('06');
+  const days = [
+    { day: 'Wed', date: '30' },
+    { day: 'Thu', date: '01' },
+    { day: 'Fri', date: '02' },
+    { day: 'Sat', date: '03' },
+    { day: 'Sun', date: '04' },
+    { day: 'Mon', date: '05' },
+    { day: 'Tue', date: '06' },
+  ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar 
-        barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} 
-        backgroundColor={colors.background} 
-      />
-      
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
+      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.headerButton}
-            onPress={() => router.back()}
-          >
-            <ArrowLeft size={24} color={colors.text} />
-          </TouchableOpacity>
-          
-          <Text style={styles.headerTitle}>Set Timer</Text>
-          
-          <TouchableOpacity style={styles.headerButton}>
-            <MoreHorizontal size={24} color={colors.text} />
-          </TouchableOpacity>
+        <Text style={[typography.h1, { marginTop: 20, marginLeft: 20, color: colors.text, fontWeight: '700' }]}>
+          My Activities
+        </Text>
+
+        {/* Calendar Strip */}
+        <View style={styles.calendarStrip}>
+          {days.map(({ day, date }) => (
+            <TouchableOpacity
+              key={date}
+              onPress={() => setSelectedDay(date)}
+              style={[styles.calendarItem, {
+                backgroundColor: selectedDay === date ? colors.primary : colors.surface,
+              }]}
+            >
+              <Text style={[typography.bodyMedium, { 
+                color: selectedDay === date ? colors.surface : colors.text,
+                fontWeight: '700'
+              }]}>
+                {date}
+              </Text>
+              <Text style={[typography.caption, { 
+                color: selectedDay === date ? colors.surface : colors.textSecondary,
+                fontSize: 12,
+                fontWeight: '500'
+              }]}>
+                {day}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        {/* Main Marathon Card */}
-        <Animated.View 
-          style={[styles.mainCard, { transform: [{ scale: scaleAnim }] }]}
-        >
-          <TouchableOpacity
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
-            activeOpacity={1}
-          >
-            <View style={styles.iconContainer}>
-              <View style={styles.runnerIcon}>
-                <ActivityIcon size={28} color={colors.surface} />
+        {/* Activity Cards - Spacious Layout */}
+        <View style={styles.activitySection}>
+          {/* Steps & Water Row */}
+          <View style={styles.activityRow}>
+            <View style={[styles.activityCard, { backgroundColor: colors.surface }]}>
+              <View style={styles.activityHeader}>
+                <Footprints size={20} color="#3B82F6" />
+                <Text style={[typography.bodyMedium, { color: colors.textSecondary, fontWeight: '600' }]}>
+                  Steps
+                </Text>
               </View>
+              <Text style={[typography.h2, { color: colors.text, fontWeight: 'bold', marginTop: 8 }]}>
+                +9000
+              </Text>
             </View>
-
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>10km{'\n'}Marathon</Text>
-              <Text style={styles.calorieLabel}>1,233kcal</Text>
+            
+            <View style={[styles.activityCard, { backgroundColor: colors.surface }]}>
+              <View style={styles.activityHeader}>
+                <Clock size={20} color="#10B981" />
+                <Text style={[typography.bodyMedium, { color: colors.textSecondary, fontWeight: '600' }]}>
+                  Moving
+                </Text>
+              </View>
+              <Text style={[typography.h2, { color: colors.text, fontWeight: 'bold', marginTop: 8 }]}>
+                +74mins
+              </Text>
             </View>
+          </View>
 
-            {/* Chart Selector */}
-            <View style={styles.chartSelector}>
-              {charts.map((chart, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.chartButton,
-                    selectedChart === index && styles.chartButtonActive,
-                  ]}
-                  onPress={() => setSelectedChart(index)}
-                >
-                  <Text style={[
-                    styles.chartButtonText,
-                    selectedChart === index && styles.chartButtonTextActive,
-                  ]}>
-                    {chart.name}
+          {/* Calories Card - Full Width */}
+          <View style={[styles.calorieCard, { backgroundColor: colors.surface }]}>
+            <View style={styles.activityHeader}>
+              <Flame size={20} color="#F59E0B" />
+              <Text style={[typography.bodyMedium, { color: colors.textSecondary, fontWeight: '600' }]}>
+                Calories
+              </Text>
+            </View>
+            <Text style={[typography.h1, { color: colors.text, fontWeight: 'bold', marginTop: 12 }]}>
+              +500kcal
+            </Text>
+          </View>
+        </View>
+
+        {/* Bar Chart */}
+        <View style={[styles.chartContainer, { backgroundColor: colors.surface }]}>
+          <View style={styles.chartHeader}>
+            <Text style={[typography.h3, { color: colors.text, fontWeight: '600' }]}>
+              Statistic
+            </Text>
+            <View style={[styles.trendIcon, { backgroundColor: colors.primary + '20' }]}>
+              <TrendingUp size={16} color={colors.primary} />
+            </View>
+          </View>
+          
+          <View style={styles.chartBars}>
+            {barData.map((bar, i) => (
+              <View key={i} style={{ alignItems: 'center' }}>
+                {i === 6 && (
+                  <Text style={[styles.tooltip, { 
+                    color: colors.surface,
+                    backgroundColor: colors.primary 
+                  }]}>
+                    180 Kcal
                   </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Dynamic Chart Component */}
-            <CurrentChart />
-          </TouchableOpacity>
-        </Animated.View>
-
-        {/* Stats Card */}
-        <View style={styles.statsCard}>
-          <LinearGradient
-            colors={statsCardColors.gradientColors}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.statsGradient}
-          >
-            {/* PRO Badge */}
-            <View style={styles.probadge}>
-              <Trophy size={16} color={statsCardColors.badgeText} />
-              <Text style={styles.proBadgeText}>PRO</Text>
-            </View>
-
-            {/* Steps */}
-            <View style={styles.statItem}>
-              <View style={styles.statHeader}>
-                <Footprints 
-                  size={20} 
-                  color={statsCardColors.labelColor} 
-                  style={styles.statIcon} 
-                />
-                <Text style={styles.statLabel}>Steps</Text>
+                )}
+                <Animated.View style={[styles.bar, { 
+                  backgroundColor: i === 6 ? colors.primary : colors.primary + '60',
+                  height: barAnim[i] 
+                }]} />
+                <Text style={[typography.caption, { 
+                  color: colors.textSecondary,
+                  fontWeight: '600',
+                  fontSize: 11
+                }]}>
+                  {bar.label}
+                </Text>
               </View>
-              <AnimatedCounter 
-                value={14233} 
-                textColor={statsCardColors.textColor}
-              />
-            </View>
-
-            {/* Heart Rate */}
-            <View style={styles.statItem}>
-              <View style={styles.statHeader}>
-                <Heart 
-                  size={20} 
-                  color={colors.error} 
-                  fill={colors.error} 
-                  style={styles.statIcon} 
-                />
-                <Text style={styles.statLabel}>HR</Text>
-              </View>
-              <AnimatedCounter 
-                value={112} 
-                textColor={statsCardColors.textColor}
-              />
-            </View>
-
-            {/* Timer */}
-            <View style={styles.statItem}>
-              <View style={styles.statHeader}>
-                <TimerIcon 
-                  size={20} 
-                  color={statsCardColors.labelColor} 
-                  style={styles.statIcon} 
-                />
-                <Text style={styles.statLabel}>Time</Text>
-              </View>
-              <Text style={styles.statValue}>00:32</Text>
-            </View>
-
-            {/* Animated Runner */}
-            <RunnerImage textColor={statsCardColors.textColor} />
-          </LinearGradient>
+            ))}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  calendarStrip: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 20,
+    marginVertical: 20,
+  },
+  calendarItem: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    minWidth: 40,
+  },
+  activitySection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  activityRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    gap: 12,
+  },
+  activityCard: {
+    flex: 1,
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  calorieCard: {
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  activityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  chartContainer: {
+    borderRadius: 20,
+    padding: 20,
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 40,
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  chartHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  chartBars: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginTop: 16,
+    height: 120,
+  },
+  bar: {
+    width: 14,
+    borderRadius: 7,
+    marginBottom: 6,
+  },
+  tooltip: {
+    fontSize: 11,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginBottom: 6,
+    fontWeight: '600',
+  },
+  trendIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
