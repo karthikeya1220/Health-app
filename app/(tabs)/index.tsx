@@ -416,10 +416,10 @@ const QuickActionsCard = () => {
   const { colors, theme } = useTheme();
   
   const actions = [
-    { name: 'Start Workout', icon: 'W', color: colors.success, route: '/workout' },
-    { name: 'Track Nutrition', icon: 'N', color: colors.primary, route: '/nutrition' },
-    { name: 'View Progress', icon: 'P', color: colors.info, route: '/progress' },
-    { name: 'Join Challenge', icon: 'C', color: colors.error, route: '/challenge' },
+    { name: 'Start Workout', icon: 'W', color: colors.success, route: '/challenge' as const },
+    { name: 'Track Nutrition', icon: 'N', color: colors.primary, route: '/challenge' as const },
+    { name: 'View Progress', icon: 'P', color: colors.info, route: '/challenge' as const },
+    { name: 'Join Challenge', icon: 'C', color: colors.error, route: '/challenge' as const },
   ];
 
   return (
@@ -679,63 +679,99 @@ const AdvancedGraphCard = ({
       }}
     >
       <View style={{
-        backgroundColor: theme === 'dark' ? colors.dashboardCardBg : colors.surface,
-        borderRadius: 16,
+        backgroundColor: colors.card,
+        borderRadius: 20,
         padding: 24,
         marginBottom: 16,
         minHeight: 220,
-        shadowColor: theme === 'dark' ? '#000' : colors.shadow,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: theme === 'dark' ? 0.24 : 0.12,
-        shadowRadius: 3,
-        elevation: 4,
-        borderWidth: theme === 'dark' ? 0 : 1,
-        borderColor: colors.border,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: theme === 'dark' ? 0.3 : 0.15,
+        shadowRadius: 8,
+        elevation: 8,
+        borderWidth: 1,
+        borderColor: theme === 'dark' ? colors.border : colors.divider,
+        // Add subtle gradient overlay for depth
+        position: 'relative',
+        overflow: 'hidden',
       }}>
+        {/* Subtle background gradient for depth */}
+        <View style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: theme === 'dark' 
+            ? `${colors.primary}08` 
+            : `${colors.primary}04`,
+          borderRadius: 20,
+        }} />
+
         {/* Header with Timeframe Selector */}
         <View style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
-          marginBottom: 8,
+          marginBottom: 12,
+          zIndex: 1,
         }}>
           <Text style={{
-            fontSize: 14,
-            fontWeight: '500',
-            color: theme === 'dark' ? colors.dashboardTextSecondary : colors.textSecondary,
-            letterSpacing: 0.5,
+            fontSize: 13,
+            fontWeight: '600',
+            color: colors.textSecondary,
+            letterSpacing: 0.8,
             textTransform: 'uppercase',
+            opacity: 0.9,
           }}>
             {title}
           </Text>
           
-          {/* Timeframe Pills */}
+          {/* Enhanced Timeframe Pills */}
           <View style={{
             flexDirection: 'row',
-            backgroundColor: theme === 'dark' ? colors.dashboardTextMuted + '20' : colors.border + '30',
-            borderRadius: 12,
-            padding: 2,
+            backgroundColor: theme === 'dark' 
+              ? `${colors.surface}40` 
+              : `${colors.background}60`,
+            borderRadius: 14,
+            padding: 3,
+            borderWidth: 1,
+            borderColor: theme === 'dark' 
+              ? `${colors.border}60` 
+              : `${colors.divider}80`,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 2,
           }}>
             {timeframes.map((tf) => (
               <TouchableOpacity
                 key={tf}
                 onPress={() => handleTimeframeChange(tf)}
                 style={{
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 10,
-                  backgroundColor: selectedTimeframe === tf ? colors.primary : 'transparent',
-                  transform: selectedTimeframe === tf ? [{ scale: 1.05 }] : [{ scale: 1 }],
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderRadius: 11,
+                  backgroundColor: selectedTimeframe === tf 
+                    ? colors.primary 
+                    : 'transparent',
+                  transform: selectedTimeframe === tf ? [{ scale: 1.02 }] : [{ scale: 1 }],
+                  shadowColor: selectedTimeframe === tf ? colors.primary : 'transparent',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: selectedTimeframe === tf ? 0.3 : 0,
+                  shadowRadius: 4,
+                  elevation: selectedTimeframe === tf ? 4 : 0,
                 }}
                 activeOpacity={0.7}
               >
                 <Animated.Text style={{
-                  fontSize: 10,
-                  fontWeight: '600',
+                  fontSize: 11,
+                  fontWeight: '700',
                   color: selectedTimeframe === tf 
-                    ? colors.surface 
-                    : theme === 'dark' ? colors.dashboardTextSecondary : colors.textSecondary,
-                  transform: selectedTimeframe === tf ? [{ scale: 1.1 }] : [{ scale: 1 }],
+                    ? (theme === 'dark' ? colors.background : colors.surface)
+                    : colors.textSecondary,
+                  transform: selectedTimeframe === tf ? [{ scale: 1.05 }] : [{ scale: 1 }],
                 }}>
                   {tf}
                 </Animated.Text>
@@ -744,60 +780,86 @@ const AdvancedGraphCard = ({
           </View>
         </View>
 
-        {/* Primary Metric */}
+        {/* Primary Metric with Enhanced Styling */}
         <View style={{ 
           flexDirection: 'row', 
           alignItems: 'baseline',
-          marginBottom: 4,
+          marginBottom: 6,
+          zIndex: 1,
         }}>
           <Text style={{
-            fontSize: 48,
-            fontWeight: '600',
-            color: theme === 'dark' ? colors.dashboardTextPrimary : colors.text,
-            lineHeight: 52,
+            fontSize: 52,
+            fontWeight: '700',
+            color: colors.text,
+            lineHeight: 56,
+            textShadowColor: theme === 'dark' ? colors.shadow : 'transparent',
+            textShadowOffset: { width: 0, height: 1 },
+            textShadowRadius: 2,
           }}>
             {typeof currentPrimaryValue === 'number' ? displayValue.toLocaleString() : currentPrimaryValue}
           </Text>
           {unit && (
             <Text style={{
-              fontSize: 18,
-              fontWeight: '400',
-              color: theme === 'dark' ? colors.dashboardTextSecondary : colors.textSecondary,
-              marginLeft: 4,
+              fontSize: 20,
+              fontWeight: '500',
+              color: colors.textSecondary,
+              marginLeft: 6,
+              opacity: 0.8,
             }}>
               {unit}
             </Text>
           )}
         </View>
 
-        {/* Change Indicator */}
+        {/* Enhanced Change Indicator */}
         {currentChange && (
-          <Animated.Text style={{
-            fontSize: 14,
-            fontWeight: '500',
-            color: changeColor,
+          <Animated.View style={{
+            backgroundColor: `${changeColor}15`,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 12,
+            alignSelf: 'flex-start',
             marginBottom: 20,
+            borderWidth: 1,
+            borderColor: `${changeColor}30`,
             opacity: chartAnim.interpolate({
               inputRange: [0, 1],
               outputRange: [0.5, 1],
             }),
+            zIndex: 1,
           }}>
-            {currentChange}
-          </Animated.Text>
+            <Text style={{
+              fontSize: 13,
+              fontWeight: '600',
+              color: changeColor,
+            }}>
+              {currentChange}
+            </Text>
+          </Animated.View>
         )}
 
-        {/* Advanced Graph */}
+        {/* Advanced Graph with Enhanced Container */}
         <Animated.View 
           style={{ 
-            marginTop: 20, 
+            marginTop: 16,
             flex: 1,
+            backgroundColor: theme === 'dark' 
+              ? `${colors.surface}20` 
+              : `${colors.background}40`,
+            borderRadius: 16,
+            padding: 4,
+            borderWidth: 1,
+            borderColor: theme === 'dark' 
+              ? `${colors.border}40` 
+              : `${colors.divider}60`,
             opacity: chartAnim,
             transform: [{
               scale: chartAnim.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0.95, 1],
+                outputRange: [0.96, 1],
               })
             }],
+            zIndex: 1,
           }}
         >
           <SmoothLineChart 
@@ -811,23 +873,37 @@ const AdvancedGraphCard = ({
           />
         </Animated.View>
 
-        {/* Timeframe Info */}
+        {/* Enhanced Timeframe Info */}
         <View style={{
-          marginTop: 12,
-          paddingTop: 12,
+          marginTop: 16,
+          paddingTop: 16,
           borderTopWidth: 1,
-          borderTopColor: theme === 'dark' ? colors.border + '30' : colors.border + '20',
+          borderTopColor: theme === 'dark' 
+            ? `${colors.border}40` 
+            : `${colors.divider}60`,
+          backgroundColor: theme === 'dark' 
+            ? `${colors.surface}10` 
+            : `${colors.background}30`,
+          marginHorizontal: -24,
+          paddingHorizontal: 24,
+          paddingBottom: -24,
+          marginBottom: -24,
+          borderBottomLeftRadius: 20,
+          borderBottomRightRadius: 20,
+          zIndex: 1,
         }}>
           <Text style={{
             fontSize: 11,
-            color: theme === 'dark' ? colors.dashboardTextMuted : colors.textSecondary,
+            color: colors.textTertiary,
             textAlign: 'center',
             fontWeight: '500',
+            opacity: 0.8,
+            letterSpacing: 0.3,
           }}>
-            {selectedTimeframe === 'Day' && '24 hours • Updated every hour'}
-            {selectedTimeframe === 'Week' && '7 days • Updated daily'}
-            {selectedTimeframe === 'Month' && '4 weeks • Updated weekly'}
-            {selectedTimeframe === 'Year' && '12 months • Updated monthly'}
+            {selectedTimeframe === 'Day' && '📊 24 hours • Updated every hour'}
+            {selectedTimeframe === 'Week' && '📈 7 days • Updated daily'}
+            {selectedTimeframe === 'Month' && '📅 4 weeks • Updated weekly'}
+            {selectedTimeframe === 'Year' && '🗓️ 12 months • Updated monthly'}
           </Text>
         </View>
       </View>
@@ -864,12 +940,14 @@ const SmoothLineChart = ({
     return '99, 102, 241'; // fallback to indigo
   };
   
-  // Dynamic color selection based on theme
+  // Enhanced dynamic color selection based on theme
   const chartColor = color || colors.primary;
-  const gridColor = theme === 'dark' ? colors.border + '30' : colors.border + '20';
-  const bgGradient = theme === 'dark' ? 
-    `rgba(${hexToRgb(chartColor)}, 0.15)` : 
-    `rgba(${hexToRgb(chartColor)}, 0.08)`;
+  const gridColor = theme === 'dark' 
+    ? `${colors.border}40` 
+    : `${colors.divider}50`;
+  const bgGradient = theme === 'dark' 
+    ? `rgba(${hexToRgb(chartColor)}, 0.2)` 
+    : `rgba(${hexToRgb(chartColor)}, 0.12)`;
 
   useEffect(() => {
     if (animate) {
@@ -960,18 +1038,20 @@ const SmoothLineChart = ({
       overflow: 'hidden',
       borderRadius: 12,
     }}>
-      {/* Background with subtle gradient */}
+      {/* Enhanced background with theme-aware gradient */}
       <View style={{
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
+        backgroundColor: theme === 'dark' 
+          ? `${colors.surface}15` 
+          : `${colors.background}20`,
         borderRadius: 12,
       }} />
 
-      {/* Grid Lines - Subtle and Modern */}
+      {/* Enhanced Grid Lines - Theme Optimized */}
       {showGrid && (
         <View style={{
           position: 'absolute',
@@ -979,17 +1059,18 @@ const SmoothLineChart = ({
           height: '100%',
         }}>
           {/* Horizontal grid lines */}
-          {[0.2, 0.4, 0.6, 0.8].map((ratio, index) => (
+          {[0.25, 0.5, 0.75].map((ratio, index) => (
             <View
               key={`h-${index}`}
               style={{
                 position: 'absolute',
-                left: 10,
-                right: 10,
+                left: 12,
+                right: 12,
                 top: ratio * height,
                 height: 1,
                 backgroundColor: gridColor,
-                opacity: 0.3,
+                opacity: theme === 'dark' ? 0.4 : 0.3,
+                borderRadius: 0.5,
               }}
             />
           ))}
@@ -999,24 +1080,25 @@ const SmoothLineChart = ({
               key={`v-${index}`}
               style={{
                 position: 'absolute',
-                left: (index * 2) * stepX + 10,
-                top: 10,
-                bottom: 10,
+                left: (index * 2) * stepX + 12,
+                top: 12,
+                bottom: 12,
                 width: 1,
                 backgroundColor: gridColor,
-                opacity: 0.2,
+                opacity: theme === 'dark' ? 0.3 : 0.2,
+                borderRadius: 0.5,
               }}
             />
           ))}
         </View>
       )}
 
-      {/* Gradient Fill Area - Gen Z Style */}
+      {/* Enhanced Gradient Fill Area */}
       <View style={{
         position: 'absolute',
         width: '100%',
         height: '100%',
-        opacity: 0.6,
+        opacity: theme === 'dark' ? 0.7 : 0.5,
       }}>
         {data.map((value, index) => {
           if (index === 0) return null;
@@ -1038,7 +1120,7 @@ const SmoothLineChart = ({
                 backgroundColor: bgGradient,
                 opacity: animatedValue.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, 0.4],
+                  outputRange: [0, theme === 'dark' ? 0.5 : 0.4],
                 }),
               }}
             />
@@ -1046,7 +1128,7 @@ const SmoothLineChart = ({
         })}
       </View>
 
-      {/* Smooth Animated Line Segments */}
+      {/* Enhanced Smooth Animated Line Segments */}
       <View style={{
         position: 'absolute',
         width: '100%',
@@ -1067,13 +1149,13 @@ const SmoothLineChart = ({
               key={`line-${index}`}
               style={{
                 position: 'absolute',
-                left: prevPoint.x + 10,
+                left: prevPoint.x + 12,
                 top: prevPoint.y,
                 width: animatedValue.interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, length],
                 }),
-                height: 3,
+                height: 4,
                 backgroundColor: chartColor,
                 borderRadius: 2,
                 transform: [{ rotate: `${angle}deg` }],
@@ -1082,11 +1164,11 @@ const SmoothLineChart = ({
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: glowAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0.3, 0.8],
+                  outputRange: [theme === 'dark' ? 0.4 : 0.2, theme === 'dark' ? 0.8 : 0.5],
                 }),
                 shadowRadius: glowAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [4, 12],
+                  outputRange: [4, theme === 'dark' ? 16 : 12],
                 }),
                 elevation: 8,
               }}
@@ -1095,16 +1177,14 @@ const SmoothLineChart = ({
         })}
       </View>
 
-      {/* Gradient overlay for modern look */}
+      {/* Enhanced gradient overlay for modern look */}
       <View style={{
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
-        height: 20,
-        background: theme === 'dark' ? 
-          'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, transparent 100%)' :
-          'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
+        height: 24,
+        backgroundColor: 'transparent',
         borderRadius: 12,
         pointerEvents: 'none',
       }} />
