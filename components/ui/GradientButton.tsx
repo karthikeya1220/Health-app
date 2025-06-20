@@ -132,9 +132,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'transparent',
   },
-  
-  text: {
+    text: {
     color: '#FFFFFF',
-    fontWeight: '600',
   },
 });
+

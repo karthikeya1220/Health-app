@@ -30,6 +30,7 @@ export const Layout = {
   buttonHeight: 48,
   headerHeight: 60,
   tabBarHeight: 70,
+  minTouchTarget: 44, // Minimum touch target size for accessibility
 };
 
 // Optional responsive spacing function (only use if needed)

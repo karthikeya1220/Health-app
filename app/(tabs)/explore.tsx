@@ -6,6 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
+import { router } from 'expo-router';
 
 export default function ExploreTab() {
   const { colors, themeMode } = useTheme();
@@ -75,12 +76,25 @@ export default function ExploreTab() {
       paddingHorizontal: Spacing.lg,
       paddingTop: Spacing.lg,
       paddingBottom: Spacing.md,
-    },
-    headerTitle: {
+    },    headerTitle: {
       ...typography.h2,
       color: colors.text,
       fontWeight: 'bold',
       marginBottom: Spacing.lg,
+    },
+    discoverButton: {
+      backgroundColor: colors.primary,
+      paddingHorizontal: Spacing.lg,
+      paddingVertical: Spacing.sm,
+      borderRadius: BorderRadius.md,
+      alignSelf: 'flex-end',
+      marginBottom: Spacing.md,
+    },
+    discoverButtonText: {
+      ...typography.body,
+      color: colors.surface,
+      fontWeight: '600',
+      fontSize: 14,
     },
     searchContainer: {
       flexDirection: 'row',
@@ -268,10 +282,16 @@ export default function ExploreTab() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
+    <SafeAreaView style={styles.container}>      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Explore Groups</Text>
+        
+        <TouchableOpacity 
+          style={styles.discoverButton}
+          onPress={() => router.push('/discover-groups')}
+        >
+          <Text style={styles.discoverButtonText}>Discover More</Text>
+        </TouchableOpacity>
         
         {/* Search */}
         <View style={styles.searchContainer}>
