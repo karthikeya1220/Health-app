@@ -365,6 +365,17 @@ export type ColorKey = keyof ColorScheme;
 // Export DS Colors for direct usage
 export { DSColors };
 
+// Gradient definitions for GradientButton component
+export const Gradients = {
+  primary: [lightColors.primary, lightColors.primaryDark],
+  secondary: [lightColors.secondary, lightColors.accent],
+  success: [lightColors.success, '#059669'],
+  error: [lightColors.error, '#dc2626'],
+  warning: [lightColors.warning, '#d97706'],
+  info: [lightColors.info, '#2563eb'],
+  accent: [lightColors.accent, lightColors.primary],
+} as const;
+
 // Default export
 export default {
   light: lightColors,

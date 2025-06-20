@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/contexts/ThemeContext';
 import { router } from 'expo-router';
 import { DSColors } from '@/theme/colors';
+import { getTypography, TextStyles } from '@/theme/typography';
 
 const { width } = Dimensions.get('window');
 
@@ -34,11 +35,10 @@ const DashboardIcon = ({ name, size = 24, color = '#fff', style = {} }: {
     alignItems: 'center',
     borderWidth: 1,
     borderColor: color + '30',
-  }, style]}>
-    <Text style={{
+  }, style]}>    <Text style={{
       color: color,
+      ...TextStyles.button,
       fontSize: size * 0.35,
-      fontWeight: '700',
     }}>
       {name.charAt(0).toUpperCase()}
     </Text>
@@ -198,13 +198,10 @@ const AnalyticsCard = ({
           borderWidth: theme === 'dark' ? 0 : 1,
           borderColor: colors.border,
         }}
-      >
-        {/* Card Title */}
+      >        {/* Card Title */}
         <Text style={{
-          fontSize: 14,
-          fontWeight: '500',
+          ...TextStyles.overline,
           color: colors.textSecondary,
-          letterSpacing: 0.5,
           marginBottom: 8,
           textTransform: 'uppercase',
         }}>
@@ -218,8 +215,7 @@ const AnalyticsCard = ({
           marginBottom: 4,
         }}>
           <Text style={{
-            fontSize: 48,
-            fontWeight: '600',
+            ...TextStyles.display,
             color: colors.text,
             lineHeight: 52,
           }}>
@@ -227,8 +223,7 @@ const AnalyticsCard = ({
           </Text>
           {unit && (
             <Text style={{
-              fontSize: 18,
-              fontWeight: '400',
+              ...TextStyles.h4,
               color: colors.textSecondary,
               marginLeft: 4,
             }}>
@@ -240,7 +235,7 @@ const AnalyticsCard = ({
         {/* Change Indicator */}
         {change && (
           <Text style={{
-            fontSize: 14,
+            ...TextStyles.bodySmall,
             fontWeight: '500',
             color: changeColor,
             marginBottom: hasChart ? 20 : 0,
@@ -316,12 +311,12 @@ const ProgressRing = ({
           }),
         }],
       }} />
-      
-      {/* Center Text */}
+        {/* Center Text */}
       <View style={{ position: 'absolute', alignItems: 'center' }}>
         <Text style={{
-          fontSize: size * 0.2,
+          ...TextStyles.h4,
           fontWeight: '700',
+          fontSize: size * 0.2,
           color: ringColor,
         }}>
           {progress}%
@@ -352,12 +347,9 @@ const ActiveGroupsCard = () => {
       shadowOpacity: 0.12,
       shadowRadius: 3,
       elevation: 4,
-    }}>
-      <Text style={{
-        fontSize: 14,
-        fontWeight: '500',
+    }}>      <Text style={{
+        ...TextStyles.overline,
         color: colors.textSecondary,
-        letterSpacing: 0.5,
         marginBottom: 16,
         textTransform: 'uppercase',
       }}>
@@ -383,17 +375,15 @@ const ActiveGroupsCard = () => {
             color={group.color}
           />
           
-          <View style={{ flex: 1, marginLeft: 16 }}>
-            <Text style={{
-              fontSize: 16,
-              fontWeight: '600',
+          <View style={{ flex: 1, marginLeft: 16 }}>            <Text style={{
+              ...TextStyles.bodyMedium,
               color: colors.text,
               marginBottom: 4,
             }}>
               {group.name}
             </Text>
             <Text style={{
-              fontSize: 12,
+              ...TextStyles.caption,
               color: colors.textSecondary,
             }}>
               {group.members} members • {group.progress}% complete
@@ -413,13 +403,13 @@ const ActiveGroupsCard = () => {
 
 // Quick Actions Component
 const QuickActionsCard = () => {
-  const { colors, theme } = useTheme();
-  
-  const actions = [
-    { name: 'Start Workout', icon: 'W', color: colors.success, route: '/workout' },
-    { name: 'Track Nutrition', icon: 'N', color: colors.primary, route: '/nutrition' },
-    { name: 'View Progress', icon: 'P', color: colors.info, route: '/progress' },
-    { name: 'Join Challenge', icon: 'C', color: colors.error, route: '/challenge' },
+  const { colors, theme } = useTheme();    const actions = [
+      { name: 'Discover Groups', icon: 'D', color: colors.success, route: '/discover-groups' as const },
+      { name: 'Trending Posts', icon: 'T', color: colors.warning, route: '/trending-posts' as const },
+      { name: 'View Profile', icon: 'P', color: colors.primary, route: '/profile' as const },
+      { name: 'Workouts', icon: 'W', color: colors.info, route: '/workouts' as const },
+      { name: 'Join Challenge', icon: 'C', color: colors.error, route: '/challenge' as const },
+      { name: 'Create Post', icon: '+', color: colors.accent, route: '/create-post' as const },
   ];
 
   return (
@@ -433,12 +423,9 @@ const QuickActionsCard = () => {
       shadowOpacity: 0.12,
       shadowRadius: 3,
       elevation: 4,
-    }}>
-      <Text style={{
-        fontSize: 14,
-        fontWeight: '500',
+    }}>      <Text style={{
+        ...TextStyles.overline,
         color: colors.textSecondary,
-        letterSpacing: 0.5,
         marginBottom: 16,
         textTransform: 'uppercase',
       }}>
@@ -471,9 +458,8 @@ const QuickActionsCard = () => {
               size={32} 
               color={action.color}
               style={{ marginBottom: 8 }}
-            />
-            <Text style={{
-              fontSize: 12,
+            />            <Text style={{
+              ...TextStyles.caption,
               fontWeight: '600',
               color: colors.text,
               textAlign: 'center',
@@ -1102,9 +1088,9 @@ const SmoothLineChart = ({
         left: 0,
         right: 0,
         height: 20,
-        background: theme === 'dark' ? 
-          'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, transparent 100%)' :
-          'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
+        backgroundColor: theme === 'dark' ? 
+          'rgba(0,0,0,0.1)' :
+          'rgba(255,255,255,0.3)',
         borderRadius: 12,
         pointerEvents: 'none',
       }} />
@@ -1118,6 +1104,7 @@ const SmoothLineChart = ({
 // Main Dashboard Component
 export default function HealthDashboard() {
   const { colors, theme } = useTheme();
+  const typography = getTypography(theme === 'dark');
   const insets = useSafeAreaInsets();
 
   // Mock data for analytics
