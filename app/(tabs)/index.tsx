@@ -9,1394 +9,758 @@ import {
   Dimensions,
   Animated,
   StatusBar,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@/contexts/ThemeContext';
 import { router } from 'expo-router';
-import { DSColors } from '@/theme/colors';
+import { useTheme } from '@/contexts/ThemeContext';
+import { getTypography, TextStyles } from '@/theme/typography';
+import { Spacing, BorderRadius } from '@/theme/spacing';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-// Enhanced Icon Component
-const DashboardIcon = ({ name, size = 24, color = '#fff', style = {} }: {
+// Enhanced Icon Component with premium styling
+const CleanIcon = ({ name, size = 24, color, backgroundColor }: {
   name: string;
   size?: number;
   color?: string;
-  style?: any;
-}) => (
-  <View style={[{
-    width: size,
-    height: size,
-    backgroundColor: color + '20',
-    borderRadius: size / 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: color + '30',
-  }, style]}>
-    <Text style={{
-      color: color,
-      fontSize: size * 0.35,
-      fontWeight: '700',
-    }}>
-      {name.charAt(0).toUpperCase()}
-    </Text>
-  </View>
-);
-
-// Sparkline Chart Component
-const SparklineChart = ({ data, color = DSColors.accent, height = 60 }: {
-  data: number[];
-  color?: string;
-  height?: number;
+  backgroundColor?: string;
 }) => {
   const { colors } = useTheme();
-  const animatedValue = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: 1,
-      duration: 1500,
-      useNativeDriver: false,
-    }).start();
-  }, []);
-
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
+  
+  const iconMap: { [key: string]: string } = {
+    'fire': '🔥',
+    'steps': '👟',
+    'heart': '💖',
+    'sleep': '😴',
+    'standing': '🧍',
+    'protein': '🥗',
+    'bell': '🔔',
+    'search': '🔍',
+    'filter': '⚙️',
+    'arrow': '→',
+  };
 
   return (
-    <View style={{ height, justifyContent: 'flex-end', paddingHorizontal: 4 }}>
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        height: height - 10,
-        justifyContent: 'space-between',
+    <View style={{
+      width: size + 16,
+      height: size + 16,
+      backgroundColor: backgroundColor || colors.primary + '15',
+      borderRadius: (size + 16) / 2,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.12,
+      shadowRadius: 6,
+      elevation: 3,
+      borderWidth: 0.5,
+      borderColor: 'rgba(255,255,255,0.3)',
+    }}>
+      <Text style={{ 
+        fontSize: size * 0.8,
+        textShadowColor: 'rgba(0,0,0,0.15)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
       }}>
-        {data.map((value, index) => {
-          const normalizedHeight = ((value - min) / range) * (height - 20) + 8;
-          return (
-            <Animated.View
-              key={index}
-              style={{
-                width: 3,
-                height: animatedValue.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [8, normalizedHeight],
-                }),
-                backgroundColor: color || colors.primary,
-                borderRadius: 2,
-                marginHorizontal: 1,
-              }}
-            />
-          );
-        })}
-      </View>
+        {iconMap[name] || '📊'}
+      </Text>
     </View>
   );
 };
 
-// Analytics Metric Card Component
-const AnalyticsCard = ({ 
-  title, 
-  primaryValue, 
-  unit = '', 
-  change, 
-  changeType = 'positive',
-  chartData = [],
-  hasChart = false,
-  delay = 0,
-  onPress
-}: {
-  title: string;
-  primaryValue: number | string;
-  unit?: string;
-  change?: string;
-  changeType?: 'positive' | 'negative' | 'neutral';
-  chartData?: number[];
-  hasChart?: boolean;
-  delay?: number;
-  onPress?: () => void;
-}) => {
-  const { colors, theme } = useTheme();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-  const valueAnim = useRef(new Animated.Value(0)).current;
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    if (typeof primaryValue === 'number') {
-      const listener = valueAnim.addListener(({ value }) => {
-        setDisplayValue(Math.floor(value));
-      });
-
-      setTimeout(() => {
-        Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-          Animated.spring(scaleAnim, {
-            toValue: 1,
-            tension: 100,
-            friction: 8,
-            useNativeDriver: true,
-          }),
-          Animated.timing(valueAnim, {
-            toValue: primaryValue,
-            duration: 2000,
-            useNativeDriver: false,
-          }),
-        ]).start();
-      }, delay);
-
-      return () => valueAnim.removeListener(listener);
-    } else {
-      setTimeout(() => {
-        Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-          Animated.spring(scaleAnim, {
-            toValue: 1,
-            tension: 100,
-            friction: 8,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }, delay);
-    }
-  }, [primaryValue]);
-
-  const changeColor = changeType === 'positive' ? colors.success : 
-                    changeType === 'negative' ? colors.error : colors.primary;
-
-  return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [{ scale: scaleAnim }],
-      }}
-    >
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.8}
-        style={{
-          backgroundColor: colors.surface,
-          borderRadius: 16,
-          padding: 24,
-          marginBottom: 16,
-          shadowColor: colors.shadow,
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.12,
-          shadowRadius: 3,
-          elevation: 4,
-          borderWidth: theme === 'dark' ? 0 : 1,
-          borderColor: colors.border,
-        }}
-      >
-        {/* Card Title */}
-        <Text style={{
-          fontSize: 14,
-          fontWeight: '500',
-          color: colors.textSecondary,
-          letterSpacing: 0.5,
-          marginBottom: 8,
-          textTransform: 'uppercase',
-        }}>
-          {title}
-        </Text>
-
-        {/* Primary Metric */}
-        <View style={{ 
-          flexDirection: 'row', 
-          alignItems: 'baseline',
-          marginBottom: 4,
-        }}>
-          <Text style={{
-            fontSize: 48,
-            fontWeight: '600',
-            color: colors.text,
-            lineHeight: 52,
-          }}>
-            {typeof primaryValue === 'number' ? displayValue.toLocaleString() : primaryValue}
-          </Text>
-          {unit && (
-            <Text style={{
-              fontSize: 18,
-              fontWeight: '400',
-              color: colors.textSecondary,
-              marginLeft: 4,
-            }}>
-              {unit}
-            </Text>
-          )}
-        </View>
-
-        {/* Change Indicator */}
-        {change && (
-          <Text style={{
-            fontSize: 14,
-            fontWeight: '500',
-            color: changeColor,
-            marginBottom: hasChart ? 20 : 0,
-          }}>
-            {change}
-          </Text>
-        )}
-
-        {/* Chart */}
-        {hasChart && chartData.length > 0 && (
-          <View style={{ marginTop: 20 }}>
-            <SparklineChart 
-              data={chartData} 
-              color={changeColor}
-              height={60}
-            />
-          </View>
-        )}
-      </TouchableOpacity>
-    </Animated.View>
-  );
-};
-
-// Progress Ring Component
-const ProgressRing = ({ 
+// Enhanced Circular Progress Ring Component
+const CircularProgress = ({ 
   progress, 
-  size = 80, 
-  strokeWidth = 6, 
-  color 
+  size = 120, 
+  strokeWidth = 8, 
+  value,
+  unit,
+  label 
 }: {
   progress: number;
   size?: number;
   strokeWidth?: number;
-  color?: string;
+  value: string | number;
+  unit: string;
+  label: string;
 }) => {
   const { colors } = useTheme();
-  const ringColor = color || colors.primary;
+  
   const animatedValue = useRef(new Animated.Value(0)).current;
-  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * ((size - strokeWidth) / 2);
 
   useEffect(() => {
     Animated.timing(animatedValue, {
       toValue: progress / 100,
-      duration: 1500,
+      duration: 2000,
       useNativeDriver: false,
     }).start();
   }, [progress]);
 
   return (
-    <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-      {/* Background Circle */}
+    <View style={{ 
+      width: size, 
+      height: size, 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      position: 'relative',
+    }}>      {/* Background Circle - Premium glass effect */}
       <View style={{
         position: 'absolute',
         width: size,
         height: size,
         borderRadius: size / 2,
         borderWidth: strokeWidth,
-        borderColor: ringColor + '20',
+        borderColor: '#F8FAFC',
+        backgroundColor: 'rgba(248, 250, 252, 0.4)',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 4,
       }} />
       
-      {/* Progress Circle */}
+      {/* Progress Circle - Enhanced gradient with glow effect */}
       <Animated.View style={{
+        position: 'absolute',
         width: size,
         height: size,
         borderRadius: size / 2,
         borderWidth: strokeWidth,
         borderColor: 'transparent',
-        borderTopColor: ringColor,
+        borderTopColor: '#6366F1',
+        borderRightColor: '#8B5CF6',
+        shadowColor: '#6366F1',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.35,
+        shadowRadius: 12,
+        elevation: 6,
         transform: [{
           rotate: animatedValue.interpolate({
             inputRange: [0, 1],
-            outputRange: ['0deg', `${progress * 3.6}deg`],
+            outputRange: ['-90deg', `${(progress * 3.6) - 90}deg`],
           }),
         }],
       }} />
       
-      {/* Center Text */}
-      <View style={{ position: 'absolute', alignItems: 'center' }}>
-        <Text style={{
-          fontSize: size * 0.2,
-          fontWeight: '700',
-          color: ringColor,
+      {/* Inner glow effect */}
+      <View style={{
+        position: 'absolute',
+        width: size - strokeWidth * 2,
+        height: size - strokeWidth * 2,
+        borderRadius: (size - strokeWidth * 2) / 2,
+        backgroundColor: 'rgba(99, 102, 241, 0.05)',
+        shadowColor: '#6366F1',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 20,
+        elevation: 2,
+      }} />
+      
+      {/* Center Content - Enhanced glass morphism */}
+      <View style={{ 
+        position: 'absolute', 
+        alignItems: 'center',
+        backgroundColor: 'rgba(99, 102, 241, 0.95)',
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 28,
+        shadowColor: '#6366F1',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.4,
+        shadowRadius: 16,
+        elevation: 8,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+      }}>        <Text style={{
+          fontSize: 18,
+          fontWeight: '900',
+          color: '#FFFFFF',
+          letterSpacing: 0.8,
+          textShadowColor: 'rgba(0,0,0,0.3)',
+          textShadowOffset: { width: 0, height: 1 },
+          textShadowRadius: 2,
         }}>
-          {progress}%
+          {value}
+        </Text>
+        <Text style={{
+          fontSize: 12,
+          fontWeight: '700',
+          color: '#FFFFFF',
+          opacity: 0.95,
+          letterSpacing: 0.5,
+          textShadowColor: 'rgba(0,0,0,0.2)',
+          textShadowOffset: { width: 0, height: 0.5 },
+          textShadowRadius: 1,
+        }}>
+          {unit}
         </Text>
       </View>
     </View>
   );
 };
 
-// Active Groups Component
-const ActiveGroupsCard = () => {
-  const { colors, theme } = useTheme();
-  
-  const groups = [
-    { name: 'Morning Runners', progress: 85, members: 12, color: colors.success },
-    { name: 'Weight Warriors', progress: 72, members: 8, color: colors.primary },
-    { name: 'Yoga Masters', progress: 94, members: 15, color: colors.info },
-  ];
-
-  return (
-    <View style={{
-      backgroundColor: colors.surface,
-      borderRadius: 16,
-      padding: 24,
-      marginBottom: 16,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.12,
-      shadowRadius: 3,
-      elevation: 4,
-    }}>
-      <Text style={{
-        fontSize: 14,
-        fontWeight: '500',
-        color: colors.textSecondary,
-        letterSpacing: 0.5,
-        marginBottom: 16,
-        textTransform: 'uppercase',
-      }}>
-        Active Groups
-      </Text>
-
-      {groups.map((group, index) => (
-        <TouchableOpacity
-          key={index}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingVertical: 12,
-            borderBottomWidth: index < groups.length - 1 ? 1 : 0,
-            borderBottomColor: colors.border,
-          }}
-          activeOpacity={0.7}
-        >
-          <ProgressRing 
-            progress={group.progress} 
-            size={50} 
-            strokeWidth={4} 
-            color={group.color}
-          />
-          
-          <View style={{ flex: 1, marginLeft: 16 }}>
-            <Text style={{
-              fontSize: 16,
-              fontWeight: '600',
-              color: colors.text,
-              marginBottom: 4,
-            }}>
-              {group.name}
-            </Text>
-            <Text style={{
-              fontSize: 12,
-              color: colors.textSecondary,
-            }}>
-              {group.members} members • {group.progress}% complete
-            </Text>
-          </View>
-
-          <DashboardIcon 
-            name=">" 
-            size={24} 
-            color={group.color}
-          />
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-};
-
-// Quick Actions Component
-const QuickActionsCard = () => {
-  const { colors, theme } = useTheme();
-  
-  const actions = [
-    { name: 'Start Workout', icon: 'W', color: colors.success, route: '/challenge' as const },
-    { name: 'Track Nutrition', icon: 'N', color: colors.primary, route: '/challenge' as const },
-    { name: 'View Progress', icon: 'P', color: colors.info, route: '/challenge' as const },
-    { name: 'Join Challenge', icon: 'C', color: colors.error, route: '/challenge' as const },
-  ];
-
-  return (
-    <View style={{
-      backgroundColor: colors.surface,
-      borderRadius: 16,
-      padding: 24,
-      marginBottom: 16,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.12,
-      shadowRadius: 3,
-      elevation: 4,
-    }}>
-      <Text style={{
-        fontSize: 14,
-        fontWeight: '500',
-        color: colors.textSecondary,
-        letterSpacing: 0.5,
-        marginBottom: 16,
-        textTransform: 'uppercase',
-      }}>
-        Quick Actions
-      </Text>
-
-      <View style={{
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
-      }}>
-        {actions.map((action, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => router.push(action.route)}
-            style={{
-              flex: 1,
-              minWidth: (width - 88) / 2 - 6,
-              backgroundColor: action.color + '15',
-              borderRadius: 12,
-              padding: 16,
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: action.color + '30',
-            }}
-            activeOpacity={0.8}
-          >
-            <DashboardIcon 
-              name={action.icon} 
-              size={32} 
-              color={action.color}
-              style={{ marginBottom: 8 }}
-            />
-            <Text style={{
-              fontSize: 12,
-              fontWeight: '600',
-              color: colors.text,
-              textAlign: 'center',
-            }}>
-              {action.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
-};
-
-// Advanced Graph Component
-const AdvancedGraphCard = ({ 
+// Enhanced Stat Tile Component with premium glass morphism
+const StatTile = ({ 
+  icon, 
   title, 
-  primaryValue, 
-  unit = '', 
-  change, 
-  changeType = 'positive',
-  graphData = [],
-  timeframe = 'Week',
-  onTimeframeChange,
-  delay = 0
+  value,
+  backgroundColor
 }: {
+  icon: string;
   title: string;
-  primaryValue: number | string;
-  unit?: string;
-  change?: string;
-  changeType?: 'positive' | 'negative' | 'neutral';
-  graphData?: number[];
-  timeframe?: string;
-  onTimeframeChange?: (timeframe: string) => void;
-  delay?: number;
+  value: string;
+  backgroundColor?: string;
 }) => {
   const { colors, theme } = useTheme();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-  const valueAnim = useRef(new Animated.Value(0)).current;
-  const chartAnim = useRef(new Animated.Value(1)).current;
-  const [displayValue, setDisplayValue] = useState(0);
-  const [selectedTimeframe, setSelectedTimeframe] = useState(timeframe);
-  const [currentGraphData, setCurrentGraphData] = useState(graphData);
-  const [currentPrimaryValue, setCurrentPrimaryValue] = useState(primaryValue);
-  const [currentChange, setCurrentChange] = useState(change);
+  const typography = getTypography(theme === 'dark');
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const timeframes = ['Day', 'Week', 'Month', 'Year'];
-
-  // Mock data for different timeframes
-  const getMockDataForTimeframe = (tf: string, baseData: number[]) => {
-    const baseAvg = baseData.reduce((a, b) => a + b, 0) / baseData.length;
-    
-    switch (tf) {
-      case 'Day':
-        // Hourly data for today (24 hours)
-        return Array.from({ length: 24 }, (_, i) => 
-          Math.floor(baseAvg * 0.1 + Math.random() * baseAvg * 0.3)
-        );
-      case 'Week':
-        // Daily data for week (7 days)
-        return baseData;
-      case 'Month':
-        // Weekly data for month (4 weeks)
-        return Array.from({ length: 4 }, (_, i) => 
-          Math.floor(baseAvg * 5 + Math.random() * baseAvg * 2)
-        );
-      case 'Year':
-        // Monthly data for year (12 months)
-        return Array.from({ length: 12 }, (_, i) => 
-          Math.floor(baseAvg * 20 + Math.random() * baseAvg * 10)
-        );
-      default:
-        return baseData;
-    }
-  };
-
-  const getPrimaryValueForTimeframe = (tf: string, baseValue: number | string) => {
-    if (typeof baseValue === 'string') return baseValue;
-    
-    switch (tf) {
-      case 'Day':
-        return Math.floor(baseValue * 0.15); // Daily portion
-      case 'Week':
-        return baseValue; // Base value
-      case 'Month':
-        return Math.floor(baseValue * 4.3); // Monthly total
-      case 'Year':
-        return Math.floor(baseValue * 52); // Yearly total
-      default:
-        return baseValue;
-    }
-  };
-
-  const getChangeTextForTimeframe = (tf: string) => {
-    switch (tf) {
-      case 'Day':
-        return '+5.2% vs yesterday';
-      case 'Week':
-        return '+12.5% vs last week';
-      case 'Month':
-        return '+8.7% vs last month';
-      case 'Year':
-        return '+15.3% vs last year';
-      default:
-        return change || '';
-    }
-  };
-
-  useEffect(() => {
-    if (typeof primaryValue === 'number') {
-      const listener = valueAnim.addListener(({ value }) => {
-        setDisplayValue(Math.floor(value));
-      });
-
-      setTimeout(() => {
-        Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-          Animated.spring(scaleAnim, {
-            toValue: 1,
-            tension: 100,
-            friction: 8,
-            useNativeDriver: true,
-          }),
-          Animated.timing(valueAnim, {
-            toValue: typeof currentPrimaryValue === 'number' ? currentPrimaryValue : 0,
-            duration: 2000,
-            useNativeDriver: false,
-          }),
-        ]).start();
-      }, delay);
-
-      return () => valueAnim.removeListener(listener);
-    } else {
-      setTimeout(() => {
-        Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-          Animated.spring(scaleAnim, {
-            toValue: 1,
-            tension: 100,
-            friction: 8,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }, delay);
-    }
-  }, [currentPrimaryValue]);
-
-  const changeColor = changeType === 'positive' ? colors.success : 
-                    changeType === 'negative' ? colors.error : colors.primary;
-
-  const handleTimeframeChange = (newTimeframe: string) => {
-    // Animate chart out
-    Animated.timing(chartAnim, {
-      toValue: 0,
-      duration: 200,
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
       useNativeDriver: true,
-    }).start(() => {
-      // Update data
-      setSelectedTimeframe(newTimeframe);
-      const newGraphData = getMockDataForTimeframe(newTimeframe, graphData);
-      const newPrimaryValue = getPrimaryValueForTimeframe(newTimeframe, primaryValue);
-      const newChange = getChangeTextForTimeframe(newTimeframe);
-      
-      setCurrentGraphData(newGraphData);
-      setCurrentPrimaryValue(newPrimaryValue);
-      setCurrentChange(newChange);
-      
-      // Animate value counter
-      if (typeof newPrimaryValue === 'number') {
-        Animated.timing(valueAnim, {
-          toValue: newPrimaryValue,
-          duration: 1500,
-          useNativeDriver: false,
-        }).start();
-      }
-      
-      // Animate chart back in
-      Animated.timing(chartAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }).start();
-      
-      // Call parent callback
-      onTimeframeChange?.(newTimeframe);
-    });
+      tension: 200,
+      friction: 8,
+    }).start();
   };
 
-  return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [{ scale: scaleAnim }],
-        flex: 1,
-      }}
-    >
-      <View style={{
-        backgroundColor: colors.card,
-        borderRadius: 20,
-        padding: 24,
-        marginBottom: 16,
-        minHeight: 220,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: theme === 'dark' ? 0.3 : 0.15,
-        shadowRadius: 8,
-        elevation: 8,
-        borderWidth: 1,
-        borderColor: theme === 'dark' ? colors.border : colors.divider,
-        // Add subtle gradient overlay for depth
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        {/* Subtle background gradient for depth */}
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 150,
+      friction: 6,
+    }).start();
+  };  return (
+    <Animated.View style={{ 
+      transform: [{ scale: scaleAnim }], 
+      flex: 1,
+    }}>
+      <TouchableOpacity
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        activeOpacity={1}
+        style={{
+          backgroundColor: backgroundColor || colors.card,
+          borderRadius: 24,
+          padding: Spacing.lg + 2,
+          paddingVertical: Spacing.lg + 6,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.15,
+          shadowRadius: 20,
+          elevation: 8,
+          height: 120,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderWidth: 1,
+          borderColor: 'rgba(255,255,255,0.9)',
+          overflow: 'hidden',
+          minWidth: 0, // Ensure tiles can shrink evenly
+        }}
+      >
+        {/* Subtle inner glow */}
         <View style={{
           position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
-          bottom: 0,
-          backgroundColor: theme === 'dark' 
-            ? `${colors.primary}08` 
-            : `${colors.primary}04`,
-          borderRadius: 20,
-        }} />
-
-        {/* Header with Timeframe Selector */}
-        <View style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: 12,
-          zIndex: 1,
-        }}>
+          height: 1,
+          backgroundColor: 'rgba(255,255,255,0.6)',
+        }} />          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+          <CleanIcon 
+            name={icon}
+            size={32}
+            backgroundColor="transparent"
+          />
           <Text style={{
-            fontSize: 13,
+            ...TextStyles.caption,
+            color: colors.text,
+            marginTop: Spacing.sm + 4,
+            fontSize: 12,
             fontWeight: '600',
-            color: colors.textSecondary,
-            letterSpacing: 0.8,
-            textTransform: 'uppercase',
-            opacity: 0.9,
+            letterSpacing: 0.3,
+            opacity: 0.8,
+            textAlign: 'center',
           }}>
             {title}
           </Text>
-          
-          {/* Enhanced Timeframe Pills */}
-          <View style={{
-            flexDirection: 'row',
-            backgroundColor: theme === 'dark' 
-              ? `${colors.surface}40` 
-              : `${colors.background}60`,
-            borderRadius: 14,
-            padding: 3,
-            borderWidth: 1,
-            borderColor: theme === 'dark' 
-              ? `${colors.border}60` 
-              : `${colors.divider}80`,
-            shadowColor: colors.shadow,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 2,
-          }}>
-            {timeframes.map((tf) => (
-              <TouchableOpacity
-                key={tf}
-                onPress={() => handleTimeframeChange(tf)}
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 6,
-                  borderRadius: 11,
-                  backgroundColor: selectedTimeframe === tf 
-                    ? colors.primary 
-                    : 'transparent',
-                  transform: selectedTimeframe === tf ? [{ scale: 1.02 }] : [{ scale: 1 }],
-                  shadowColor: selectedTimeframe === tf ? colors.primary : 'transparent',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: selectedTimeframe === tf ? 0.3 : 0,
-                  shadowRadius: 4,
-                  elevation: selectedTimeframe === tf ? 4 : 0,
-                }}
-                activeOpacity={0.7}
-              >
-                <Animated.Text style={{
-                  fontSize: 11,
-                  fontWeight: '700',
-                  color: selectedTimeframe === tf 
-                    ? (theme === 'dark' ? colors.background : colors.surface)
-                    : colors.textSecondary,
-                  transform: selectedTimeframe === tf ? [{ scale: 1.05 }] : [{ scale: 1 }],
-                }}>
-                  {tf}
-                </Animated.Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Primary Metric with Enhanced Styling */}
-        <View style={{ 
-          flexDirection: 'row', 
-          alignItems: 'baseline',
-          marginBottom: 6,
-          zIndex: 1,
-        }}>
           <Text style={{
-            fontSize: 52,
-            fontWeight: '700',
+            ...TextStyles.bodyMedium,
             color: colors.text,
-            lineHeight: 56,
-            textShadowColor: theme === 'dark' ? colors.shadow : 'transparent',
-            textShadowOffset: { width: 0, height: 1 },
-            textShadowRadius: 2,
-          }}>
-            {typeof currentPrimaryValue === 'number' ? displayValue.toLocaleString() : currentPrimaryValue}
-          </Text>
-          {unit && (
-            <Text style={{
-              fontSize: 20,
-              fontWeight: '500',
-              color: colors.textSecondary,
-              marginLeft: 6,
-              opacity: 0.8,
-            }}>
-              {unit}
-            </Text>
-          )}
-        </View>
-
-        {/* Enhanced Change Indicator */}
-        {currentChange && (
-          <Animated.View style={{
-            backgroundColor: `${changeColor}15`,
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderRadius: 12,
-            alignSelf: 'flex-start',
-            marginBottom: 20,
-            borderWidth: 1,
-            borderColor: `${changeColor}30`,
-            opacity: chartAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.5, 1],
-            }),
-            zIndex: 1,
-          }}>
-            <Text style={{
-              fontSize: 13,
-              fontWeight: '600',
-              color: changeColor,
-            }}>
-              {currentChange}
-            </Text>
-          </Animated.View>
-        )}
-
-        {/* Advanced Graph with Enhanced Container */}
-        <Animated.View 
-          style={{ 
-            marginTop: 16,
-            flex: 1,
-            backgroundColor: theme === 'dark' 
-              ? `${colors.surface}20` 
-              : `${colors.background}40`,
-            borderRadius: 16,
-            padding: 4,
-            borderWidth: 1,
-            borderColor: theme === 'dark' 
-              ? `${colors.border}40` 
-              : `${colors.divider}60`,
-            opacity: chartAnim,
-            transform: [{
-              scale: chartAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0.96, 1],
-              })
-            }],
-            zIndex: 1,
-          }}
-        >
-          <SmoothLineChart 
-            data={currentGraphData} 
-            color={colors.primary}
-            height={80}
-            showDataPoints={false}
-            showGrid={true}
-            animate={true}
-            key={`${selectedTimeframe}-${Date.now()}`} // Force re-render for animation
-          />
-        </Animated.View>
-
-        {/* Enhanced Timeframe Info */}
-        <View style={{
-          marginTop: 16,
-          paddingTop: 16,
-          borderTopWidth: 1,
-          borderTopColor: theme === 'dark' 
-            ? `${colors.border}40` 
-            : `${colors.divider}60`,
-          backgroundColor: theme === 'dark' 
-            ? `${colors.surface}10` 
-            : `${colors.background}30`,
-          marginHorizontal: -24,
-          paddingHorizontal: 24,
-          paddingBottom: -24,
-          marginBottom: -24,
-          borderBottomLeftRadius: 20,
-          borderBottomRightRadius: 20,
-          zIndex: 1,
-        }}>
-          <Text style={{
-            fontSize: 11,
-            color: colors.textTertiary,
+            fontWeight: '800',
+            fontSize: 15,
+            marginTop: 4,
+            letterSpacing: 0.2,
+            textShadowColor: 'rgba(0,0,0,0.1)',
+            textShadowOffset: { width: 0, height: 0.5 },
+            textShadowRadius: 1,
             textAlign: 'center',
-            fontWeight: '500',
-            opacity: 0.8,
-            letterSpacing: 0.3,
           }}>
-            {selectedTimeframe === 'Day' && '📊 24 hours • Updated every hour'}
-            {selectedTimeframe === 'Week' && '📈 7 days • Updated daily'}
-            {selectedTimeframe === 'Month' && '📅 4 weeks • Updated weekly'}
-            {selectedTimeframe === 'Year' && '🗓️ 12 months • Updated monthly'}
+            {value}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     </Animated.View>
   );
 };
 
-// Smooth Line Chart Component (Following graph.json specs)
-const SmoothLineChart = ({ 
-  data, 
-  color, 
-  height = 80,
-  showDataPoints = false,
-  showGrid = false,
-  animate = true 
-}: {
-  data: number[];
-  color?: string;
-  height?: number;
-  showDataPoints?: boolean;
-  showGrid?: boolean;
-  animate?: boolean;
-}) => {
-  const { colors, theme } = useTheme();
-  const animatedValue = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
-  
-  // Helper function to convert hex to rgb
-  const hexToRgb = (hex: string) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    if (result) {
-      return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
-    }
-    return '99, 102, 241'; // fallback to indigo
-  };
-  
-  // Enhanced dynamic color selection based on theme
-  const chartColor = color || colors.primary;
-  const gridColor = theme === 'dark' 
-    ? `${colors.border}40` 
-    : `${colors.divider}50`;
-  const bgGradient = theme === 'dark' 
-    ? `rgba(${hexToRgb(chartColor)}, 0.2)` 
-    : `rgba(${hexToRgb(chartColor)}, 0.12)`;
-
-  useEffect(() => {
-    if (animate) {
-      // Main animation
-      Animated.timing(animatedValue, {
-        toValue: 1,
-        duration: 2500,
-        useNativeDriver: false,
-      }).start();
-
-      // Glow effect animation
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, {
-            toValue: 1,
-            duration: 2000,
-            useNativeDriver: false,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 0,
-            duration: 2000,
-            useNativeDriver: false,
-          }),
-        ])
-      ).start();
-    } else {
-      animatedValue.setValue(1);
-      glowAnim.setValue(0);
-    }
-  }, [data]);
-
-  if (!data || data.length === 0) return null;
-
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
-  const chartWidth = width - 80; // Account for padding
-  const stepX = chartWidth / (data.length - 1);
-
-  // Create smooth curve points using Catmull-Rom spline
-  const createSmoothPath = () => {
-    const points = data.map((value, index) => ({
-      x: index * stepX,
-      y: height - ((value - min) / range) * (height - 30) - 15
-    }));
-
-    if (points.length < 2) return [];
-
-    const smoothPoints = [];
-    
-    for (let i = 0; i < points.length - 1; i++) {
-      const p0 = points[Math.max(i - 1, 0)];
-      const p1 = points[i];
-      const p2 = points[i + 1];
-      const p3 = points[Math.min(i + 2, points.length - 1)];
-
-      // Create smooth curve segments
-      for (let t = 0; t <= 1; t += 0.1) {
-        const x = catmullRom(p0.x, p1.x, p2.x, p3.x, t);
-        const y = catmullRom(p0.y, p1.y, p2.y, p3.y, t);
-        smoothPoints.push({ x, y });
-      }
-    }
-
-    return smoothPoints;
-  };
-
-  // Catmull-Rom spline function for smooth curves
-  const catmullRom = (p0: number, p1: number, p2: number, p3: number, t: number) => {
-    const t2 = t * t;
-    const t3 = t2 * t;
-    return 0.5 * (
-      (2 * p1) +
-      (-p0 + p2) * t +
-      (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
-      (-p0 + 3 * p1 - 3 * p2 + p3) * t3
-    );
-  };
-
-  const smoothPoints = createSmoothPath();
-
-  return (
-    <View style={{ 
-      height, 
-      width: '100%',
-      position: 'relative',
-      backgroundColor: 'transparent',
-      overflow: 'hidden',
-      borderRadius: 12,
-    }}>
-      {/* Enhanced background with theme-aware gradient */}
-      <View style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: theme === 'dark' 
-          ? `${colors.surface}15` 
-          : `${colors.background}20`,
-        borderRadius: 12,
-      }} />
-
-      {/* Enhanced Grid Lines - Theme Optimized */}
-      {showGrid && (
-        <View style={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-        }}>
-          {/* Horizontal grid lines */}
-          {[0.25, 0.5, 0.75].map((ratio, index) => (
-            <View
-              key={`h-${index}`}
-              style={{
-                position: 'absolute',
-                left: 12,
-                right: 12,
-                top: ratio * height,
-                height: 1,
-                backgroundColor: gridColor,
-                opacity: theme === 'dark' ? 0.4 : 0.3,
-                borderRadius: 0.5,
-              }}
-            />
-          ))}
-          {/* Vertical grid lines */}
-          {data.filter((_, index) => index % 2 === 0).map((_, index) => (
-            <View
-              key={`v-${index}`}
-              style={{
-                position: 'absolute',
-                left: (index * 2) * stepX + 12,
-                top: 12,
-                bottom: 12,
-                width: 1,
-                backgroundColor: gridColor,
-                opacity: theme === 'dark' ? 0.3 : 0.2,
-                borderRadius: 0.5,
-              }}
-            />
-          ))}
-        </View>
-      )}
-
-      {/* Enhanced Gradient Fill Area */}
-      <View style={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        opacity: theme === 'dark' ? 0.7 : 0.5,
-      }}>
-        {data.map((value, index) => {
-          if (index === 0) return null;
-          
-          const prevY = height - ((data[index - 1] - min) / range) * (height - 30) - 15;
-          const currentY = height - ((value - min) / range) * (height - 30) - 15;
-          const x = index * stepX;
-          const prevX = (index - 1) * stepX;
-          
-          return (
-            <Animated.View
-              key={`fill-${index}`}
-              style={{
-                position: 'absolute',
-                left: prevX,
-                top: Math.min(prevY, currentY),
-                width: stepX,
-                height: Math.abs(currentY - prevY) + (height - Math.max(prevY, currentY)),
-                backgroundColor: bgGradient,
-                opacity: animatedValue.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, theme === 'dark' ? 0.5 : 0.4],
-                }),
-              }}
-            />
-          );
-        })}
-      </View>
-
-      {/* Enhanced Smooth Animated Line Segments */}
-      <View style={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-      }}>
-        {smoothPoints.map((point, index) => {
-          if (index === 0) return null;
-          
-          const prevPoint = smoothPoints[index - 1];
-          const length = Math.sqrt(
-            Math.pow(point.x - prevPoint.x, 2) + 
-            Math.pow(point.y - prevPoint.y, 2)
-          );
-          const angle = Math.atan2(point.y - prevPoint.y, point.x - prevPoint.x) * 180 / Math.PI;
-          
-          return (
-            <Animated.View
-              key={`line-${index}`}
-              style={{
-                position: 'absolute',
-                left: prevPoint.x + 12,
-                top: prevPoint.y,
-                width: animatedValue.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, length],
-                }),
-                height: 4,
-                backgroundColor: chartColor,
-                borderRadius: 2,
-                transform: [{ rotate: `${angle}deg` }],
-                transformOrigin: 'left center',
-                shadowColor: chartColor,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: glowAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [theme === 'dark' ? 0.4 : 0.2, theme === 'dark' ? 0.8 : 0.5],
-                }),
-                shadowRadius: glowAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [4, theme === 'dark' ? 16 : 12],
-                }),
-                elevation: 8,
-              }}
-            />
-          );
-        })}
-      </View>
-
-      {/* Enhanced gradient overlay for modern look */}
-      <View style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 24,
-        backgroundColor: 'transparent',
-        borderRadius: 12,
-        pointerEvents: 'none',
-      }} />
-    </View>
-  );
-};
-
-// Quick Action Buttons for Graph
-
-
 // Main Dashboard Component
 export default function HealthDashboard() {
   const { colors, theme } = useTheme();
+  const typography = getTypography(theme === 'dark');
   const insets = useSafeAreaInsets();
-
-  // Mock data for analytics
-  const weeklySteps = [8547, 9123, 7834, 10245, 8756, 9567, 11234];
-  const caloriesBurned = [425, 567, 398, 612, 489, 534, 678];
-  const workoutMinutes = [32, 45, 28, 52, 38, 41, 58];
-
-  const styles = StyleSheet.create({
-    container: {
+  const [searchText, setSearchText] = useState('');
+  const styles = StyleSheet.create({    container: {
       flex: 1,
       backgroundColor: colors.background,
+    },    scrollContent: {
+      padding: Spacing.lg + 4,
+      paddingTop: Spacing.lg,
+      paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.xxl + Spacing.xl,
+    },header: {
+      marginBottom: Spacing.xl,
     },
-    scrollContent: {
-      padding: 20,
-      paddingTop: 16,
-      paddingBottom: Math.max(insets.bottom, 20) + 100,
-    },
-    header: {
+    greeting: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 32,
+      marginBottom: Spacing.lg,
     },
-    headerLeft: {
+    greetingLeft: {
       flexDirection: 'row',
       alignItems: 'center',
     },
     avatar: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      marginRight: 16,
+      width: 52,
+      height: 52,
+      borderRadius: 26,
+      backgroundColor: colors.primary,
+      marginRight: Spacing.md,
+      overflow: 'hidden',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 12,
+      elevation: 6,
       borderWidth: 2,
-      borderColor: colors.primary + '50',
-    },
-    greeting: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.text,
-    },
-    subGreeting: {
-      fontSize: 14,
+      borderColor: 'rgba(255,255,255,0.9)',
+    },    greetingText: {
+      ...TextStyles.bodySmall,
       color: colors.textSecondary,
-      marginTop: 2,
+      marginBottom: 3,
+      fontSize: 14,
+      fontWeight: '500',
+      letterSpacing: 0.2,
+    },
+    userName: {
+      ...TextStyles.h3,
+      color: colors.text,
+      fontWeight: '700',
+      fontSize: 22,
+      letterSpacing: 0.3,
     },
     notificationButton: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: 48,
+      height: 48,
+      borderRadius: 24,
       backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    metricsGrid: {
-      marginBottom: 24,
-    },
-    metricsRow: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 12,
+      elevation: 6,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.8)',
+    },    searchContainer: {
       flexDirection: 'row',
-      gap: 16,
-      marginBottom: 16,
+      alignItems: 'center',
+      gap: Spacing.md,
+      marginBottom: Spacing.xl,
+    },    
+    searchInput: {
+      flex: 1,
+      height: Spacing.xxl + 4,
+      backgroundColor: colors.surface,
+      borderRadius: 28,
+      paddingHorizontal: Spacing.lg,
+      paddingLeft: 48,
+      ...TextStyles.body,
+      color: colors.text,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.06,
+      shadowRadius: 8,
+      elevation: 3,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.8)',
+      fontSize: 15,
+      fontWeight: '500',
+    },
+    searchIcon: {
+      position: 'absolute',
+      left: Spacing.lg,
+      zIndex: 1,
+    },    filterButton: {
+      width: Spacing.xxl + 4,
+      height: Spacing.xxl + 4,
+      borderRadius: 26,
+      backgroundColor: colors.surface,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.08,
+      shadowRadius: 12,
+      elevation: 4,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.8)',
+    },    progressSection: {
+      backgroundColor: colors.surface,
+      borderRadius: 28,
+      padding: Spacing.xl + 4,
+      marginBottom: Spacing.xl + 4,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.12,
+      shadowRadius: 20,
+      elevation: 8,
+      marginHorizontal: 2,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.9)',
+      overflow: 'hidden',
+    },
+    progressContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    progressLeft: {
+      flex: 1,
+      justifyContent: 'center',
+    },
+    progressRight: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    progressTitle: {
+      ...TextStyles.bodyMedium,
+      color: colors.text,
+      marginBottom: 10,
+      fontWeight: '600',
+      fontSize: 17,
+      letterSpacing: 0.3,
+    },
+    progressPercentage: {
+      ...TextStyles.h1,
+      color: colors.text,
+      fontWeight: '800',
+      fontSize: 42,
+      marginBottom: 6,
+      letterSpacing: 0.5,
+      textShadowColor: 'rgba(0,0,0,0.1)',
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 2,
+    },
+    progressDate: {
+      ...TextStyles.bodySmall,
+      color: colors.textSecondary,
+      fontSize: 15,
+      fontWeight: '500',
+      letterSpacing: 0.2,
+    },    statsGrid: {
+      flexDirection: 'row',
+      gap: Spacing.lg,
+      marginBottom: Spacing.xl + 4,
+      justifyContent: 'space-between',
+      paddingHorizontal: 4,
+    },expandedSection: {
+      marginBottom: Spacing.xl + 4,
+    },
+    sectionTitle: {
+      ...TextStyles.h4,
+      color: colors.text,
+      marginBottom: Spacing.lg,
+      fontWeight: '700',
+      fontSize: 18,
+      letterSpacing: 0.3,
+    },    expandedGrid: {
+      flexDirection: 'column',
+      gap: Spacing.lg,
+    },
+    expandedTile: {
+      backgroundColor: colors.surface,
+      borderRadius: 24,
+      padding: Spacing.xl,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.1,
+      shadowRadius: 16,
+      elevation: 6,
+      minHeight: 80,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.8)',
     },
   });
 
+  const getCurrentDate = () => {
+    const now = new Date();
+    const day = now.getDate();
+    const month = now.toLocaleDateString('en-US', { month: 'long' });
+    const year = now.getFullYear();
+    
+    const suffix = day === 1 || day === 21 || day === 31 ? 'st' :
+                  day === 2 || day === 22 ? 'nd' :
+                  day === 3 || day === 23 ? 'rd' : 'th';
+    
+    return `${day}${suffix} ${month} ${year}`;
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar 
-        barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} 
-        backgroundColor={styles.container.backgroundColor} 
-      />
+      <StatusBar barStyle="dark-content" backgroundColor={styles.container.backgroundColor} />
       
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Header Section */}
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Image 
-              source={{ uri: "https://via.placeholder.com/100x100/6366f1/FFFFFF?text=A" }}
-              style={styles.avatar}
-            />
-            <View>
-              <Text style={styles.greeting}>Hello, Alex</Text>
-              <Text style={styles.subGreeting}>Ready to crush your goals?</Text>
+          <View style={styles.greeting}>
+            <View style={styles.greetingLeft}>
+              <View style={styles.avatar}>
+                <Image 
+                  source={{ uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Raju' }}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
+              </View>
+              <View>
+                <Text style={styles.greetingText}>{getGreeting()}</Text>
+                <Text style={styles.userName}>Raju!</Text>
+              </View>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.notificationButton}
+              onPress={() => router.push('/notifications')}
+            >
+              <CleanIcon name="bell" size={20} />              <View style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: colors.error,
+              }} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <View style={{ flex: 1, position: 'relative' }}>
+              <View style={styles.searchIcon}>
+                <CleanIcon name="search" size={18} />
+              </View>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search any data here"
+                placeholderTextColor={colors.textSecondary}
+                value={searchText}
+                onChangeText={setSearchText}
+              />
+            </View>
+            <TouchableOpacity style={styles.filterButton}>
+              <CleanIcon name="filter" size={18} />
+            </TouchableOpacity>
+          </View>
+        </View>        {/* Progress Overview - Enhanced with subtle background pattern */}
+        <View style={styles.progressSection}>
+          {/* Subtle top highlight */}
+          <View style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 2,
+            backgroundColor: 'rgba(255,255,255,0.4)',
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+          }} />
+          
+          <View style={styles.progressContent}>
+            <View style={styles.progressLeft}>
+              <Text style={styles.progressTitle}>Today's Progress</Text>
+              <Text style={styles.progressPercentage}>91%</Text>
+              <Text style={styles.progressDate}>{getCurrentDate()}</Text>
+            </View>
+            <View style={styles.progressRight}>
+              <CircularProgress
+                progress={91}
+                size={115}
+                strokeWidth={9}
+                value="500"
+                unit="kcal"
+                label="Calories"
+              />
             </View>
           </View>
-          <TouchableOpacity 
-            style={styles.notificationButton}
-            onPress={() => router.push('/notifications')}
-            activeOpacity={0.7}
-          >
-            <DashboardIcon name="B" size={24} color={colors.primary} />
-            <View style={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              width: 8,
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: colors.error,
-            }} />
-          </TouchableOpacity>
+        </View>        {/* Stats Grid - 3 columns in a row with perfect spacing */}
+        <View style={styles.statsGrid}>
+          <StatTile
+            icon="fire"
+            title="Calories"
+            value="+500kcal"
+            backgroundColor="#FFE5CC"
+          />
+          <StatTile
+            icon="steps"
+            title="Steps"
+            value="+9000 steps"
+            backgroundColor="#E5E9FF"
+          />
+          <StatTile
+            icon="heart"
+            title="Moving"
+            value="+74mins"
+            backgroundColor="#FFE5F1"
+          />
+        </View>{/* Expanded Health Stats - Enhanced with premium styling */}
+        <View style={styles.expandedSection}>
+          <View style={styles.expandedGrid}>
+            <View style={[styles.expandedTile, { backgroundColor: '#FAFAFA' }]}>
+              {/* Subtle top highlight */}              <View style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 1,
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+              }} />
+              
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CleanIcon name="sleep" size={24} color="#8b5cf6" backgroundColor="rgba(139, 92, 246, 0.1)" />
+                  <View style={{ marginLeft: 18 }}>
+                    <Text style={{
+                      ...TextStyles.bodyMedium,
+                      color: colors.text,
+                      fontWeight: '700',
+                      fontSize: 18,
+                      letterSpacing: 0.2,
+                    }}>
+                      Sleep
+                    </Text>
+                    <Text style={{
+                      ...TextStyles.caption,
+                      color: colors.textSecondary,
+                      fontSize: 15,
+                      fontWeight: '500',
+                      marginTop: 4,
+                    }}>
+                      8 Hrs 12 Mins
+                    </Text>
+                  </View>
+                </View>
+                <Text style={{ fontSize: 22, color: colors.textSecondary, fontWeight: '600' }}>⋯</Text>
+              </View>
+            </View>
+
+            <View style={[styles.expandedTile, { backgroundColor: '#FAFAFA' }]}>
+              {/* Subtle top highlight */}              <View style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 1,
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+              }} />
+              
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CleanIcon name="standing" size={24} color="#10b981" backgroundColor="rgba(16, 185, 129, 0.1)" />
+                  <View style={{ marginLeft: 18 }}>
+                    <Text style={{
+                      ...TextStyles.bodyMedium,
+                      color: colors.text,
+                      fontWeight: '700',
+                      fontSize: 18,
+                      letterSpacing: 0.2,
+                    }}>
+                      Standing
+                    </Text>
+                    <Text style={{
+                      ...TextStyles.caption,
+                      color: colors.textSecondary,
+                      fontSize: 15,
+                      fontWeight: '500',
+                      marginTop: 4,
+                    }}>
+                      6 Hrs 10 Mins
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View style={[styles.expandedTile, { backgroundColor: '#FAFAFA' }]}>
+              {/* Subtle top highlight */}              <View style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 1,
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+              }} />
+              
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CleanIcon name="heart" size={24} color="#ef4444" backgroundColor="rgba(239, 68, 68, 0.1)" />
+                  <View style={{ marginLeft: 18 }}>
+                    <Text style={{
+                      ...TextStyles.bodyMedium,
+                      color: colors.text,
+                      fontWeight: '700',
+                      fontSize: 18,
+                      letterSpacing: 0.2,
+                    }}>
+                      Heart
+                    </Text>
+                    <Text style={{
+                      ...TextStyles.caption,
+                      color: colors.textSecondary,
+                      fontSize: 15,
+                      fontWeight: '500',
+                      marginTop: 4,
+                    }}>
+                      Add heart data
+                    </Text>
+                  </View>
+                </View>
+                <CleanIcon name="heart" size={20} color="#ef4444" backgroundColor="rgba(239, 68, 68, 0.1)" />
+              </View>
+            </View>
+          </View>
         </View>
-
-        {/* Metrics Grid */}
-        <View style={styles.metricsGrid}>
-          {/* Row 1: Main Metrics */}
-          <View style={styles.metricsRow}>
-            <View style={{ flex: 1 }}>
-              <AnalyticsCard
-                title="Daily Steps"
-                primaryValue={8547}
-                change="+12.5% from yesterday"
-                changeType="positive"
-                hasChart={true}
-                chartData={weeklySteps}
-                delay={0}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <AnalyticsCard
-                title="Calories Burned"
-                primaryValue={425}
-                change="+8.3% this week"
-                changeType="positive"
-                hasChart={true}
-                chartData={caloriesBurned}
-                delay={200}
-              />
-            </View>
-          </View>
-
-          {/* Row 2: Advanced Graph Metrics */}
-          <View style={styles.metricsRow}>
-            <View style={{ flex: 1 }}>
-              <AdvancedGraphCard
-                title="Active Minutes"
-                primaryValue={32}
-                unit="min"
-                change="Goal: 45 min"
-                changeType="neutral"
-                graphData={workoutMinutes}
-                timeframe="Week"
-                onTimeframeChange={(timeframe) => {
-                  console.log('Timeframe changed to:', timeframe);
-                  // Handle timeframe change logic here
-                }}
-                delay={400}
-              />
-              {/* <GraphQuickActions /> */}
-            </View>
-            {/* <View style={{ flex: 1 }}>
-              <AdvancedGraphCard
-                title="Weekly Goal"
-                primaryValue="76%"
-                change="3 days remaining"
-                changeType="positive" 
-                graphData={[45, 52, 67, 71, 76, 73, 76]}
-                timeframe="Week"
-                delay={600}
-              />
-              <GraphQuickActions />
-            </View> */}
-          </View>
-
-          {/* Row 3: Additional Metrics */}
-          <View style={styles.metricsRow}>
-            <View style={{ flex: 1 }}>
-              <AnalyticsCard
-                title="Water Intake"
-                primaryValue="2.1L"
-                change="Goal: 3.0L"
-                changeType="neutral"
-                delay={800}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <AnalyticsCard
-                title="Sleep Quality"
-                primaryValue="8.2"
-                unit="/10"
-                change="+0.5 vs last week"
-                changeType="positive"
-                delay={1000}
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* Active Groups */}
-        <ActiveGroupsCard />
-
-        {/* Quick Actions */}
-        <QuickActionsCard />
       </ScrollView>
     </SafeAreaView>
   );

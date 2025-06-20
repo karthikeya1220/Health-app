@@ -14,11 +14,10 @@ import { Card } from '@/components/ui/Card';
 export default function LoginScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
@@ -27,7 +26,6 @@ export default function LoginScreen() {
       }
     };
   }, []);
-
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
@@ -39,8 +37,15 @@ export default function LoginScreen() {
     // Simulate API call
     timeoutRef.current = setTimeout(() => {
       setIsLoading(false);
-      // Navigate to main app
-      router.replace('/(tabs)');
+      // For demo purposes, we'll assume new users need onboarding
+      // In a real app, you'd check if this is a new user from your backend
+      const isNewUser = email.includes('new') || email.includes('first'); // Simple demo logic
+      
+      if (isNewUser) {
+        router.replace('/onboarding');
+      } else {
+        router.replace('/(tabs)');
+      }
     }, 1500);
   };
 
@@ -62,18 +67,16 @@ export default function LoginScreen() {
     header: {
       alignItems: 'center',
       marginBottom: Spacing.xl * 2,
-    },
-    title: {
+    },    title: {
       ...typography.h1,
       color: colors.text,
       textAlign: 'center',
       marginBottom: Spacing.md,
-      fontWeight: 'bold',
     },
     subtitle: {
       ...typography.body,
       textAlign: 'center',
-      color: colors.textSecondary,
+      color: colors.textSecondary, // Override the default typography color
     },
     loginCard: {
       marginBottom: Spacing.xl,
@@ -107,8 +110,8 @@ export default function LoginScreen() {
       backgroundColor: 'transparent',
       borderWidth: 0,
       paddingHorizontal: 0,
-      color: colors.text,
       ...typography.body,
+      color: colors.text, // Override typography color
     },
     eyeButton: {
       backgroundColor: 'transparent',
@@ -123,10 +126,9 @@ export default function LoginScreen() {
       paddingVertical: Spacing.md,
     },
     loginButtonText: {
-      color: colors.surface,
-      fontWeight: '600',
-      textAlign: 'center',
       ...typography.body,
+      textAlign: 'center',
+      color: colors.surface, // Override typography color
     },
     footer: {
       flexDirection: 'row',
@@ -135,18 +137,15 @@ export default function LoginScreen() {
     },
     footerText: {
       ...typography.body,
-      color: colors.text,
     },
     signUpButton: {
       backgroundColor: 'transparent',
       borderWidth: 0,
       padding: Spacing.xs,
       minHeight: 0,
-    },
-    signUpButtonText: {
+    },    signUpButtonText: {
+      ...typography.bodyMedium,
       color: colors.primary,
-      fontWeight: '600',
-      ...typography.body,
     },
     demoInfo: {
       alignItems: 'center',
@@ -234,18 +233,18 @@ export default function LoginScreen() {
               </TouchableOpacity>
 
               <View style={styles.footer}>
-                <Text style={styles.footerText}>Don't have an account? </Text>
-                <TouchableOpacity
-                  onPress={() => Alert.alert('Sign Up', 'Sign up functionality not implemented yet')}
+                <Text style={styles.footerText}>Don't have an account? </Text>                <TouchableOpacity
+                  onPress={() => router.push('/signup')}
                   style={styles.signUpButton}
                 >
                   <Text style={styles.signUpButtonText}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-
-            <View style={styles.demoInfo}>
-              <Text style={styles.demoText}>Demo App - Use any email and password to login</Text>
+            </View>            <View style={styles.demoInfo}>
+              <Text style={styles.demoText}>
+                Demo App - Use any email and password to login{'\n'}
+                Use email with "new" or "first" to see onboarding flow
+              </Text>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
