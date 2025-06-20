@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: Layout.minTouchTarget,
+    minHeight: 44, // Use fixed value instead of Layout.minTouchTarget
   },
   
   // Sizes

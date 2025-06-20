@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share as ShareAPI, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share as ShareAPI, Alert, Animated, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, Share, MessageCircle, Copy, Twitter, 
-  Facebook, Instagram, Link, Mail, Download, Bookmark 
+  Facebook, Instagram, Link, Mail, Download, Bookmark, Heart, ChevronRight
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width } = Dimensions.get('window');
 
 export default function SharePostScreen() {
   const { colors, themeMode } = useTheme();
   const typography = getTypography(themeMode === 'dark');
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 8,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, []);
 
   const shareOptions = [
     {

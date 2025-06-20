@@ -1,16 +1,36 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Image, TextInput } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Image, TextInput, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, MessageSquare, Heart, Share, Bookmark, MoreHorizontal, Send, ThumbsUp } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ViewAllCommentsScreen() {
   const { colors, themeMode } = useTheme();
   const typography = getTypography(themeMode === 'dark');
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(-20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   // Mock data for comments
   const comments = [
@@ -301,88 +321,109 @@ export default function ViewAllCommentsScreen() {
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primary,      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    sendButtonInner: {
+      width: '100%',
+      height: '100%',
       justifyContent: 'center',
       alignItems: 'center',
     },
-  });
+  });return (
+    <LinearGradient
+      colors={[colors.background, colors.background + 'CC', colors.surface + '66']}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.container}>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* Header */}
+          <LinearGradient
+            colors={[colors.primary + '15', colors.surface]}
+            style={styles.header}
+          >
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <ArrowLeft size={20} color={colors.text} />
+            </TouchableOpacity>
+            
+            <Text style={[TextStyles.h3, styles.headerTitle]}>Comments</Text>
+            
+            <TouchableOpacity>
+              <Text style={styles.headerAction}>Share</Text>
+            </TouchableOpacity>
+          </LinearGradient>
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={20} color={colors.text} />
-        </TouchableOpacity>
-        
-        <Text style={styles.headerTitle}>Comments</Text>
-        
-        <TouchableOpacity>
-          <Text style={styles.headerAction}>Share</Text>
-        </TouchableOpacity>
-      </View>
+          {/* Post Preview */}
+          <View style={styles.postPreview}>
+            <View style={styles.postHeader}>
+              <Image 
+                source={{ uri: 'https://via.placeholder.com/40x40/6366F1/FFFFFF?text=A' }}
+                style={styles.postAvatar}
+              />
+              <View style={styles.postUserInfo}>
+                <Text style={styles.postUserName}>Alex Thompson</Text>
+                <Text style={styles.postTime}>6 hours ago</Text>
+              </View>
+            </View>
+            
+            <Text style={styles.postContent}>
+              Just completed my 10K marathon training! Feeling stronger every day. 
+              The journey has been incredible and I'm grateful for all the support from this amazing community! 🏃‍♂️💪
+            </Text>
+            
+            <View style={styles.postStats}>
+              <View style={styles.postStat}>
+                <Heart size={16} color={colors.error} />
+                <Text style={styles.postStatText}>124 likes</Text>
+              </View>
+              <View style={styles.postStat}>
+                <MessageSquare size={16} color={colors.textSecondary} />
+                <Text style={styles.postStatText}>{comments.length} comments</Text>
+              </View>
+              <View style={styles.postStat}>
+                <Share size={16} color={colors.textSecondary} />
+                <Text style={styles.postStatText}>18 shares</Text>
+              </View>
+            </View>
+          </View>
 
-      {/* Post Preview */}
-      <View style={styles.postPreview}>
-        <View style={styles.postHeader}>
-          <Image 
-            source={{ uri: 'https://via.placeholder.com/40x40/6366F1/FFFFFF?text=A' }}
-            style={styles.postAvatar}
+          {/* Comments List */}
+          <FlatList
+            data={comments}
+            renderItem={renderCommentWithReplies}
+            keyExtractor={(item) => item.id}
+            style={styles.commentsContainer}
+            showsVerticalScrollIndicator={false}
           />
-          <View style={styles.postUserInfo}>
-            <Text style={styles.postUserName}>Alex Thompson</Text>
-            <Text style={styles.postTime}>6 hours ago</Text>
-          </View>
-        </View>
-        
-        <Text style={styles.postContent}>
-          Just completed my 10K marathon training! Feeling stronger every day. 
-          The journey has been incredible and I'm grateful for all the support from this amazing community! 🏃‍♂️💪
-        </Text>
-        
-        <View style={styles.postStats}>
-          <View style={styles.postStat}>
-            <Heart size={16} color={colors.error} />
-            <Text style={styles.postStatText}>124 likes</Text>
-          </View>
-          <View style={styles.postStat}>
-            <MessageSquare size={16} color={colors.textSecondary} />
-            <Text style={styles.postStatText}>{comments.length} comments</Text>
-          </View>
-          <View style={styles.postStat}>
-            <Share size={16} color={colors.textSecondary} />
-            <Text style={styles.postStatText}>18 shares</Text>
-          </View>
-        </View>
-      </View>
 
-      {/* Comments List */}
-      <FlatList
-        data={comments}
-        renderItem={renderCommentWithReplies}
-        keyExtractor={(item) => item.id}
-        style={styles.commentsContainer}
-        showsVerticalScrollIndicator={false}
-      />
-
-      {/* Add Comment */}
-      <View style={styles.addCommentContainer}>
-        <Image 
-          source={{ uri: 'https://via.placeholder.com/32x32/6366F1/FFFFFF?text=Y' }}
-          style={styles.addCommentAvatar}
-        />
-        <TextInput
-          style={styles.addCommentInput}
-          placeholder="Add a comment..."
-          placeholderTextColor={colors.textSecondary}
-        />
-        <TouchableOpacity style={styles.sendButton}>
-          <Send size={16} color={colors.surface} />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          {/* Add Comment */}
+          <LinearGradient
+            colors={[colors.surface, colors.surface + 'F0']}
+            style={styles.addCommentContainer}
+          >
+            <Image 
+              source={{ uri: 'https://via.placeholder.com/32x32/6366F1/FFFFFF?text=Y' }}
+              style={styles.addCommentAvatar}
+            />
+            <TextInput
+              style={styles.addCommentInput}
+              placeholder="Add a comment..."
+              placeholderTextColor={colors.textSecondary}
+            />
+            <LinearGradient
+              colors={[colors.primary, colors.primary + 'DD']}
+              style={styles.sendButton}
+            >
+              <TouchableOpacity style={styles.sendButtonInner}>
+                <Send size={16} color={colors.surface} />
+              </TouchableOpacity>
+            </LinearGradient>
+          </LinearGradient>
+        </Animated.View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

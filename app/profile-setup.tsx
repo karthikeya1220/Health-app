@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, Animated, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Camera, Upload, User, Target, Calendar, MapPin, Edit } from 'lucide-react-native';
+import { Camera, Upload, User, Target, Calendar, MapPin, Edit, CheckCircle, ChevronRight } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+
+const { width } = Dimensions.get('window');
 
 export default function ProfileSetupScreen() {
   const { colors, theme } = useTheme();
@@ -124,17 +126,21 @@ export default function ProfileSetupScreen() {
     profileImageContainer: {
       alignItems: 'center',
       marginBottom: Spacing.xl,
-    },
-    profileImageWrapper: {
+    },    profileImageWrapper: {
       width: 120,
       height: 120,
       borderRadius: 60,
-      backgroundColor: colors.border,
+      backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
       marginBottom: Spacing.md,
-      borderWidth: 3,
+      borderWidth: 4,
       borderColor: colors.primary,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.3,
+      shadowRadius: 16,
+      elevation: 12,
     },
     profileImage: {
       width: '100%',
@@ -186,19 +192,24 @@ export default function ProfileSetupScreen() {
       flexWrap: 'wrap',
       gap: Spacing.md,
       justifyContent: 'space-between',
-    },
-    goalCard: {
+    },    goalCard: {
       width: '48%',
       backgroundColor: colors.surface,
       padding: Spacing.lg,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.xl,
       alignItems: 'center',
       borderWidth: 2,
       borderColor: colors.border,
-    },
-    goalCardActive: {
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 4,
+    },    goalCardActive: {
       borderColor: colors.primary,
-      backgroundColor: colors.primary + '10',
+      backgroundColor: colors.primary + '15',
+      shadowColor: colors.primary,
+      shadowOpacity: 0.25,
     },
     goalIcon: {
       fontSize: 32,

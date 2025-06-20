@@ -25,10 +25,11 @@ import {
   Trophy,
   TrendingUp,
   Activity,
-  Heart
+  Heart,
+  ChevronRight
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';

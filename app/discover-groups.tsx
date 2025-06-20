@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, TextInput } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, TextInput, Animated, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Search, Filter, TrendingUp, MapPin, Users, Star, Clock } from 'lucide-react-native';
+import { ArrowLeft, Search, Filter, TrendingUp, MapPin, Users, Star, Clock, ChevronRight, Zap } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width } = Dimensions.get('window');
 
 export default function DiscoverGroupsScreen() {
   const { colors, theme } = useTheme();
@@ -14,8 +17,25 @@ export default function DiscoverGroupsScreen() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
 
   const categories = ['All', 'Running', 'Weightlifting', 'Yoga', 'Cycling', 'Swimming', 'CrossFit'];
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, []);
 
   const trendingGroups = [
     {
@@ -103,12 +123,17 @@ export default function DiscoverGroupsScreen() {
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: Spacing.md,
-    },
-    headerTitle: {
-      ...typography.h2,
+    },    headerTitle: {
+      ...TextStyles.h2,
       color: colors.text,
-      fontWeight: 'bold',
+      marginBottom: 2,
+    },
+    headerContent: {
       flex: 1,
+    },
+    headerSubtitle: {
+      ...TextStyles.caption,
+      color: colors.textSecondary,
     },
     searchContainer: {
       flexDirection: 'row',
@@ -254,9 +279,23 @@ export default function DiscoverGroupsScreen() {
     },
     newBadge: {
       backgroundColor: colors.success + '20',
-    },
-    newBadgeText: {
+    },    newBadgeText: {
       color: colors.success,
+    },
+    trendingBadge: {
+      backgroundColor: colors.warning + '20',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    trendingBadgeText: {
+      color: colors.warning,
+    },
+    groupTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 4,
     },
     groupStats: {
       flexDirection: 'row',
@@ -300,75 +339,109 @@ export default function DiscoverGroupsScreen() {
       fontWeight: '600',
     },
   });
-
-  const renderGroupCard = ({ item }: { item: typeof trendingGroups[0] }) => (
-    <TouchableOpacity 
-      style={styles.groupCard}
-      onPress={() => router.push('/group-page')}
+  const renderGroupCard = ({ item, index }: { item: typeof trendingGroups[0]; index: number }) => (
+    <Animated.View
+      style={{
+        opacity: fadeAnim,
+        transform: [{ translateY: slideAnim }]
+      }}
     >
-      <View style={styles.groupHeader}>
-        <View style={[styles.groupIcon, { backgroundColor: item.color + '20' }]}>
-          <Text style={styles.groupIconText}>{item.image}</Text>
-        </View>
+      <TouchableOpacity 
+        style={[styles.groupCard, { 
+          shadowColor: item.color,
+          shadowOpacity: 0.15,
+          shadowRadius: 10,
+          shadowOffset: { width: 0, height: 4 },
+        }]}
+        onPress={() => router.push('/group-page')}
+        activeOpacity={0.95}
+      >
+        <LinearGradient
+          colors={[item.color + '08', item.color + '03']}
+          style={StyleSheet.absoluteFillObject}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        />
         
-        <View style={styles.groupInfo}>
-          <Text style={styles.groupName}>{item.name}</Text>
-          <Text style={styles.groupCategory}>{item.category}</Text>
-          <Text style={styles.groupDescription}>{item.description}</Text>
+        <View style={styles.groupHeader}>
+          <View style={[styles.groupIcon, { backgroundColor: item.color + '20' }]}>
+            <Text style={styles.groupIconText}>{item.image}</Text>
+          </View>
           
-          <View style={styles.badges}>
-            {item.isTrending && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>TRENDING</Text>
-              </View>
-            )}
-            {item.isNew && (
-              <View style={[styles.badge, styles.newBadge]}>
-                <Text style={[styles.badgeText, styles.newBadgeText]}>NEW</Text>
-              </View>
-            )}
+          <View style={styles.groupInfo}>
+            <View style={styles.groupTitleRow}>
+              <Text style={styles.groupName}>{item.name}</Text>
+              <ChevronRight size={18} color={colors.textSecondary} />
+            </View>
+            <Text style={styles.groupCategory}>{item.category}</Text>
+            <Text style={styles.groupDescription}>{item.description}</Text>
+            
+            <View style={styles.badges}>
+              {item.isTrending && (
+                <View style={[styles.badge, styles.trendingBadge]}>
+                  <Zap size={10} color={colors.warning} />
+                  <Text style={[styles.badgeText, styles.trendingBadgeText]}>TRENDING</Text>
+                </View>
+              )}
+              {item.isNew && (
+                <View style={[styles.badge, styles.newBadge]}>
+                  <Text style={[styles.badgeText, styles.newBadgeText]}>NEW</Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.nextEvent}>
-        <Clock size={14} color={colors.primary} />
-        <Text style={styles.nextEventText}>Next: {item.nextEvent}</Text>
-      </View>
+        <View style={styles.nextEvent}>
+          <Clock size={14} color={colors.primary} />
+          <Text style={styles.nextEventText}>Next: {item.nextEvent}</Text>
+        </View>
 
-      <View style={styles.groupStats}>
-        <View style={styles.groupStat}>
-          <Users size={16} color={colors.textSecondary} />
-          <Text style={styles.groupStatText}>{item.members.toLocaleString()}</Text>
+        <View style={styles.groupStats}>
+          <View style={styles.groupStat}>
+            <Users size={16} color={colors.textSecondary} />
+            <Text style={styles.groupStatText}>{item.members.toLocaleString()}</Text>
+          </View>
+          <View style={styles.groupStat}>
+            <MapPin size={16} color={colors.textSecondary} />
+            <Text style={styles.groupStatText}>{item.location}</Text>
+          </View>
+          <View style={styles.groupStat}>
+            <Star size={16} color={colors.accent} />
+            <Text style={styles.groupStatText}>{item.rating}</Text>
+          </View>
         </View>
-        <View style={styles.groupStat}>
-          <MapPin size={16} color={colors.textSecondary} />
-          <Text style={styles.groupStatText}>{item.location}</Text>
-        </View>
-        <View style={styles.groupStat}>
-          <Star size={16} color={colors.accent} />
-          <Text style={styles.groupStatText}>{item.rating}</Text>
-        </View>
-      </View>
 
-      <TouchableOpacity style={styles.joinButton}>
-        <Text style={styles.joinButtonText}>Join Group</Text>
+        <LinearGradient
+          colors={[item.color, item.color + 'CC']}
+          style={styles.joinButton}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+        >
+          <Text style={styles.joinButtonText}>Join Group</Text>
+        </LinearGradient>
       </TouchableOpacity>
-    </TouchableOpacity>
+    </Animated.View>
   );
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
+      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+        {/* Enhanced Header */}
+        <LinearGradient
+          colors={[colors.surface, colors.background]}
+          style={styles.header}
         >
-          <ArrowLeft size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Discover Groups</Text>
-      </View>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <ArrowLeft size={24} color={colors.text} />
+          </TouchableOpacity>
+          <View style={styles.headerContent}>
+            <Text style={styles.headerTitle}>Discover Groups</Text>
+            <Text style={styles.headerSubtitle}>Find your fitness community</Text>
+          </View>
+        </LinearGradient>
 
       {/* Search */}
       <View style={styles.searchContainer}>
@@ -423,11 +496,11 @@ export default function DiscoverGroupsScreen() {
       {/* Groups List */}
       <FlatList
         data={filteredGroups}
-        renderItem={renderGroupCard}
-        keyExtractor={(item) => item.id}
+        renderItem={renderGroupCard}        keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.groupsContainer}
       />
+      </Animated.View>
     </SafeAreaView>
   );
 }

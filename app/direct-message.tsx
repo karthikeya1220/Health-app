@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, FlatList, Image } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, FlatList, Image, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Send, MessageCircle, Users, Search, Phone, Video } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function DirectMessageScreen() {
   const { colors, themeMode } = useTheme();
   const typography = getTypography(themeMode === 'dark');
   const [message, setMessage] = useState('');
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(-20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   // Mock data for conversation
   const messages = [
@@ -211,69 +231,90 @@ export default function DirectMessageScreen() {
       borderRadius: 22,
       backgroundColor: colors.primary,
       justifyContent: 'center',
+      alignItems: 'center',    },
+    sendButtonInner: {
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
       alignItems: 'center',
     },
-  });
+  });return (
+    <LinearGradient
+      colors={[colors.background, colors.background + 'CC', colors.surface + '66']}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.container}>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* Header */}
+          <LinearGradient
+            colors={[colors.primary + '15', colors.surface]}
+            style={styles.header}
+          >
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <ArrowLeft size={20} color={colors.text} />
+            </TouchableOpacity>
+            
+            <View style={styles.headerContent}>
+              <Image 
+                source={{ uri: 'https://via.placeholder.com/40x40/6366f1/FFFFFF?text=S' }}
+                style={styles.headerAvatar}
+              />
+              <View style={styles.headerInfo}>
+                <Text style={[TextStyles.h3, styles.headerName]}>Sarah Johnson</Text>
+                <Text style={styles.headerStatus}>Online</Text>
+              </View>
+            </View>
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={20} color={colors.text} />
-        </TouchableOpacity>
-        
-        <View style={styles.headerContent}>
-          <Image 
-            source={{ uri: 'https://via.placeholder.com/40x40/6366f1/FFFFFF?text=S' }}
-            style={styles.headerAvatar}
+            <View style={styles.headerActions}>
+              <TouchableOpacity style={styles.actionButton}>
+                <Phone size={20} color={colors.text} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton}>
+                <Video size={20} color={colors.text} />
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+
+          {/* Messages */}
+          <FlatList
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(item) => item.id}
+            style={styles.messagesContainer}
+            showsVerticalScrollIndicator={false}
+            inverted
           />
-          <View style={styles.headerInfo}>
-            <Text style={styles.headerName}>Sarah Johnson</Text>
-            <Text style={styles.headerStatus}>Online</Text>
-          </View>
-        </View>
 
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Phone size={20} color={colors.text} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Video size={20} color={colors.text} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Messages */}
-      <FlatList
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        style={styles.messagesContainer}
-        showsVerticalScrollIndicator={false}
-        inverted
-      />
-
-      {/* Message Input */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.messageInput}
-          placeholder="Type a message..."
-          placeholderTextColor={colors.textSecondary}
-          value={message}
-          onChangeText={setMessage}
-          multiline
-        />
-        <TouchableOpacity 
-          style={styles.sendButton}
-          onPress={sendMessage}
-        >
-          <Send size={20} color={colors.surface} />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          {/* Message Input */}
+          <LinearGradient
+            colors={[colors.surface, colors.surface + 'F0']}
+            style={styles.inputContainer}
+          >
+            <TextInput
+              style={styles.messageInput}
+              placeholder="Type a message..."
+              placeholderTextColor={colors.textSecondary}
+              value={message}
+              onChangeText={setMessage}
+              multiline
+            />
+            <LinearGradient
+              colors={[colors.primary, colors.primary + 'DD']}
+              style={styles.sendButton}
+            >
+              <TouchableOpacity 
+                style={styles.sendButtonInner}
+                onPress={sendMessage}
+              >
+                <Send size={20} color={colors.surface} />
+              </TouchableOpacity>
+            </LinearGradient>
+          </LinearGradient>
+        </Animated.View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

@@ -1,21 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Image } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Image, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, Bell, Users, Heart, Trophy, MessageCircle, Calendar, 
   UserPlus, CheckCircle, XCircle, Clock, Star, Activity 
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function NotificationsCenterScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
   
   const [activeTab, setActiveTab] = useState('all');
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(-20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   const tabs = [
     { id: 'all', label: 'All' },
@@ -361,57 +381,67 @@ export default function NotificationsCenterScreen() {
       </Text>
     </View>
   );
-
-  const unreadCount = notifications.filter(n => !n.isRead).length;
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notifications</Text>
-        {unreadCount > 0 && (
-          <View style={styles.unreadCount}>
-            <Text style={styles.unreadCountText}>{unreadCount}</Text>
-          </View>
-        )}
-      </View>
-
-      {/* Tabs */}
-      <View style={styles.tabsContainer}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab.id}
-            style={[styles.tab, activeTab === tab.id && styles.activeTab]}
-            onPress={() => setActiveTab(tab.id)}
+  const unreadCount = notifications.filter(n => !n.isRead).length;return (
+    <LinearGradient
+      colors={[colors.background, colors.background + 'CC', colors.surface + '66']}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.container}>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* Header */}
+          <LinearGradient
+            colors={[colors.primary + '15', colors.surface]}
+            style={styles.header}
           >
-            <Text style={[
-              styles.tabText,
-              activeTab === tab.id && styles.activeTabText
-            ]}>
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <ArrowLeft size={24} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={[TextStyles.h2, styles.headerTitle]}>Notifications</Text>
+            {unreadCount > 0 && (
+              <LinearGradient
+                colors={[colors.error, colors.error + 'DD']}
+                style={styles.unreadCount}
+              >
+                <Text style={styles.unreadCountText}>{unreadCount}</Text>
+              </LinearGradient>
+            )}
+          </LinearGradient>
 
-      {/* Notifications List */}
-      {filteredNotifications.length > 0 ? (
-        <FlatList
-          data={filteredNotifications}
-          renderItem={renderNotification}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.notificationsContainer}
-        />
-      ) : (
-        renderEmptyState()
-      )}
-    </SafeAreaView>
+          {/* Tabs */}
+          <View style={styles.tabsContainer}>
+            {tabs.map((tab) => (
+              <TouchableOpacity
+                key={tab.id}
+                style={[styles.tab, activeTab === tab.id && styles.activeTab]}
+                onPress={() => setActiveTab(tab.id)}
+              >
+                <Text style={[
+                  styles.tabText,
+                  activeTab === tab.id && styles.activeTabText
+                ]}>
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Notifications List */}
+          {filteredNotifications.length > 0 ? (
+            <FlatList
+              data={filteredNotifications}
+              renderItem={renderNotification}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.notificationsContainer}
+            />
+          ) : (
+            renderEmptyState()
+          )}
+        </Animated.View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

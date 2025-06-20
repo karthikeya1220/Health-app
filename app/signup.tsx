@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react-native';
+import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Input } from '@/components/ui/Input';
+import { GradientButton } from '@/components/ui/GradientButton';
 import { router } from 'expo-router';
 
 export default function SignupScreen() {
@@ -24,6 +25,25 @@ export default function SignupScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   const handleSignup = async () => {
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
@@ -46,10 +66,34 @@ export default function SignupScreen() {
       ]);
     }, 1500);
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
+    },
+    topHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.md,
+      paddingBottom: Spacing.lg,
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.surface + 'CC',
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    topHeaderTitle: {
+      color: colors.text,
+      fontWeight: '600',
     },
     gradient: {
       flex: 1,
@@ -67,14 +111,12 @@ export default function SignupScreen() {
       marginBottom: Spacing.xl,
     },
     title: {
-      ...typography.h1,
       color: colors.text,
       textAlign: 'center',
       marginBottom: Spacing.md,
       fontWeight: 'bold',
     },
     subtitle: {
-      ...typography.body,
       textAlign: 'center',
       color: colors.textSecondary,
     },
@@ -169,25 +211,41 @@ export default function SignupScreen() {
       fontWeight: '600',
     },
   });
-
   return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={[colors.primaryLight, colors.background]}
-        style={styles.gradient}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardView}
-        >
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
+    <LinearGradient
+      colors={[colors.primary + '20', colors.background, colors.surface + '80']}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.container}>
+        <Animated.View style={{ 
+          opacity: fadeAnim, 
+          transform: [{ translateY: slideAnim }],
+          flex: 1 
+        }}>
+          {/* Header with Back Button */}
+          <View style={styles.topHeader}>
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <ArrowLeft size={24} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={[TextStyles.h3, styles.topHeaderTitle]}>Sign Up</Text>
+            <View style={{ width: 40 }} />
+          </View>
+
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.keyboardView}
           >
-            <View style={styles.header}>
-              <Text style={styles.title}>Create Account</Text>
-              <Text style={styles.subtitle}>Join our fitness community today</Text>
-            </View>
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.header}>
+                <Text style={[TextStyles.h1, styles.title]}>Create Account</Text>
+                <Text style={[TextStyles.body, styles.subtitle]}>Join our fitness community today</Text>
+              </View>
 
             <View style={styles.signupCard}>
               <View style={styles.inputContainer}>
@@ -287,20 +345,12 @@ export default function SignupScreen() {
                     )}
                   </TouchableOpacity>
                 </View>
-              </View>
-
-              <TouchableOpacity
+              </View>              <GradientButton
+                title={isLoading ? 'Creating Account...' : 'Create Account'}
                 onPress={handleSignup}
                 disabled={isLoading}
-                style={[
-                  styles.signupButton,
-                  { opacity: isLoading ? 0.7 : 1 }
-                ]}
-              >
-                <Text style={styles.signupButtonText}>
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
-                </Text>
-              </TouchableOpacity>
+                style={[styles.signupButton, { opacity: isLoading ? 0.7 : 1 }]}
+              />
 
               <Text style={styles.termsText}>
                 By creating an account, you agree to our{' '}
@@ -313,14 +363,14 @@ export default function SignupScreen() {
               <Text style={styles.footerText}>Already have an account? </Text>
               <TouchableOpacity
                 onPress={() => router.back()}
-                style={styles.loginButton}
-              >
+                style={styles.loginButton}              >
                 <Text style={styles.loginButtonText}>Sign In</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
-      </LinearGradient>
-    </SafeAreaView>
+        </Animated.View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
