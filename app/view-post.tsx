@@ -11,7 +11,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, 
   Heart,
@@ -32,6 +31,16 @@ import { getTypography } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ResponsiveLayout, ResponsiveCard, useResponsiveDimensions } from '@/components/ui/ResponsiveLayout';
+import { 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  COMPONENT,
+  TYPOGRAPHY,
+  responsiveValue,
+  useBreakpoint 
+} from '@/utils/responsive';
 
 interface Comment {
   id: string;
@@ -54,6 +63,8 @@ interface Reaction {
 export default function ViewPostScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
+  const dimensions = useResponsiveDimensions();
+  const breakpoint = useBreakpoint();
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -262,9 +273,7 @@ export default function ViewPostScreen() {
         )}
       </View>
     </View>
-  );
-
-  const styles = StyleSheet.create({
+  );  const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
@@ -273,35 +282,38 @@ export default function ViewPostScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingVertical: LAYOUT.getPadding(12),
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
     },
     headerTitle: {
-      ...typography.h3,
+      fontSize: TYPOGRAPHY.getHeaderSize(3),
       color: colors.text,
       fontWeight: 'bold',
     },
     headerButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-    },    postContainer: {
+    },
+    postContainer: {
       backgroundColor: colors.surface,
-      borderBottomWidth: 8,
+      borderBottomWidth: responsiveValue({
+        xs: 6, sm: 6, md: 8, lg: 8, xl: 10, xxl: 10, xxxl: 12, default: 8
+      }),
       borderBottomColor: colors.border + '30',
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
@@ -312,18 +324,24 @@ export default function ViewPostScreen() {
     postHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
-      paddingBottom: Spacing.md,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingTop: LAYOUT.getContentPadding(),
+      paddingBottom: LAYOUT.getPadding(12),
     },
     authorAvatar: {
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      width: responsiveValue({
+        xs: 48, sm: 52, md: 56, lg: 60, xl: 64, xxl: 68, xxxl: 72, default: 56
+      }),
+      height: responsiveValue({
+        xs: 48, sm: 52, md: 56, lg: 60, xl: 64, xxl: 68, xxxl: 72, default: 56
+      }),
+      borderRadius: responsiveValue({
+        xs: 24, sm: 26, md: 28, lg: 30, xl: 32, xxl: 34, xxxl: 36, default: 28
+      }),
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getPadding(12),
       shadowColor: colors.primary,
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.2,
@@ -333,7 +351,9 @@ export default function ViewPostScreen() {
       borderColor: colors.primary + '30',
     },
     authorAvatarText: {
-      fontSize: 24,
+      fontSize: responsiveValue({
+        xs: 20, sm: 22, md: 24, lg: 26, xl: 28, xxl: 30, xxxl: 32, default: 24
+      }),
       fontWeight: '600',
     },
     verifiedBadge: {
@@ -355,52 +375,53 @@ export default function ViewPostScreen() {
       flex: 1,
     },
     authorName: {
-      ...typography.bodyMedium,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.text,
       fontWeight: 'bold',
     },
     authorUsername: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
     },
     postTimestamp: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
     },
     followButton: {
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.md,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(8),
+      paddingHorizontal: LAYOUT.getPadding(12),
+      paddingVertical: LAYOUT.getPadding(8),
+      minHeight: TOUCH.getButtonSize('small'),
+      justifyContent: 'center',
     },
     followingButton: {
       backgroundColor: colors.success,
     },
     followButtonText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.surface,
       fontWeight: 'bold',
     },
     postContent: {
-      paddingHorizontal: Spacing.lg,
-      paddingBottom: Spacing.md,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingBottom: LAYOUT.getPadding(12),
     },
     postText: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.text,
-      lineHeight: 24,
-      marginBottom: Spacing.sm,
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium')),
+      marginBottom: LAYOUT.getPadding(8),
     },
     postLocation: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.primary,
       fontWeight: '500',
-    },
-    postStats: {
+    },    postStats: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingVertical: LAYOUT.getPadding(8),
       borderTopWidth: 1,
       borderBottomWidth: 1,
       borderColor: colors.border,
@@ -410,30 +431,31 @@ export default function ViewPostScreen() {
       alignItems: 'center',
     },
     statText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
-      marginLeft: Spacing.xs,
+      marginLeft: LAYOUT.getPadding(4),
     },
     postActions: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      paddingVertical: Spacing.md,
-      paddingHorizontal: Spacing.lg,
+      paddingVertical: LAYOUT.getPadding(12),
+      paddingHorizontal: LAYOUT.getContentPadding(),
     },
     actionButton: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
       flex: 1,
-      paddingVertical: Spacing.sm,
+      paddingVertical: LAYOUT.getPadding(8),
+      minHeight: TOUCH.getButtonSize('small'),
     },
     likedButton: {
       color: colors.error,
     },
     actionText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
-      marginLeft: Spacing.xs,
+      marginLeft: LAYOUT.getPadding(4),
       fontWeight: '500',
     },
     likedText: {
@@ -442,11 +464,11 @@ export default function ViewPostScreen() {
     reactionsOverlay: {
       position: 'absolute',
       bottom: 60,
-      left: 20,
-      right: 20,
+      left: LAYOUT.getContentPadding(),
+      right: LAYOUT.getContentPadding(),
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(12),
       flexDirection: 'row',
       justifyContent: 'space-around',
       shadowColor: colors.shadow,
@@ -459,61 +481,72 @@ export default function ViewPostScreen() {
     },
     reactionButton: {
       alignItems: 'center',
-      padding: Spacing.sm,
-      borderRadius: BorderRadius.md,
+      padding: LAYOUT.getPadding(8),
+      borderRadius: LAYOUT.getBorderRadius(8),
+      minWidth: TOUCH.getButtonSize('small'),
+      minHeight: TOUCH.getButtonSize('small'),
     },
     selectedReaction: {
       backgroundColor: colors.primary + '20',
     },
     reactionIcon: {
-      fontSize: 24,
+      fontSize: responsiveValue({
+        xs: 20, sm: 22, md: 24, lg: 26, xl: 28, xxl: 30, xxxl: 32, default: 24
+      }),
       marginBottom: 4,
     },
     reactionCount: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
       fontWeight: '500',
     },
     selectedReactionCount: {
       color: colors.primary,
-    },
-    commentsSection: {
+    },    commentsSection: {
       flex: 1,
       backgroundColor: colors.background,
     },
     commentsSectionHeader: {
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingVertical: LAYOUT.getPadding(12),
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
     commentsSectionTitle: {
-      ...typography.bodyMedium,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.text,
       fontWeight: '600',
     },
     commentsList: {
       flex: 1,
-      paddingHorizontal: Spacing.lg,
+      paddingHorizontal: LAYOUT.getContentPadding(),
     },
     commentItem: {
       flexDirection: 'row',
-      paddingVertical: Spacing.md,
+      paddingVertical: LAYOUT.getPadding(12),
       borderBottomWidth: 1,
       borderBottomColor: colors.border + '30',
     },
     commentAvatar: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
+      width: responsiveValue({
+        xs: 32, sm: 34, md: 36, lg: 38, xl: 40, xxl: 42, xxxl: 44, default: 36
+      }),
+      height: responsiveValue({
+        xs: 32, sm: 34, md: 36, lg: 38, xl: 40, xxl: 42, xxxl: 44, default: 36
+      }),
+      borderRadius: responsiveValue({
+        xs: 16, sm: 17, md: 18, lg: 19, xl: 20, xxl: 21, xxxl: 22, default: 18
+      }),
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getPadding(8),
     },
     commentAvatarText: {
-      fontSize: 18,
+      fontSize: responsiveValue({
+        xs: 16, sm: 17, md: 18, lg: 19, xl: 20, xxl: 21, xxxl: 22, default: 18
+      }),
     },
     commentContent: {
       flex: 1,
@@ -524,82 +557,89 @@ export default function ViewPostScreen() {
       marginBottom: 4,
     },
     commentUser: {
-      ...typography.bodySmall,
+      fontSize: TYPOGRAPHY.getBodySize('small'),
       color: colors.text,
       fontWeight: '600',
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getPadding(8),
     },
     commentTimestamp: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize() * 0.9,
       color: colors.textSecondary,
-      fontSize: 11,
     },
     commentText: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.text,
-      lineHeight: 20,
-      marginBottom: Spacing.xs,
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium'), 1.3),
+      marginBottom: LAYOUT.getPadding(4),
     },
     commentActions: {
       flexDirection: 'row',
-      gap: Spacing.md,
+      gap: LAYOUT.getPadding(12),
     },
     commentAction: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 4,
+      minHeight: TOUCH.getButtonSize('small'),
+      paddingVertical: LAYOUT.getPadding(4),
     },
     commentActionText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
       fontWeight: '500',
-    },
-    repliesContainer: {
-      marginTop: Spacing.sm,
-      paddingLeft: Spacing.md,
+    },    repliesContainer: {
+      marginTop: LAYOUT.getPadding(8),
+      paddingLeft: LAYOUT.getPadding(12),
       borderLeftWidth: 2,
       borderLeftColor: colors.border,
     },
     replyItem: {
       flexDirection: 'row',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getPadding(8),
     },
     replyAvatar: {
-      width: 24,
-      height: 24,
-      borderRadius: 12,
+      width: responsiveValue({
+        xs: 20, sm: 22, md: 24, lg: 26, xl: 28, xxl: 30, xxxl: 32, default: 24
+      }),
+      height: responsiveValue({
+        xs: 20, sm: 22, md: 24, lg: 26, xl: 28, xxl: 30, xxxl: 32, default: 24
+      }),
+      borderRadius: responsiveValue({
+        xs: 10, sm: 11, md: 12, lg: 13, xl: 14, xxl: 15, xxxl: 16, default: 12
+      }),
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.xs,
+      marginRight: LAYOUT.getPadding(4),
     },
     replyAvatarText: {
-      fontSize: 12,
+      fontSize: responsiveValue({
+        xs: 10, sm: 11, md: 12, lg: 13, xl: 14, xxl: 15, xxxl: 16, default: 12
+      }),
     },
     replyContent: {
       flex: 1,
     },
     replyUser: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.text,
       fontWeight: '600',
     },
     replyText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.text,
-      lineHeight: 18,
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getCaptionSize(), 1.3),
     },
     replyTimestamp: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize() * 0.85,
       color: colors.textSecondary,
-      fontSize: 10,
       marginTop: 2,
     },
     commentInputContainer: {
       flexDirection: 'row',
       alignItems: 'flex-end',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingVertical: LAYOUT.getPadding(12),
       backgroundColor: colors.surface,
       borderTopWidth: 1,
       borderTopColor: colors.border,
@@ -607,18 +647,21 @@ export default function ViewPostScreen() {
     commentInput: {
       flex: 1,
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
-      marginRight: Spacing.sm,
-      maxHeight: 100,
-      ...typography.body,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      paddingHorizontal: LAYOUT.getPadding(12),
+      paddingVertical: LAYOUT.getPadding(8),
+      marginRight: LAYOUT.getPadding(8),
+      maxHeight: responsiveValue({
+        xs: 80, sm: 90, md: 100, lg: 110, xl: 120, xxl: 130, xxxl: 140, default: 100
+      }),
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.text,
+      minHeight: TOUCH.getButtonSize('medium'),
     },
     sendButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
@@ -628,20 +671,19 @@ export default function ViewPostScreen() {
     },
     replyingIndicator: {
       backgroundColor: colors.primary + '10',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingVertical: LAYOUT.getPadding(8),
       borderTopWidth: 1,
       borderTopColor: colors.border,
     },
     replyingText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.primary,
       fontWeight: '500',
     },
   });
-
   return (
-    <SafeAreaView style={styles.container}>
+    <ResponsiveLayout style={styles.container}>
       <KeyboardAvoidingView 
         style={styles.container} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -855,9 +897,8 @@ export default function ViewPostScreen() {
             >
               <Send size={18} color={colors.surface} />
             </TouchableOpacity>
-          </View>
-        </Animated.View>
+          </View>        </Animated.View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </ResponsiveLayout>
   );
 }

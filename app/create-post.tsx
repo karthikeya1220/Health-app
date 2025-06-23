@@ -26,7 +26,7 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { responsiveValue, LAYOUT, TOUCH, SCREEN } from '@/utils/responsive';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -140,7 +140,6 @@ export default function CreatePostScreen() {
       case 'private': return colors.warning;
     }
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -150,8 +149,8 @@ export default function CreatePostScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingVertical: LAYOUT.getPadding(16),
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
@@ -161,13 +160,13 @@ export default function CreatePostScreen() {
       alignItems: 'center',
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     headerTitle: {
       ...typography.h3,
@@ -176,9 +175,9 @@ export default function CreatePostScreen() {
     },
     postButton: {
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingVertical: LAYOUT.getPadding(8),
     },
     postButtonDisabled: {
       opacity: 0.5,
@@ -190,26 +189,33 @@ export default function CreatePostScreen() {
     },
     content: {
       flex: 1,
-      paddingHorizontal: Spacing.lg,
+      paddingHorizontal: LAYOUT.getContentPadding(),
     },
     userInfo: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: Spacing.md,
+      paddingVertical: LAYOUT.getPadding(16),
       borderBottomWidth: 1,
-      borderBottomColor: colors.border,
-    },
+      borderBottomColor: colors.border,    },
     userAvatar: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: responsiveValue({
+        xs: 45, sm: 47, md: 50, lg: 52, default: 50
+      }),
+      height: responsiveValue({
+        xs: 45, sm: 47, md: 50, lg: 52, default: 50
+      }),
+      borderRadius: responsiveValue({
+        xs: 22.5, sm: 23.5, md: 25, lg: 26, default: 25
+      }),
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     userAvatarText: {
-      fontSize: 24,
+      fontSize: responsiveValue({
+        xs: 20, sm: 22, md: 24, lg: 26, default: 24
+      }),
     },
     userDetails: {
       flex: 1,
@@ -228,34 +234,34 @@ export default function CreatePostScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.md,
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: 4,
+      borderRadius: LAYOUT.getBorderRadius(8),
+      paddingHorizontal: LAYOUT.getPadding(8),
+      paddingVertical: LAYOUT.getPadding(4),
     },
     privacyText: {
       ...typography.caption,
       color: colors.textSecondary,
-      marginLeft: Spacing.xs,
+      marginLeft: LAYOUT.getMargin(4),
       fontWeight: '500',
     },
     postTypeSelector: {
-      paddingVertical: Spacing.md,
+      paddingVertical: LAYOUT.getPadding(16),
     },
     postTypeTitle: {
       ...typography.bodyMedium,
       color: colors.text,
       fontWeight: '600',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     postTypeOptions: {
       flexDirection: 'row',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
     },
     postTypeOption: {
       flex: 1,
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(16),
       alignItems: 'center',
       borderWidth: 2,
       borderColor: 'transparent',
@@ -265,13 +271,13 @@ export default function CreatePostScreen() {
       backgroundColor: colors.primary + '10',
     },
     postTypeIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     selectedPostTypeIcon: {
       backgroundColor: colors.primary,
@@ -301,16 +307,15 @@ export default function CreatePostScreen() {
     },
     liveLabel: {
       color: colors.error,
-    },
-    inputSection: {
-      paddingVertical: Spacing.md,
+    },    inputSection: {
+      paddingVertical: LAYOUT.getPadding(16),
     },
     textInput: {
       ...typography.body,
       color: colors.text,
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(24),
       minHeight: 120,
       textAlignVertical: 'top',
       borderWidth: 1,
@@ -318,25 +323,22 @@ export default function CreatePostScreen() {
     },
     inputPlaceholder: {
       color: colors.textSecondary,
-    },
-    featuresSection: {
-      paddingVertical: Spacing.md,
-    },
-    featureRow: {
+    },    featuresSection: {
+      paddingVertical: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+    },featureRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: Spacing.md,
+      paddingVertical: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       borderBottomWidth: 1,
       borderBottomColor: colors.border + '30',
-    },
-    featureIcon: {
+    },    featureIcon: {
       width: 40,
       height: 40,
       borderRadius: 20,
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     featureInfo: {
       flex: 1,
@@ -349,36 +351,32 @@ export default function CreatePostScreen() {
     featureSubtitle: {
       ...typography.caption,
       color: colors.textSecondary,
-    },
-    featureAction: {
+    },    featureAction: {
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.md,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: responsiveValue({ default: 12, sm: 8, md: 12, lg: 16 }),
+      paddingHorizontal: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingVertical: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
     featureActionText: {
       ...typography.caption,
       color: colors.primary,
       fontWeight: '600',
-    },
-    groupsSection: {
-      paddingVertical: Spacing.md,
+    },    groupsSection: {
+      paddingVertical: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     sectionTitle: {
       ...typography.bodyMedium,
       color: colors.text,
       fontWeight: '600',
-      marginBottom: Spacing.md,
-    },
-    groupsList: {
-      gap: Spacing.sm,
-    },
-    groupItem: {
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+    },    groupsList: {
+      gap: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+    },    groupItem: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      padding: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       borderWidth: 2,
       borderColor: 'transparent',
     },
@@ -393,7 +391,7 @@ export default function CreatePostScreen() {
       backgroundColor: colors.success + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     groupAvatarText: {
       fontSize: 20,
@@ -418,20 +416,17 @@ export default function CreatePostScreen() {
       backgroundColor: colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
-    },
-    suggestionsSection: {
-      paddingVertical: Spacing.md,
-    },
-    suggestionsList: {
+    },    suggestionsSection: {
+      paddingVertical: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+    },    suggestionsList: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.sm,
-    },
-    suggestionChip: {
+      gap: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+    },    suggestionChip: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingHorizontal: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingVertical: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
       borderWidth: 1,
       borderColor: colors.border,
     },
@@ -439,12 +434,11 @@ export default function CreatePostScreen() {
       ...typography.caption,
       color: colors.text,
       fontWeight: '500',
-    },
-    liveButton: {
+    },    liveButton: {
       backgroundColor: colors.error,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      margin: Spacing.lg,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      padding: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      margin: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
@@ -453,7 +447,7 @@ export default function CreatePostScreen() {
       ...typography.bodyMedium,
       color: colors.surface,
       fontWeight: 'bold',
-      marginLeft: Spacing.sm,
+      marginLeft: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
   });
 

@@ -7,7 +7,6 @@ import {
   StyleSheet,
   StatusBar,
   Animated,
-  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -32,10 +31,21 @@ import {
   MapPin
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { 
+  scale, 
+  verticalScale, 
+  moderateScale, 
+  SCREEN, 
+  GRID, 
+  LAYOUT, 
+  COMPONENT,
+  TOUCH,
+  useSafeLayout,
+  responsiveValue,
+  isTablet
+} from '@/utils/responsive';
 
-const { width } = Dimensions.get('window');
-
-// Goal Progress Component
+// Goal Progress Component with responsive design
 const GoalProgressCard = ({
   title,
   current,
@@ -286,35 +296,34 @@ export default function ActivityPage() {
     { day: 'Mon', date: '05' },
     { day: 'Tue', date: '06' },
   ];
-
   const styles = StyleSheet.create({
     calendarStrip: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      marginHorizontal: 20,
-      marginVertical: 20,
+      marginHorizontal: LAYOUT.getContentPadding(),
+      marginVertical: LAYOUT.getMargin(20),
     },
     calendarItem: {
       alignItems: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 12,
-      borderRadius: 12,
-      minWidth: 40,
+      paddingVertical: LAYOUT.getPadding(12),
+      paddingHorizontal: LAYOUT.getPadding(12),
+      borderRadius: LAYOUT.getBorderRadius(12),
+      minWidth: responsiveValue({ xs: 36, sm: 38, md: 40, default: 40 }),
     },
     activitySection: {
-      paddingHorizontal: 20,
-      marginBottom: 20,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      marginBottom: LAYOUT.getMargin(20),
     },
     activityRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 16,
-      gap: 12,
+      marginBottom: LAYOUT.getMargin(16),
+      gap: LAYOUT.getMargin(12),
     },
     activityCard: {
       flex: 1,
-      borderRadius: 20,
-      padding: 20,
+      borderRadius: LAYOUT.getBorderRadius(20),
+      padding: LAYOUT.getPadding(20),
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -322,8 +331,8 @@ export default function ActivityPage() {
       elevation: 4,
     },
     calorieCard: {
-      borderRadius: 20,
-      padding: 20,
+      borderRadius: LAYOUT.getBorderRadius(20),
+      padding: LAYOUT.getPadding(20),
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -333,92 +342,95 @@ export default function ActivityPage() {
     activityHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: LAYOUT.getMargin(8),
     },
     chartContainer: {
-      borderRadius: 20,
-      padding: 20,
-      marginHorizontal: 20,
-      marginTop: 20,
-      marginBottom: 20,
+      borderRadius: LAYOUT.getBorderRadius(20),
+      padding: LAYOUT.getPadding(20),
+      marginHorizontal: LAYOUT.getContentPadding(),
+      marginTop: LAYOUT.getMargin(20),
+      marginBottom: LAYOUT.getMargin(20),
       position: 'relative',
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 8,
       elevation: 4,
-    },
-    chartHeader: {
+    },    chartHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 20,
+      marginBottom: LAYOUT.getMargin(20),
     },
     chartBars: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-end',
-      marginTop: 16,
-      height: 120,
+      marginTop: LAYOUT.getMargin(16),
+      height: responsiveValue({ xs: 100, sm: 110, md: 120, default: 120 }),
     },
     bar: {
-      width: 14,
-      borderRadius: 7,
-      marginBottom: 6,
-    },
-    tooltip: {
-      fontSize: 11,
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 10,
-      marginBottom: 6,
+      width: responsiveValue({ xs: 12, sm: 13, md: 14, default: 14 }),
+      borderRadius: responsiveValue({ xs: 6, sm: 6.5, md: 7, default: 7 }),
+      marginBottom: LAYOUT.getMargin(6),
+    },tooltip: {
+      fontSize: responsiveValue({ xs: 9, sm: 10, md: 11, default: 11 }),
+      paddingHorizontal: LAYOUT.getPadding(8),
+      paddingVertical: LAYOUT.getPadding(4),
+      borderRadius: LAYOUT.getBorderRadius(10),
+      marginBottom: LAYOUT.getMargin(6),
       fontWeight: '600',
     },
     trendIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
+      width: responsiveValue({ xs: 28, sm: 30, md: 32, default: 32 }),
+      height: responsiveValue({ xs: 28, sm: 30, md: 32, default: 32 }),
+      borderRadius: responsiveValue({ xs: 14, sm: 15, md: 16, default: 16 }),
       justifyContent: 'center',
       alignItems: 'center',
     },
     sectionTitle: {
-      marginHorizontal: 20,
-      marginTop: 24,
-      marginBottom: 16,
+      marginHorizontal: LAYOUT.getContentPadding(),
+      marginTop: LAYOUT.getMargin(24),
+      marginBottom: LAYOUT.getMargin(16),
     },
     goalSection: {
-      paddingHorizontal: 20,
-      marginBottom: 24,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      marginBottom: LAYOUT.getMargin(24),
     },
     goalGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 12,
+      gap: LAYOUT.getMargin(12),
     },
     achievementSection: {
-      paddingHorizontal: 20,
-      marginBottom: 24,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      marginBottom: LAYOUT.getMargin(24),
     },
     achievementScroll: {
-      paddingRight: 20,
+      paddingRight: LAYOUT.getContentPadding(),
     },
     quickActionSection: {
-      paddingHorizontal: 20,
-      marginBottom: 24,
-    },
-    quickActionGrid: {
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      marginBottom: LAYOUT.getMargin(24),
+    },    quickActionGrid: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      gap: 12,
+      gap: LAYOUT.getMargin(12),
     },
   });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
-      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
-        {/* Header */}
-        <Text style={[typography.h1, { marginTop: 20, marginLeft: 20, color: colors.text, fontWeight: '700' }]}>
+      <ScrollView contentContainerStyle={{ 
+        paddingBottom: insets.bottom + LAYOUT.getMargin(20) 
+      }}>
+        {/* Header */}        <Text style={[typography.h1, { 
+          marginTop: LAYOUT.getMargin(20), 
+          marginLeft: LAYOUT.getContentPadding(), 
+          color: colors.text, 
+          fontWeight: '700' 
+        }]}>
           My Activities
         </Text>
 
@@ -610,10 +622,15 @@ export default function ActivityPage() {
 // Styles for Goal Progress Cards
 const goalStyles = StyleSheet.create({
   goalCard: {
-    width: (width - 56) / 2, // Account for padding and gap
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
+    width: responsiveValue({
+      xs: (SCREEN.width - LAYOUT.getContentPadding() * 2 - LAYOUT.getMargin(12)) / 2,
+      sm: (SCREEN.width - LAYOUT.getContentPadding() * 2 - LAYOUT.getMargin(12)) / 2,
+      md: (SCREEN.width - LAYOUT.getContentPadding() * 2 - LAYOUT.getMargin(12)) / 2,
+      default: (SCREEN.width - LAYOUT.getContentPadding() * 2 - LAYOUT.getMargin(12)) / 2
+    }),
+    borderRadius: LAYOUT.getBorderRadius(16),
+    padding: LAYOUT.getPadding(16),
+    marginBottom: LAYOUT.getMargin(12),
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -623,37 +640,42 @@ const goalStyles = StyleSheet.create({
   goalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: LAYOUT.getMargin(12),
   },
   goalIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: responsiveValue({ xs: 28, sm: 30, md: 32, default: 32 }),
+    height: responsiveValue({ xs: 28, sm: 30, md: 32, default: 32 }),
+    borderRadius: responsiveValue({ xs: 14, sm: 15, md: 16, default: 16 }),
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
+    marginRight: LAYOUT.getMargin(8),
   },
   goalProgress: {
-    marginBottom: 12,
+    marginBottom: LAYOUT.getMargin(12),
   },
   progressBar: {
-    height: 6,
-    borderRadius: 3,
-    marginBottom: 8,
+    height: responsiveValue({ xs: 4, sm: 5, md: 6, default: 6 }),
+    borderRadius: responsiveValue({ xs: 2, sm: 2.5, md: 3, default: 3 }),
+    marginBottom: LAYOUT.getMargin(8),
   },
   progressFill: {
-    height: 6,
-    borderRadius: 3,
+    height: responsiveValue({ xs: 4, sm: 5, md: 6, default: 6 }),
+    borderRadius: responsiveValue({ xs: 2, sm: 2.5, md: 3, default: 3 }),
   },
 });
 
 // Styles for Achievement Cards
 const achievementStyles = StyleSheet.create({
   achievementCard: {
-    width: 280,
-    borderRadius: 16,
-    padding: 16,
-    marginRight: 16,
+    width: responsiveValue({
+      xs: SCREEN.width * 0.75,
+      sm: SCREEN.width * 0.7,
+      md: SCREEN.width * 0.65,
+      default: 280
+    }),
+    borderRadius: LAYOUT.getBorderRadius(16),
+    padding: LAYOUT.getPadding(16),
+    marginRight: LAYOUT.getMargin(16),
     flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000',
@@ -663,12 +685,12 @@ const achievementStyles = StyleSheet.create({
     elevation: 4,
   },
   achievementIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: responsiveValue({ xs: 40, sm: 44, md: 48, default: 48 }),
+    height: responsiveValue({ xs: 40, sm: 44, md: 48, default: 48 }),
+    borderRadius: responsiveValue({ xs: 20, sm: 22, md: 24, default: 24 }),
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: LAYOUT.getMargin(12),
   },
   achievementContent: {
     flex: 1,
@@ -676,20 +698,20 @@ const achievementStyles = StyleSheet.create({
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
-    gap: 8,
+    marginTop: LAYOUT.getMargin(8),
+    gap: LAYOUT.getMargin(8),
   },
   progressBar: {
     flex: 1,
-    height: 4,
-    borderRadius: 2,
+    height: responsiveValue({ xs: 3, sm: 3.5, md: 4, default: 4 }),
+    borderRadius: responsiveValue({ xs: 1.5, sm: 1.75, md: 2, default: 2 }),
   },
   progressFill: {
-    height: 4,
-    borderRadius: 2,
+    height: responsiveValue({ xs: 3, sm: 3.5, md: 4, default: 4 }),
+    borderRadius: responsiveValue({ xs: 1.5, sm: 1.75, md: 2, default: 2 }),
   },
   completedBadge: {
-    marginLeft: 8,
+    marginLeft: LAYOUT.getMargin(8),
   },
 });
 
@@ -698,8 +720,8 @@ const quickActionStyles = StyleSheet.create({
   actionButton: {
     flex: 1,
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
+    padding: LAYOUT.getPadding(16),
+    borderRadius: LAYOUT.getBorderRadius(16),
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -707,9 +729,9 @@ const quickActionStyles = StyleSheet.create({
     elevation: 4,
   },
   actionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: responsiveValue({ xs: 40, sm: 44, md: 48, default: 48 }),
+    height: responsiveValue({ xs: 40, sm: 44, md: 48, default: 48 }),
+    borderRadius: responsiveValue({ xs: 20, sm: 22, md: 24, default: 24 }),
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -27,12 +27,38 @@ import { Card } from '@/components/ui/Card';
 import { userData } from '@/constants/data';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+// Enhanced responsive imports
+import { 
+  ResponsiveLayout, 
+  ResponsiveGrid, 
+  ResponsiveCard,
+  useResponsiveDimensions 
+} from '@/components/ui/ResponsiveLayout';
+import { 
+  SCREEN, 
+  COMPONENT, 
+  LAYOUT, 
+  TYPOGRAPHY,
+  TOUCH,
+  useBreakpoint,
+  responsiveValue 
+} from '@/utils/responsive';
 
 export default function ProfileTab() {
   const { colors, theme, themeMode, setThemeMode, pastelTheme, setPastelTheme } = useTheme();
   const typography = getTypography(theme === 'dark');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [privateModeEnabled, setPrivateModeEnabled] = useState(false);
+  
+  // Enhanced responsive hooks
+  const { 
+    isMobile, 
+    isCompact, 
+    contentPadding, 
+    headerHeight,
+    getOptimalColumns 
+  } = useResponsiveDimensions();
+  const { deviceSize, category } = useBreakpoint();
   
   // Animation refs
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -55,6 +81,7 @@ export default function ProfileTab() {
     ]).start();
   }, []);
 
+  // Responsive stats configuration
   const stats = [
     { label: 'Workouts', value: '247', icon: Activity, color: colors.primary, change: '+12%' },
     { label: 'Calories', value: '12.5K', icon: Heart, color: colors.error, change: '+8%' },
@@ -155,7 +182,7 @@ export default function ProfileTab() {
         { icon: Settings, label: 'Advanced Settings', action: () => {}, hasArrow: true },
       ]
     }
-  ];
+  ];  // Enhanced responsive styles
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -169,23 +196,31 @@ export default function ProfileTab() {
       overflow: 'hidden',
     },
     heroGradient: {
-      paddingTop: Spacing.xl,
-      paddingBottom: Spacing.xl,
-      paddingHorizontal: Spacing.lg,
+      paddingTop: LAYOUT.getPadding(32),
+      paddingBottom: LAYOUT.getPadding(32),
+      paddingHorizontal: contentPadding,
     },
     profileImageContainer: {
       alignItems: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getPadding(24),
       position: 'relative',
     },
     profileImageWrapper: {
       position: 'relative',
     },
     profileImage: {
-      width: 120,
-      height: 120,
-      borderRadius: 60,
-      borderWidth: 4,
+      width: responsiveValue({
+        xs: 100, sm: 110, md: 120, lg: 130, xl: 140, default: 120
+      }),
+      height: responsiveValue({
+        xs: 100, sm: 110, md: 120, lg: 130, xl: 140, default: 120
+      }),
+      borderRadius: responsiveValue({
+        xs: 50, sm: 55, md: 60, lg: 65, xl: 70, default: 60
+      }),
+      borderWidth: responsiveValue({
+        xs: 3, sm: 3, md: 4, lg: 4, xl: 5, default: 4
+      }),
       borderColor: colors.surface,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 8 },
@@ -197,9 +232,9 @@ export default function ProfileTab() {
       position: 'absolute',
       bottom: 0,
       right: 0,
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getTouchSize(40),
+      height: TOUCH.getTouchSize(40),
+      borderRadius: TOUCH.getTouchSize(40) / 2,
       backgroundColor: colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
@@ -213,63 +248,72 @@ export default function ProfileTab() {
     },
     profileInfo: {
       alignItems: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getPadding(24),
     },
     profileName: {
-      ...typography.h1,
-      color: colors.surface,
+      fontSize: TYPOGRAPHY.getHeaderSize(1),
       fontWeight: '700',
+      color: colors.surface,
       marginBottom: 4,
       textAlign: 'center',
       textShadowColor: 'rgba(0,0,0,0.3)',
       textShadowOffset: { width: 0, height: 2 },
       textShadowRadius: 4,
+      fontFamily: 'Poppins_700Bold',
     },
     profileEmail: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.surface,
       opacity: 0.9,
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getPadding(12),
       textAlign: 'center',
+      fontFamily: 'Poppins_400Regular',
     },
     profileBadge: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.success,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: 6,
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(6),
       borderRadius: BorderRadius.full,
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getPadding(24),
     },
     badgeText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.surface,
       fontWeight: '600',
       marginLeft: 4,
+      fontFamily: 'Poppins_600SemiBold',
     },
     editButton: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.surface,
-      paddingHorizontal: Spacing.xl,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getPadding(32),
+      paddingVertical: LAYOUT.getPadding(16),
       borderRadius: BorderRadius.full,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.2,
       shadowRadius: 8,
       elevation: 6,
+      minHeight: TOUCH.minTarget,
     },
     editButtonText: {
-      ...typography.bodyMedium,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.primary,
       fontWeight: '600',
-      marginLeft: Spacing.sm,
+      marginLeft: LAYOUT.getPadding(12),
+      fontFamily: 'Poppins_600SemiBold',
     },
     contentSection: {
       backgroundColor: colors.background,
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
+      borderTopLeftRadius: responsiveValue({
+        xs: 20, sm: 22, md: 24, lg: 26, xl: 28, default: 24
+      }),
+      borderTopRightRadius: responsiveValue({
+        xs: 20, sm: 22, md: 24, lg: 26, xl: 28, default: 24
+      }),
       marginTop: -24,
       paddingTop: Spacing.xl,
       paddingHorizontal: Spacing.lg,
@@ -682,22 +726,16 @@ export default function ProfileTab() {
         ))}
       </View>
     </View>
-  );
-  return (
-    <SafeAreaView style={styles.container}>
+  );  return (
+    <ResponsiveLayout safeArea={true} scrollable={true} padding={false}>
       <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
       
-      <Animated.ScrollView 
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-        style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={16}
-      >
-        {/* Hero Section with Gradient */}
+      <Animated.View style={{ 
+        opacity: fadeAnim, 
+        transform: [{ scale: scaleAnim }], 
+        flex: 1 
+      }}>
+        {/* Hero Section with Gradient - Responsive */}
         <View style={styles.heroSection}>
           <LinearGradient
             colors={[colors.primary, colors.accent]}
@@ -708,192 +746,321 @@ export default function ProfileTab() {
               <View style={styles.profileImageWrapper}>
                 <Image source={{ uri: userData.profileImage }} style={styles.profileImage} />
                 <TouchableOpacity style={styles.cameraButton} activeOpacity={0.8}>
-                  <Camera size={20} color={colors.surface} />
+                  <Camera 
+                    size={responsiveValue({ xs: 16, sm: 18, md: 20, default: 20 })} 
+                    color={colors.surface} 
+                  />
                 </TouchableOpacity>
               </View>
             </View>
 
-            {/* Profile Info */}
+            {/* Profile Info - Responsive layout */}
             <View style={styles.profileInfo}>
               <Text style={styles.profileName}>{userData.name}</Text>
               <Text style={styles.profileEmail}>{userData.email}</Text>
               
               {/* Premium Badge */}
               <View style={styles.profileBadge}>
-                <Crown size={16} color={colors.surface} />
+                <Crown 
+                  size={responsiveValue({ xs: 14, sm: 15, md: 16, default: 16 })} 
+                  color={colors.surface} 
+                />
                 <Text style={styles.badgeText}>Premium Member</Text>
               </View>
 
-              {/* Edit Profile Button */}
+              {/* Edit Profile Button - Touch optimized */}
               <TouchableOpacity style={styles.editButton} activeOpacity={0.8}>
-                <Edit size={16} color={colors.primary} />
+                <Edit 
+                  size={responsiveValue({ xs: 14, sm: 15, md: 16, default: 16 })} 
+                  color={colors.primary} 
+                />
                 <Text style={styles.editButtonText}>Edit Profile</Text>
               </TouchableOpacity>
             </View>
           </LinearGradient>
         </View>
 
-        {/* Content Section */}
+        {/* Content Section with ResponsiveCards */}
         <View style={styles.contentSection}>
-          {/* Quick Actions */}
-          {renderQuickActions()}
-
-          {/* Stats */}
-          {renderStats()}
-
-          {/* Achievements */}
-          {renderAchievements()}
-
-          {/* Settings Sections */}
-          {settingsGroups.map((group) => (
-            <View key={group.title} style={styles.settingsSection}>
-              <Text style={styles.sectionTitle}>{group.title}</Text>
-              <View style={styles.settingsCard}>
-                {group.items.map((item, index) => 
-                  renderSettingsItem(item, index === group.items.length - 1)
-                )}
-              </View>
-            </View>
-          ))}
-
-          {/* Theme Mode Selector */}
-          <View style={styles.themeSection}>
-            <Text style={styles.sectionTitle}>Appearance Mode</Text>
-            <View style={styles.themeSelector}>
-              <TouchableOpacity
-                style={[
-                  styles.themeOption,
-                  themeMode === 'light' && styles.themeOptionActive,
-                ]}
-                onPress={() => setThemeMode('light')}
-                activeOpacity={0.8}
+          {/* Quick Actions - Responsive Grid */}
+          <View style={{ marginBottom: LAYOUT.getPadding(24) }}>
+            <Text style={[styles.sectionTitle, { paddingHorizontal: contentPadding }]}>
+              Quick Actions
+            </Text>
+            <View style={{ paddingHorizontal: contentPadding }}>
+              <ResponsiveGrid 
+                columns={isMobile ? 2 : 4} 
+                spacing={LAYOUT.getPadding(12)}
               >
-                <Sun size={16} color={themeMode === 'light' ? colors.surface : colors.text} />
-                <Text
-                  style={[
-                    styles.themeOptionText,
-                    themeMode === 'light' && styles.themeOptionTextActive,
-                  ]}
-                >
-                  Light
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.themeOption,
-                  themeMode === 'dark' && styles.themeOptionActive,
-                ]}
-                onPress={() => setThemeMode('dark')}
-                activeOpacity={0.8}
-              >
-                <Moon size={16} color={themeMode === 'dark' ? colors.surface : colors.text} />
-                <Text
-                  style={[
-                    styles.themeOptionText,
-                    themeMode === 'dark' && styles.themeOptionTextActive,
-                  ]}
-                >
-                  Dark
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.themeOption,
-                  themeMode === 'system' && styles.themeOptionActive,
-                ]}
-                onPress={() => setThemeMode('system')}
-                activeOpacity={0.8}
-              >
-                <Settings size={16} color={themeMode === 'system' ? colors.surface : colors.text} />
-                <Text
-                  style={[
-                    styles.themeOptionText,
-                    themeMode === 'system' && styles.themeOptionTextActive,
-                  ]}
-                >
-                  Auto
-                </Text>
-              </TouchableOpacity>
+                {quickActions.map((action) => (
+                  <ResponsiveCard key={action.id} padding={true}>
+                    <TouchableOpacity
+                      onPress={action.onPress}
+                      style={{
+                        alignItems: 'center',
+                        paddingVertical: LAYOUT.getPadding(8),
+                        minHeight: TOUCH.minTarget,
+                        justifyContent: 'center',
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <View style={{
+                        width: COMPONENT.icon.lg,
+                        height: COMPONENT.icon.lg,
+                        backgroundColor: action.color + '20',
+                        borderRadius: LAYOUT.getBorderRadius(8),
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginBottom: LAYOUT.getPadding(8),
+                      }}>
+                        <action.icon 
+                          size={COMPONENT.icon.md} 
+                          color={action.color} 
+                        />
+                      </View>
+                      <Text style={{
+                        fontSize: TYPOGRAPHY.getCaptionSize(),
+                        color: colors.text,
+                        textAlign: 'center',
+                        fontWeight: '500',
+                      }}>
+                        {action.title}
+                      </Text>
+                    </TouchableOpacity>
+                  </ResponsiveCard>
+                ))}
+              </ResponsiveGrid>
             </View>
           </View>
 
-          {/* Color Theme Selector */}
-          <View style={styles.settingsSection}>
+          {/* Stats - Responsive Grid */}
+          <View style={{ marginBottom: LAYOUT.getPadding(24) }}>
+            <Text style={[styles.sectionTitle, { paddingHorizontal: contentPadding }]}>
+              Statistics
+            </Text>
+            <View style={{ paddingHorizontal: contentPadding }}>
+              <ResponsiveGrid 
+                columns={isCompact ? 2 : 4} 
+                spacing={LAYOUT.getPadding(12)}
+              >
+                {stats.map((stat, index) => (
+                  <ResponsiveCard key={index}>
+                    <View style={{
+                      alignItems: 'center',
+                      paddingVertical: LAYOUT.getPadding(12),
+                    }}>
+                      <stat.icon 
+                        size={COMPONENT.icon.lg} 
+                        color={stat.color} 
+                        strokeWidth={2}
+                      />
+                      <Text style={{
+                        fontSize: TYPOGRAPHY.getHeaderSize(4),
+                        fontWeight: '700',
+                        color: colors.text,
+                        marginTop: LAYOUT.getPadding(8),
+                        marginBottom: LAYOUT.getPadding(4),
+                      }}>
+                        {stat.value}
+                      </Text>
+                      <Text style={{
+                        fontSize: TYPOGRAPHY.getCaptionSize(),
+                        color: colors.textSecondary,
+                        textAlign: 'center',
+                      }}>
+                        {stat.label}
+                      </Text>
+                      <Text style={{
+                        fontSize: TYPOGRAPHY.getCaptionSize(),
+                        color: stat.color,
+                        fontWeight: '600',
+                        marginTop: LAYOUT.getPadding(4),
+                      }}>
+                        {stat.change}
+                      </Text>
+                    </View>
+                  </ResponsiveCard>
+                ))}
+              </ResponsiveGrid>
+            </View>
+          </View>
+
+          {/* Achievements - Responsive */}
+          {renderAchievements()}
+
+          {/* Settings Sections with responsive spacing */}
+          {settingsGroups.map((group) => (
+            <View key={group.title} style={[
+              styles.settingsSection,
+              { paddingHorizontal: contentPadding }
+            ]}>
+              <Text style={styles.sectionTitle}>{group.title}</Text>
+              <ResponsiveCard>
+                {group.items.map((item, index) => 
+                  renderSettingsItem(item, index === group.items.length - 1)
+                )}
+              </ResponsiveCard>
+            </View>
+          ))}
+
+          {/* Theme Mode Selector - Responsive */}
+          <View style={[styles.themeSection, { paddingHorizontal: contentPadding }]}>
+            <Text style={styles.sectionTitle}>Appearance Mode</Text>
+            <ResponsiveCard>
+              <View style={{
+                flexDirection: isMobile ? 'column' : 'row',
+                gap: LAYOUT.getPadding(8),
+              }}>
+                {[
+                  { key: 'light', label: 'Light', icon: Sun },
+                  { key: 'dark', label: 'Dark', icon: Moon },
+                  { key: 'system', label: 'Auto', icon: Settings },
+                ].map(({ key, label, icon: IconComponent }) => (
+                  <TouchableOpacity
+                    key={key}
+                    style={[
+                      {
+                        flex: isMobile ? undefined : 1,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingVertical: LAYOUT.getPadding(12),
+                        paddingHorizontal: LAYOUT.getPadding(16),
+                        borderRadius: LAYOUT.getBorderRadius(8),
+                        backgroundColor: themeMode === key ? colors.primary : colors.background,
+                        minHeight: TOUCH.minTarget,
+                      }
+                    ]}
+                    onPress={() => setThemeMode(key as any)}
+                    activeOpacity={0.8}
+                  >
+                    <IconComponent 
+                      size={COMPONENT.icon.sm} 
+                      color={themeMode === key ? colors.surface : colors.text} 
+                    />
+                    <Text style={{
+                      fontSize: TYPOGRAPHY.getBodySize('medium'),
+                      color: themeMode === key ? colors.surface : colors.text,
+                      fontWeight: '600',
+                      marginLeft: LAYOUT.getPadding(8),
+                    }}>
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ResponsiveCard>
+          </View>
+
+          {/* Color Theme Selector - Responsive Grid */}
+          <View style={[styles.settingsSection, { paddingHorizontal: contentPadding }]}>
             <Text style={styles.sectionTitle}>Color Themes</Text>
             <Text style={{
-              ...typography.caption,
+              fontSize: TYPOGRAPHY.getCaptionSize(),
               color: colors.textSecondary,
-              marginBottom: Spacing.lg,
-              lineHeight: 18,
+              marginBottom: LAYOUT.getPadding(16),
+              lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getCaptionSize()),
             }}>
               Choose your preferred color palette. These themes work beautifully in both light and dark modes.
             </Text>
             
-            <View style={styles.pastelThemeGrid}>
+            <ResponsiveGrid 
+              columns={isCompact ? 1 : 2}
+              spacing={LAYOUT.getPadding(12)}
+            >
               {pastelThemes.map((themeOption) => {
                 const IconComponent = themeOption.icon;
                 const isActive = pastelTheme === themeOption.id;
                 
                 return (
-                  <TouchableOpacity
-                    key={themeOption.id}
-                    style={[
-                      styles.pastelThemeCard,
-                      isActive && styles.pastelThemeCardActive,
-                    ]}
-                    onPress={() => setPastelTheme(themeOption.id as any)}
-                    activeOpacity={0.8}
-                  >
-                    <View style={styles.pastelThemeHeader}>
-                      <View style={[
-                        styles.pastelThemeIconContainer,
-                        {
-                          backgroundColor: isActive ? colors.primary : colors.primary + '20'
-                        }
-                      ]}>
-                        <IconComponent 
-                          size={20} 
-                          color={isActive ? colors.surface : colors.primary}
-                        />
+                  <ResponsiveCard key={themeOption.id}>
+                    <TouchableOpacity
+                      onPress={() => setPastelTheme(themeOption.id as any)}
+                      activeOpacity={0.8}
+                      style={{
+                        padding: LAYOUT.getPadding(4),
+                      }}
+                    >
+                      <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginBottom: LAYOUT.getPadding(8),
+                      }}>
+                        <View style={{
+                          width: COMPONENT.avatar.sm,
+                          height: COMPONENT.avatar.sm,
+                          borderRadius: COMPONENT.avatar.sm / 2,
+                          backgroundColor: isActive ? colors.primary : colors.primary + '20',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          marginRight: LAYOUT.getPadding(12),
+                        }}>
+                          <IconComponent 
+                            size={COMPONENT.icon.sm} 
+                            color={isActive ? colors.surface : colors.primary}
+                          />
+                        </View>
+                        <Text style={{
+                          fontSize: TYPOGRAPHY.getBodySize('medium'),
+                          fontWeight: '600',
+                          color: isActive ? colors.primary : colors.text,
+                        }}>
+                          {themeOption.name}
+                        </Text>
                       </View>
-                      <Text style={[
-                        styles.pastelThemeName,
-                        isActive && { color: colors.primary }
-                      ]}>
-                        {themeOption.name}
+                      
+                      <Text style={{
+                        fontSize: TYPOGRAPHY.getCaptionSize(),
+                        color: colors.textSecondary,
+                        marginBottom: LAYOUT.getPadding(8),
+                      }}>
+                        {themeOption.description}
                       </Text>
-                    </View>
-                    
-                    <Text style={styles.pastelThemeDescription}>
-                      {themeOption.description}
-                    </Text>
-                    
-                    <View style={styles.pastelThemeColors}>
-                      {themeOption.colors.map((color, index) => (
-                        <View
-                          key={index}
-                          style={[
-                            styles.pastelThemeColorDot,
-                            { backgroundColor: color }
-                          ]}
-                        />
-                      ))}
-                    </View>
-                  </TouchableOpacity>
+                      
+                      <View style={{
+                        flexDirection: 'row',
+                        gap: LAYOUT.getPadding(4),
+                      }}>
+                        {themeOption.colors.map((color, index) => (
+                          <View
+                            key={index}
+                            style={{
+                              width: responsiveValue({ xs: 16, sm: 18, md: 20, default: 20 }),
+                              height: responsiveValue({ xs: 16, sm: 18, md: 20, default: 20 }),
+                              borderRadius: responsiveValue({ xs: 8, sm: 9, md: 10, default: 10 }),
+                              backgroundColor: color,
+                            }}
+                          />
+                        ))}
+                      </View>
+                    </TouchableOpacity>
+                  </ResponsiveCard>
                 );
               })}
-            </View>
+            </ResponsiveGrid>
           </View>
 
-          {/* Logout Button */}
-          <View style={styles.logoutSection}>
-            <TouchableOpacity style={styles.logoutButton} activeOpacity={0.8}>
-              <LogOut size={20} color={colors.error} />
+          {/* Logout Button - Touch optimized */}
+          <View style={[styles.logoutSection, { paddingHorizontal: contentPadding }]}>
+            <TouchableOpacity 
+              style={[
+                styles.logoutButton,
+                {
+                  minHeight: TOUCH.minTarget,
+                  paddingVertical: LAYOUT.getPadding(16),
+                }
+              ]} 
+              activeOpacity={0.8}
+            >
+              <LogOut size={COMPONENT.icon.md} color={colors.error} />
               <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Extra bottom padding for mobile navigation */}
+          <View style={{ height: LAYOUT.getPadding(40) }} />
         </View>
-      </Animated.ScrollView>
-    </SafeAreaView>
+      </Animated.View>
+    </ResponsiveLayout>
   );
 }

@@ -26,6 +26,16 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { router } from 'expo-router';
+import { ResponsiveLayout, useResponsiveDimensions } from '@/components/ui/ResponsiveLayout';
+import { 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  COMPONENT,
+  TYPOGRAPHY,
+  responsiveValue,
+  useBreakpoint 
+} from '@/utils/responsive';
 
 interface Message {
   id: string;
@@ -39,6 +49,7 @@ interface Message {
 export default function ChatScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
+  const { isMobile, isCompact, contentPadding } = useResponsiveDimensions();
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -141,7 +152,6 @@ export default function ChatScreen() {
       </Animated.View>
     );
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -151,11 +161,12 @@ export default function ChatScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: contentPadding,
+      paddingVertical: LAYOUT.getPadding(16),
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
+      minHeight: COMPONENT.getHeaderHeight(),
     },
     headerLeft: {
       flexDirection: 'row',
@@ -163,43 +174,47 @@ export default function ChatScreen() {
       flex: 1,
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getTouchSize(40),
+      height: TOUCH.getTouchSize(40),
+      borderRadius: TOUCH.getTouchSize(40) / 2,
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getPadding(16),
     },
     headerInfo: {
       flex: 1,
-    },    headerTitle: {
-      ...typography.h3,
+    },    
+    headerTitle: {
+      fontSize: TYPOGRAPHY.getHeaderSize(3),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getHeaderSize(3)),
       color: colors.text,
+      fontWeight: '600',
     },
     headerSubtitle: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getCaptionSize()),
       color: colors.textSecondary,
+      marginTop: 2,
     },
     headerActions: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: LAYOUT.getPadding(8),
     },
     headerButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getTouchSize(40),
+      height: TOUCH.getTouchSize(40),
+      borderRadius: TOUCH.getTouchSize(40) / 2,
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
     },
     messagesContainer: {
       flex: 1,
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
-    },
-    messageContainer: {
-      marginBottom: Spacing.md,
+      paddingHorizontal: contentPadding,
+      paddingVertical: LAYOUT.getPadding(16),
+    },    messageContainer: {
+      marginBottom: LAYOUT.getPadding(16),
       flexDirection: 'row',
       alignItems: 'flex-end',
     },
@@ -210,22 +225,22 @@ export default function ChatScreen() {
       justifyContent: 'flex-start',
     },
     avatarContainer: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
+      width: responsiveValue({ xs: 28, sm: 32, default: 32 }),
+      height: responsiveValue({ xs: 28, sm: 32, default: 32 }),
+      borderRadius: responsiveValue({ xs: 14, sm: 16, default: 16 }),
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getPadding(12),
     },
     avatar: {
-      fontSize: 16,
+      fontSize: responsiveValue({ xs: 14, sm: 16, default: 16 }),
     },
     messageBubble: {
-      maxWidth: '75%',
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
-      borderRadius: BorderRadius.lg,
+      maxWidth: responsiveValue({ xs: '80%', sm: '75%', default: '75%' }),
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(12),
+      borderRadius: LAYOUT.getBorderRadius(16),
     },
     myMessageBubble: {
       backgroundColor: colors.primary,
@@ -238,8 +253,8 @@ export default function ChatScreen() {
       borderColor: colors.border,
     },
     messageText: {
-      ...typography.body,
-      lineHeight: 20,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium'), 1.4),
     },
     myMessageText: {
       color: colors.surface,
@@ -248,9 +263,9 @@ export default function ChatScreen() {
       color: colors.text,
     },
     messageTime: {
-      ...typography.caption,
-      fontSize: 11,
-      marginTop: 4,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getCaptionSize()),
+      marginTop: LAYOUT.getPadding(4),
     },
     myMessageTime: {
       color: colors.surface + '80',
@@ -261,9 +276,8 @@ export default function ChatScreen() {
     },
     inputContainer: {
       flexDirection: 'row',
-      alignItems: 'flex-end',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      alignItems: 'flex-end',      paddingHorizontal: contentPadding,
+      paddingVertical: LAYOUT.getPadding(16),
       backgroundColor: colors.surface,
       borderTopWidth: 1,
       borderTopColor: colors.border,
@@ -273,36 +287,38 @@ export default function ChatScreen() {
       flexDirection: 'row',
       alignItems: 'flex-end',
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.xl,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
-      marginRight: Spacing.sm,
-      maxHeight: 100,
+      borderRadius: LAYOUT.getBorderRadius(24),
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(12),
+      marginRight: LAYOUT.getPadding(12),
+      maxHeight: responsiveValue({ xs: 80, sm: 100, default: 100 }),
+      minHeight: COMPONENT.input.md,
     },
     textInput: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium')),
       color: colors.text,
       flex: 1,
-      paddingVertical: Spacing.xs,
-      minHeight: 36,
-      maxHeight: 80,
+      paddingVertical: LAYOUT.getPadding(8),
+      minHeight: responsiveValue({ xs: 32, sm: 36, default: 36 }),
+      maxHeight: responsiveValue({ xs: 64, sm: 80, default: 80 }),
     },
     inputActions: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.xs,
+      gap: LAYOUT.getPadding(8),
     },
     inputButton: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
+      width: TOUCH.getTouchSize(32),
+      height: TOUCH.getTouchSize(32),
+      borderRadius: TOUCH.getTouchSize(32) / 2,
       justifyContent: 'center',
       alignItems: 'center',
     },
     sendButton: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
+      width: TOUCH.getTouchSize(44),
+      height: TOUCH.getTouchSize(44),
+      borderRadius: TOUCH.getTouchSize(44) / 2,
       backgroundColor: colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
@@ -313,9 +329,8 @@ export default function ChatScreen() {
       elevation: 4,
     },
   });
-
   return (
-    <SafeAreaView style={styles.container}>
+    <ResponsiveLayout safeArea={true} scrollable={false} padding={false}>
       <KeyboardAvoidingView 
         style={styles.container} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -323,8 +338,12 @@ export default function ChatScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-              <ArrowLeft size={20} color={colors.text} />
+            <TouchableOpacity 
+              style={styles.backButton} 
+              onPress={() => router.back()}
+              activeOpacity={0.7}
+            >
+              <ArrowLeft size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Morning Runners</Text>
@@ -333,14 +352,14 @@ export default function ChatScreen() {
           </View>
           
           <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.headerButton}>
-              <Phone size={20} color={colors.text} />
+            <TouchableOpacity style={styles.headerButton} activeOpacity={0.7}>
+              <Phone size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton}>
-              <Video size={20} color={colors.text} />
+            <TouchableOpacity style={styles.headerButton} activeOpacity={0.7}>
+              <Video size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton}>
-              <MoreHorizontal size={20} color={colors.text} />
+            <TouchableOpacity style={styles.headerButton} activeOpacity={0.7}>
+              <MoreHorizontal size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.text} />
             </TouchableOpacity>
           </View>
         </View>
@@ -351,6 +370,7 @@ export default function ChatScreen() {
           style={styles.messagesContainer}
           showsVerticalScrollIndicator={false}
           onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+          keyboardShouldPersistTaps="handled"
         >
           {messages.map((message, index) => renderMessage(message, index))}
         </ScrollView>
@@ -368,11 +388,11 @@ export default function ChatScreen() {
               maxLength={1000}
             />
             <View style={styles.inputActions}>
-              <TouchableOpacity style={styles.inputButton}>
-                <Paperclip size={18} color={colors.textSecondary} />
+              <TouchableOpacity style={styles.inputButton} activeOpacity={0.7}>
+                <Paperclip size={responsiveValue({ xs: 16, sm: 18, default: 18 })} color={colors.textSecondary} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.inputButton}>
-                <Smile size={18} color={colors.textSecondary} />
+              <TouchableOpacity style={styles.inputButton} activeOpacity={0.7}>
+                <Smile size={responsiveValue({ xs: 16, sm: 18, default: 18 })} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -381,11 +401,12 @@ export default function ChatScreen() {
             style={styles.sendButton} 
             onPress={sendMessage}
             disabled={!messageText.trim()}
+            activeOpacity={0.8}
           >
-            <Send size={20} color={colors.surface} />
+            <Send size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.surface} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </ResponsiveLayout>
   );
 }

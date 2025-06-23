@@ -7,9 +7,8 @@ import {
   TouchableOpacity,
   Image,
   Animated,
-  Dimensions,
+  SafeAreaView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, 
   MoreHorizontal, 
@@ -29,11 +28,18 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
+import { ResponsiveLayout, ResponsiveCard, useResponsiveDimensions } from '@/components/ui/ResponsiveLayout';
+import { 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  COMPONENT,
+  TYPOGRAPHY,
+  responsiveValue,
+  useBreakpoint
+} from '@/utils/responsive';
 
 interface UserStats {
   label: string;
@@ -55,6 +61,8 @@ interface UserPost {
 export default function UserProfileScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
+  const dimensions = useResponsiveDimensions();
+  const breakpoint = useBreakpoint();
   const [isFollowing, setIsFollowing] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'posts' | 'stats' | 'groups'>('posts');
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -265,7 +273,6 @@ export default function UserProfileScreen() {
         return null;
     }
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -275,8 +282,8 @@ export default function UserProfileScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingVertical: LAYOUT.getPadding(16),
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
@@ -291,7 +298,7 @@ export default function UserProfileScreen() {
     },
     headerActions: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: LAYOUT.getMargin(8),
     },
     headerButton: {
       width: 40,
@@ -303,16 +310,16 @@ export default function UserProfileScreen() {
     },
     profileHero: {
       backgroundColor: colors.surface,
-      paddingHorizontal: Spacing.lg,
-      paddingBottom: Spacing.xl,
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingBottom: LAYOUT.getPadding(32),
     },
     profileHeader: {
       alignItems: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     avatarContainer: {
       position: 'relative',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     avatar: {
       width: 100,
@@ -348,13 +355,13 @@ export default function UserProfileScreen() {
       ...typography.body,
       color: colors.textSecondary,
       textAlign: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     userStats: {
       flexDirection: 'row',
       justifyContent: 'center',
-      gap: Spacing.xl,
-      marginBottom: Spacing.lg,
+      gap: LAYOUT.getMargin(32),
+      marginBottom: LAYOUT.getMargin(24),
     },
     userStat: {
       alignItems: 'center',
@@ -373,28 +380,28 @@ export default function UserProfileScreen() {
       color: colors.textSecondary,
       textAlign: 'center',
       lineHeight: 22,
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     userLocation: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     locationText: {
       ...typography.body,
       color: colors.textSecondary,
-      marginLeft: Spacing.xs,
+      marginLeft: LAYOUT.getMargin(4),
     },
     profileActions: {
       flexDirection: 'row',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
     },
     followButton: {
       flex: 1,
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.lg,
-      paddingVertical: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      paddingVertical: LAYOUT.getPadding(16),
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
@@ -406,7 +413,7 @@ export default function UserProfileScreen() {
       ...typography.bodyMedium,
       color: colors.surface,
       fontWeight: '600',
-      marginLeft: Spacing.sm,
+      marginLeft: LAYOUT.getMargin(8),
     },
     actionButton: {
       width: 50,
@@ -426,7 +433,7 @@ export default function UserProfileScreen() {
     },
     tab: {
       flex: 1,
-      paddingVertical: Spacing.md,
+      paddingVertical: LAYOUT.getPadding(16),
       alignItems: 'center',
       borderBottomWidth: 2,
       borderBottomColor: 'transparent',
@@ -444,14 +451,14 @@ export default function UserProfileScreen() {
       fontWeight: '600',
     },
     tabContent: {
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingTop: LAYOUT.getPadding(24),
     },
     postCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      marginBottom: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(24),
+      marginBottom: LAYOUT.getMargin(16),
       borderWidth: 1,
       borderColor: colors.border,
     },
@@ -459,12 +466,12 @@ export default function UserProfileScreen() {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     postType: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.xs,
+      gap: LAYOUT.getMargin(4),
     },
     postTypeText: {
       ...typography.caption,
@@ -479,14 +486,14 @@ export default function UserProfileScreen() {
       ...typography.body,
       color: colors.text,
       lineHeight: 22,
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     postImage: {
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     imagePlaceholder: {
       height: 200,
-      borderRadius: BorderRadius.md,
+      borderRadius: LAYOUT.getBorderRadius(8),
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -495,12 +502,12 @@ export default function UserProfileScreen() {
     },
     postActions: {
       flexDirection: 'row',
-      gap: Spacing.lg,
+      gap: LAYOUT.getMargin(24),
     },
     postAction: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.xs,
+      gap: LAYOUT.getMargin(4),
     },
     postActionText: {
       ...typography.caption,
@@ -509,14 +516,23 @@ export default function UserProfileScreen() {
     statsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.md,
-      marginBottom: Spacing.xl,
+      gap: LAYOUT.getMargin(16),
+      marginBottom: LAYOUT.getMargin(32),
     },
     statCard: {
-      width: (width - Spacing.lg * 2 - Spacing.md) / 2,
+      width: responsiveValue({
+        xs: dimensions.screenWidth - (LAYOUT.getContentPadding() * 2) - LAYOUT.getPadding(12),
+        sm: (dimensions.screenWidth - (LAYOUT.getContentPadding() * 2) - LAYOUT.getPadding(12)) / 2,
+        md: (dimensions.screenWidth - (LAYOUT.getContentPadding() * 2) - LAYOUT.getPadding(12)) / 2,
+        lg: (dimensions.screenWidth - (LAYOUT.getContentPadding() * 2) - LAYOUT.getPadding(12)) / 2,
+        xl: (dimensions.screenWidth - (LAYOUT.getContentPadding() * 2) - LAYOUT.getPadding(12)) / 2,
+        xxl: (dimensions.screenWidth - (LAYOUT.getContentPadding() * 2) - LAYOUT.getPadding(12)) / 2,
+        xxxl: (dimensions.screenWidth - (LAYOUT.getContentPadding() * 2) - LAYOUT.getPadding(12)) / 2,
+        default: (dimensions.screenWidth - (LAYOUT.getContentPadding() * 2) - LAYOUT.getPadding(12)) / 2
+      }),
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(24),
       alignItems: 'center',
       borderWidth: 1,
       borderColor: colors.border,
@@ -527,7 +543,7 @@ export default function UserProfileScreen() {
       borderRadius: 25,
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     statValue: {
       ...typography.h3,
@@ -540,23 +556,23 @@ export default function UserProfileScreen() {
       color: colors.textSecondary,
     },
     achievementsSection: {
-      marginTop: Spacing.lg,
+      marginTop: LAYOUT.getMargin(24),
     },
     sectionTitle: {
       ...typography.bodyMedium,
       color: colors.text,
       fontWeight: '600',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     achievementsList: {
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
     },
     achievementItem: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(16),
       borderWidth: 1,
       borderColor: colors.border,
     },
@@ -566,7 +582,7 @@ export default function UserProfileScreen() {
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     achievementInfo: {
       flex: 1,
@@ -585,9 +601,9 @@ export default function UserProfileScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
-      marginBottom: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(16),
+      marginBottom: LAYOUT.getMargin(16),
       borderWidth: 1,
       borderColor: colors.border,
     },
@@ -598,7 +614,7 @@ export default function UserProfileScreen() {
       backgroundColor: colors.success + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     groupAvatarText: {
       fontSize: 24,
@@ -618,9 +634,9 @@ export default function UserProfileScreen() {
     },
     groupJoinButton: {
       backgroundColor: colors.primary + '20',
-      borderRadius: BorderRadius.md,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(8),
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(8),
     },
     groupJoinButtonText: {
       ...typography.caption,

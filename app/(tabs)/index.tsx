@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Dimensions,
   Animated,
   StatusBar,
   TextInput,
@@ -15,13 +14,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
+import { 
+  scale, 
+  verticalScale, 
+  moderateScale, 
+  SCREEN, 
+  GRID, 
+  LAYOUT,   COMPONENT,
+  TOUCH,
+  useSafeLayout,
+  responsiveValue,
+  isTablet
+} from '@/utils/responsive';
 
-const { width, height } = Dimensions.get('window');
-
-// Enhanced Icon Component with premium styling
-const CleanIcon = ({ name, size = 24, color, backgroundColor }: {
+// Enhanced Icon Component with responsive sizing
+const CleanIcon = ({ name, size = COMPONENT.icon.md, color, backgroundColor }: {
   name: string;
   size?: number;
   color?: string;
@@ -42,12 +50,14 @@ const CleanIcon = ({ name, size = 24, color, backgroundColor }: {
     'arrow': '→',
   };
 
+  const containerSize = size + scale(16);
+
   return (
     <View style={{
-      width: size + 16,
-      height: size + 16,
+      width: containerSize,
+      height: containerSize,
       backgroundColor: backgroundColor || colors.primary + '15',
-      borderRadius: (size + 16) / 2,
+      borderRadius: containerSize / 2,
       justifyContent: 'center',
       alignItems: 'center',
       shadowColor: '#000',
@@ -70,11 +80,11 @@ const CleanIcon = ({ name, size = 24, color, backgroundColor }: {
   );
 };
 
-// Enhanced Circular Progress Ring Component
+// Enhanced Circular Progress Ring Component with responsive sizing
 const CircularProgress = ({ 
   progress, 
-  size = 120, 
-  strokeWidth = 8, 
+  size = responsiveValue({ xs: scale(100), sm: scale(120), md: scale(140), default: scale(120) }), 
+  strokeWidth = scale(8), 
   value,
   unit,
   label 
@@ -100,14 +110,113 @@ const CircularProgress = ({
   }, [progress]);
 
   return (
-    <View style={{ 
-      width: size, 
-      height: size, 
-      justifyContent: 'center', 
+    <View style={{
+      width: size,
+      height: size,
+      justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
-    }}>      {/* Background Circle - Premium glass effect */}
+    }}>
+      {/* Background Circle */}
       <View style={{
+        position: 'absolute',
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        borderWidth: strokeWidth,
+        borderColor: colors.border + '30',
+      }} />
+      
+      {/* Progress Circle */}
+      <Animated.View
+        style={{
+          position: 'absolute',
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          borderWidth: strokeWidth,
+          borderColor: 'transparent',
+          borderTopColor: colors.primary,
+          transform: [
+            { rotate: '-90deg' },
+            {
+              rotate: animatedValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0deg', `${360 * (progress / 100)}deg`],
+              }),
+            },
+          ],
+        }}
+      />
+      
+      {/* Center Content */}
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{
+          fontSize: responsiveValue({ xs: scale(20), sm: scale(24), md: scale(28), default: scale(24) }),
+          fontWeight: '700',
+          color: colors.text,
+          fontFamily: 'Poppins_700Bold',
+        }}>
+          {value}
+        </Text>
+        <Text style={{
+          fontSize: responsiveValue({ xs: scale(10), sm: scale(12), md: scale(14), default: scale(12) }),
+          color: colors.textSecondary,
+          fontFamily: 'Poppins_500Medium',
+          textAlign: 'center',
+        }}>
+          {unit}
+        </Text>
+        <Text style={{
+          fontSize: responsiveValue({ xs: scale(8), sm: scale(10), md: scale(12), default: scale(10) }),
+          color: colors.textSecondary,
+          fontFamily: 'Poppins_400Regular',
+          textAlign: 'center',
+          marginTop: 2,
+        }}>
+          {label}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+  
+  
+  const EnhancedCircularProgress = ({ 
+    progress, 
+    size, 
+    strokeWidth, 
+    value,
+    unit,
+    label 
+  }: {
+    progress: number;
+    size: number;
+    strokeWidth: number;
+    value: string | number;
+    unit: string;
+    label: string;
+  }) => {
+    const animatedValue = useRef(new Animated.Value(0)).current;
+  
+    useEffect(() => {
+      Animated.timing(animatedValue, {
+        toValue: progress,
+        duration: 2000,
+        useNativeDriver: false,
+      }).start();
+    }, [progress]);
+  
+    return (
+      <View style={{ 
+        width: size, 
+        height: size, 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        position: 'relative',
+      }}>      {/* Background Circle - Premium glass effect */}
+        <View style={{
         position: 'absolute',
         width: size,
         height: size,
@@ -245,9 +354,8 @@ const StatTile = ({
         activeOpacity={1}
         style={{
           backgroundColor: backgroundColor || colors.card,
-          borderRadius: 24,
-          padding: Spacing.lg + 2,
-          paddingVertical: Spacing.lg + 6,
+          borderRadius: 24,          padding: LAYOUT.getPadding(24) + 2,
+          paddingVertical: LAYOUT.getPadding(24) + 6,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 8 },
           shadowOpacity: 0.15,
@@ -275,11 +383,10 @@ const StatTile = ({
             name={icon}
             size={32}
             backgroundColor="transparent"
-          />
-          <Text style={{
-            ...TextStyles.caption,
+          />          <Text style={{
+            ...typography.caption,
             color: colors.text,
-            marginTop: Spacing.sm + 4,
+            marginTop: LAYOUT.getMargin(8) + 4,
             fontSize: 12,
             fontWeight: '600',
             letterSpacing: 0.3,
@@ -287,9 +394,8 @@ const StatTile = ({
             textAlign: 'center',
           }}>
             {title}
-          </Text>
-          <Text style={{
-            ...TextStyles.bodyMedium,
+          </Text>          <Text style={{
+            ...typography.body,
             color: colors.text,
             fontWeight: '800',
             fontSize: 15,
@@ -317,18 +423,16 @@ export default function HealthDashboard() {
   const styles = StyleSheet.create({    container: {
       flex: 1,
       backgroundColor: colors.background,
-    },    scrollContent: {
-      padding: Spacing.lg + 4,
-      paddingTop: Spacing.lg,
-      paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.xxl + Spacing.xl,
-    },header: {
-      marginBottom: Spacing.xl,
+    },    scrollContent: {      padding: LAYOUT.getPadding(24) + 4,
+      paddingTop: LAYOUT.getPadding(24),
+      paddingBottom: Math.max(insets.bottom, LAYOUT.getPadding(24)) + LAYOUT.getPadding(48) + LAYOUT.getPadding(32),    },header: {
+      marginBottom: LAYOUT.getMargin(32),
     },
     greeting: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     greetingLeft: {
       flexDirection: 'row',
@@ -339,7 +443,7 @@ export default function HealthDashboard() {
       height: 52,
       borderRadius: 26,
       backgroundColor: colors.primary,
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
       overflow: 'hidden',
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
@@ -349,15 +453,14 @@ export default function HealthDashboard() {
       borderWidth: 2,
       borderColor: 'rgba(255,255,255,0.9)',
     },    greetingText: {
-      ...TextStyles.bodySmall,
+      ...typography.bodySmall,
       color: colors.textSecondary,
       marginBottom: 3,
       fontSize: 14,
       fontWeight: '500',
       letterSpacing: 0.2,
-    },
-    userName: {
-      ...TextStyles.h3,
+    },    userName: {
+      ...typography.h3,
       color: colors.text,
       fontWeight: '700',
       fontSize: 22,
@@ -379,18 +482,16 @@ export default function HealthDashboard() {
       borderColor: 'rgba(255,255,255,0.8)',
     },    searchContainer: {
       flexDirection: 'row',
-      alignItems: 'center',
-      gap: Spacing.md,
-      marginBottom: Spacing.xl,
+      alignItems: 'center',      gap: LAYOUT.getMargin(16),
+      marginBottom: LAYOUT.getMargin(32),
     },    
     searchInput: {
-      flex: 1,
-      height: Spacing.xxl + 4,
+      flex: 1,      height: LAYOUT.getPadding(48) + 4,
       backgroundColor: colors.surface,
       borderRadius: 28,
-      paddingHorizontal: Spacing.lg,
+      paddingHorizontal: LAYOUT.getPadding(24),
       paddingLeft: 48,
-      ...TextStyles.body,
+      ...typography.body,
       color: colors.text,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
@@ -404,11 +505,10 @@ export default function HealthDashboard() {
     },
     searchIcon: {
       position: 'absolute',
-      left: Spacing.lg,
+      left: LAYOUT.getPadding(24),
       zIndex: 1,
-    },    filterButton: {
-      width: Spacing.xxl + 4,
-      height: Spacing.xxl + 4,
+    },    filterButton: {      width: LAYOUT.getPadding(48) + 4,
+      height: LAYOUT.getPadding(48) + 4,
       borderRadius: 26,
       backgroundColor: colors.surface,
       justifyContent: 'center',
@@ -422,9 +522,8 @@ export default function HealthDashboard() {
       borderColor: 'rgba(255,255,255,0.8)',
     },    progressSection: {
       backgroundColor: colors.surface,
-      borderRadius: 28,
-      padding: Spacing.xl + 4,
-      marginBottom: Spacing.xl + 4,
+      borderRadius: 28,      padding: LAYOUT.getPadding(32) + 4,
+      marginBottom: LAYOUT.getMargin(32) + 4,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 0.12,
@@ -447,9 +546,8 @@ export default function HealthDashboard() {
     progressRight: {
       alignItems: 'center',
       justifyContent: 'center',
-    },
-    progressTitle: {
-      ...TextStyles.bodyMedium,
+    },    progressTitle: {
+      ...typography.bodyMedium,
       color: colors.text,
       marginBottom: 10,
       fontWeight: '600',
@@ -457,7 +555,7 @@ export default function HealthDashboard() {
       letterSpacing: 0.3,
     },
     progressPercentage: {
-      ...TextStyles.h1,
+      ...typography.h1,
       color: colors.text,
       fontWeight: '800',
       fontSize: 42,
@@ -468,35 +566,33 @@ export default function HealthDashboard() {
       textShadowRadius: 2,
     },
     progressDate: {
-      ...TextStyles.bodySmall,
+      ...typography.bodySmall,
       color: colors.textSecondary,
       fontSize: 15,
       fontWeight: '500',
       letterSpacing: 0.2,
     },    statsGrid: {
-      flexDirection: 'row',
-      gap: Spacing.lg,
-      marginBottom: Spacing.xl + 4,
+      flexDirection: 'row',      gap: LAYOUT.getMargin(24),
+      marginBottom: LAYOUT.getMargin(32) + 4,
       justifyContent: 'space-between',
       paddingHorizontal: 4,
-    },expandedSection: {
-      marginBottom: Spacing.xl + 4,
+    },expandedSection: {      marginBottom: LAYOUT.getMargin(32) + 4,
     },
     sectionTitle: {
-      ...TextStyles.h4,
+      ...typography.h4,
       color: colors.text,
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
       fontWeight: '700',
       fontSize: 18,
       letterSpacing: 0.3,
     },    expandedGrid: {
       flexDirection: 'column',
-      gap: Spacing.lg,
+      gap: LAYOUT.getMargin(24),
     },
     expandedTile: {
       backgroundColor: colors.surface,
-      borderRadius: 24,
-      padding: Spacing.xl,
+      borderRadius: LAYOUT.getBorderRadius(24),
+      padding: LAYOUT.getPadding(24),
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.1,
@@ -654,11 +750,10 @@ export default function HealthDashboard() {
               }} />
               
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <CleanIcon name="sleep" size={24} color="#8b5cf6" backgroundColor="rgba(139, 92, 246, 0.1)" />
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>                  <CleanIcon name="sleep" size={24} color="#8b5cf6" backgroundColor="rgba(139, 92, 246, 0.1)" />
                   <View style={{ marginLeft: 18 }}>
                     <Text style={{
-                      ...TextStyles.bodyMedium,
+                      ...typography.body,
                       color: colors.text,
                       fontWeight: '700',
                       fontSize: 18,
@@ -667,7 +762,7 @@ export default function HealthDashboard() {
                       Sleep
                     </Text>
                     <Text style={{
-                      ...TextStyles.caption,
+                      ...typography.caption,
                       color: colors.textSecondary,
                       fontSize: 15,
                       fontWeight: '500',
@@ -694,11 +789,10 @@ export default function HealthDashboard() {
               }} />
               
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <CleanIcon name="standing" size={24} color="#10b981" backgroundColor="rgba(16, 185, 129, 0.1)" />
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>                  <CleanIcon name="standing" size={24} color="#10b981" backgroundColor="rgba(16, 185, 129, 0.1)" />
                   <View style={{ marginLeft: 18 }}>
                     <Text style={{
-                      ...TextStyles.bodyMedium,
+                      ...typography.body,
                       color: colors.text,
                       fontWeight: '700',
                       fontSize: 18,
@@ -707,7 +801,7 @@ export default function HealthDashboard() {
                       Standing
                     </Text>
                     <Text style={{
-                      ...TextStyles.caption,
+                      ...typography.caption,
                       color: colors.textSecondary,
                       fontSize: 15,
                       fontWeight: '500',
@@ -733,11 +827,10 @@ export default function HealthDashboard() {
               }} />
               
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <CleanIcon name="heart" size={24} color="#ef4444" backgroundColor="rgba(239, 68, 68, 0.1)" />
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>                  <CleanIcon name="heart" size={24} color="#ef4444" backgroundColor="rgba(239, 68, 68, 0.1)" />
                   <View style={{ marginLeft: 18 }}>
                     <Text style={{
-                      ...TextStyles.bodyMedium,
+                      ...typography.body,
                       color: colors.text,
                       fontWeight: '700',
                       fontSize: 18,
@@ -746,7 +839,7 @@ export default function HealthDashboard() {
                       Heart
                     </Text>
                     <Text style={{
-                      ...TextStyles.caption,
+                      ...typography.caption,
                       color: colors.textSecondary,
                       fontSize: 15,
                       fontWeight: '500',

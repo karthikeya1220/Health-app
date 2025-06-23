@@ -3,11 +3,18 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, TextInp
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Search, Filter, TrendingUp, MapPin, Users, Star, Clock, ChevronRight, Zap } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { 
+  scale, 
+  verticalScale, 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  responsiveValue 
+} from '@/utils/responsive';
 
 const { width } = Dimensions.get('window');
 
@@ -107,13 +114,12 @@ export default function DiscoverGroupsScreen() {
     container: {
       flex: 1,
       backgroundColor: colors.background,
-    },
-    header: {
+    },    header: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
-      paddingBottom: Spacing.md,
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingTop: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     backButton: {
       width: 40,
@@ -122,9 +128,9 @@ export default function DiscoverGroupsScreen() {
       backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },    headerTitle: {
-      ...TextStyles.h2,
+      ...typography.h2,
       color: colors.text,
       marginBottom: 2,
     },
@@ -132,21 +138,19 @@ export default function DiscoverGroupsScreen() {
       flex: 1,
     },
     headerSubtitle: {
-      ...TextStyles.caption,
+      ...typography.caption,
       color: colors.textSecondary,
-    },
-    searchContainer: {
+    },    searchContainer: {
       flexDirection: 'row',
-      gap: Spacing.md,
-      paddingHorizontal: Spacing.lg,
-      marginBottom: Spacing.lg,
-    },
-    searchBox: {
+      gap: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+    },    searchBox: {
       flex: 1,
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.md,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingHorizontal: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingVertical: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       flexDirection: 'row',
       alignItems: 'center',
       borderWidth: 1,
@@ -155,30 +159,29 @@ export default function DiscoverGroupsScreen() {
     searchInput: {
       ...typography.body,
       color: colors.text,
-      marginLeft: Spacing.sm,
+      marginLeft: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
       flex: 1,
     },
     filterButton: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      padding: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       justifyContent: 'center',
       alignItems: 'center',
       borderWidth: 1,
       borderColor: colors.border,
-    },
-    categoriesContainer: {
-      paddingLeft: Spacing.lg,
-      marginBottom: Spacing.lg,
+    },    categoriesContainer: {
+      paddingLeft: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     categoriesScroll: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
     categoryChip: {
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
-      borderRadius: BorderRadius.full,
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingVertical: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+      borderRadius: responsiveValue({ default: 50, sm: 40, md: 50, lg: 60 }),
       backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: colors.border,
@@ -194,27 +197,26 @@ export default function DiscoverGroupsScreen() {
     },
     categoryChipTextActive: {
       color: colors.surface,
-    },
-    sectionTitle: {
+    },    sectionTitle: {
       ...typography.h3,
       color: colors.text,
       fontWeight: 'bold',
-      paddingHorizontal: Spacing.lg,
-      marginBottom: Spacing.md,
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       flexDirection: 'row',
       alignItems: 'center',
     },
     trendingIcon: {
-      marginRight: Spacing.sm,
+      marginRight: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
     groupsContainer: {
-      paddingHorizontal: Spacing.lg,
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     groupCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.lg,
-      marginBottom: Spacing.lg,
+      borderRadius: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      padding: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -226,7 +228,7 @@ export default function DiscoverGroupsScreen() {
     groupHeader: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      marginBottom: Spacing.md,
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     groupIcon: {
       width: 60,
@@ -234,7 +236,7 @@ export default function DiscoverGroupsScreen() {
       borderRadius: 30,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     groupIconText: {
       fontSize: 28,
@@ -259,16 +261,15 @@ export default function DiscoverGroupsScreen() {
       ...typography.body,
       color: colors.textSecondary,
       lineHeight: 20,
-    },
-    badges: {
+    },    badges: {
       flexDirection: 'row',
-      gap: Spacing.xs,
-      marginTop: Spacing.xs,
+      gap: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
+      marginTop: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
     },
     badge: {
-      paddingHorizontal: Spacing.sm,
+      paddingHorizontal: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
       paddingVertical: 2,
-      borderRadius: BorderRadius.sm,
+      borderRadius: responsiveValue({ default: 6, sm: 4, md: 6, lg: 8 }),
       backgroundColor: colors.error + '20',
     },
     badgeText: {
@@ -296,12 +297,11 @@ export default function DiscoverGroupsScreen() {
       alignItems: 'center',
       justifyContent: 'space-between',
       marginBottom: 4,
-    },
-    groupStats: {
+    },    groupStats: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: Spacing.md,
-      gap: Spacing.lg,
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      gap: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     groupStat: {
       flexDirection: 'row',
@@ -312,25 +312,24 @@ export default function DiscoverGroupsScreen() {
       ...typography.caption,
       color: colors.textSecondary,
       fontWeight: '500',
-    },
-    nextEvent: {
+    },    nextEvent: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.primary + '10',
-      padding: Spacing.sm,
-      borderRadius: BorderRadius.md,
-      marginBottom: Spacing.md,
+      padding: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+      borderRadius: responsiveValue({ default: 12, sm: 8, md: 12, lg: 16 }),
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     nextEventText: {
       ...typography.caption,
       color: colors.primary,
       fontWeight: '600',
-      marginLeft: Spacing.xs,
+      marginLeft: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
     },
     joinButton: {
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.lg,
-      paddingVertical: Spacing.md,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingVertical: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       alignItems: 'center',
     },
     joinButtonText: {

@@ -4,9 +4,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, Filter, MapPin, Users, Star } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
+import { 
+  scale, 
+  verticalScale, 
+  moderateScale, 
+  SCREEN, 
+  GRID,   LAYOUT, 
+  COMPONENT,
+  TOUCH,
+  useSafeLayout,
+  responsiveValue,
+  isTablet
+} from '@/utils/responsive';
 
 export default function ExploreTab() {
   const { colors, themeMode } = useTheme();
@@ -66,29 +77,29 @@ export default function ExploreTab() {
       trending: false,
     },
   ];
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
     },
     header: {
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
-      paddingBottom: Spacing.md,
-    },    headerTitle: {
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingTop: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+    },
+    headerTitle: {
       ...typography.h2,
       color: colors.text,
       fontWeight: 'bold',
-      marginBottom: Spacing.lg,
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     discoverButton: {
       backgroundColor: colors.primary,
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
-      borderRadius: BorderRadius.md,
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingVertical: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+      borderRadius: responsiveValue({ default: 12, sm: 8, md: 12, lg: 16 }),
       alignSelf: 'flex-end',
-      marginBottom: Spacing.md,
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     discoverButtonText: {
       ...typography.body,
@@ -98,43 +109,43 @@ export default function ExploreTab() {
     },
     searchContainer: {
       flexDirection: 'row',
-      gap: Spacing.md,
-      marginBottom: Spacing.lg,
+      gap: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     searchBox: {
       flex: 1,
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.md,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingHorizontal: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingVertical: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       flexDirection: 'row',
       alignItems: 'center',
     },
     searchInput: {
       ...typography.body,
       color: colors.text,
-      marginLeft: Spacing.sm,
+      marginLeft: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
       flex: 1,
     },
     filterButton: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      padding: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       justifyContent: 'center',
       alignItems: 'center',
     },
     filterContainer: {
-      paddingLeft: Spacing.lg,
-      marginBottom: Spacing.lg,
+      paddingLeft: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     filterScroll: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
     filterChip: {
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
-      borderRadius: BorderRadius.full,
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingVertical: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+      borderRadius: responsiveValue({ default: 28, sm: 22, md: 28, lg: 34 }),
       backgroundColor: colors.surface,
     },
     filterChipActive: {
@@ -147,15 +158,14 @@ export default function ExploreTab() {
     },
     filterChipTextActive: {
       color: colors.surface,
-    },
-    groupsContainer: {
-      paddingHorizontal: Spacing.lg,
+    },    groupsContainer: {
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     groupCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.lg,
-      marginBottom: Spacing.lg,
+      borderRadius: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      padding: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
       shadowColor: colors.text,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.1,
@@ -166,7 +176,7 @@ export default function ExploreTab() {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      marginBottom: Spacing.md,
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     groupInfo: {
       flex: 1,
@@ -177,7 +187,7 @@ export default function ExploreTab() {
       borderRadius: 30,
       justifyContent: 'center',
       alignItems: 'center',
-      marginLeft: Spacing.md,
+      marginLeft: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     groupIconText: {
       fontSize: 24,
@@ -186,17 +196,17 @@ export default function ExploreTab() {
       ...typography.h3,
       color: colors.text,
       fontWeight: 'bold',
-      marginBottom: Spacing.xs,
+      marginBottom: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
     },
     groupCategory: {
       ...typography.body,
       color: colors.textSecondary,
-      marginBottom: Spacing.xs,
+      marginBottom: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
     },
     groupDescription: {
       ...typography.body,
       color: colors.textSecondary,
-      marginBottom: Spacing.md,
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     groupStats: {
       flexDirection: 'row',
@@ -210,7 +220,7 @@ export default function ExploreTab() {
     groupStatText: {
       ...typography.caption,
       color: colors.textSecondary,
-      marginLeft: Spacing.xs,
+      marginLeft: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
     },
     trendingBadge: {
       position: 'absolute',
@@ -218,7 +228,7 @@ export default function ExploreTab() {
       right: -5,
       backgroundColor: colors.error,
       borderRadius: 12,
-      paddingHorizontal: Spacing.sm,
+      paddingHorizontal: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
       paddingVertical: 2,
     },
     trendingText: {
@@ -226,13 +236,12 @@ export default function ExploreTab() {
       color: colors.surface,
       fontWeight: 'bold',
       fontSize: 10,
-    },
-    joinButton: {
+    },    joinButton: {
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
-      marginTop: Spacing.md,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingVertical: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+      marginTop: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     joinButtonText: {
       ...typography.body,

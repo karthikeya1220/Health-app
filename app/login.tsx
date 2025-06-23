@@ -10,11 +10,23 @@ import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
+import { ResponsiveLayout, ResponsiveCard, useResponsiveDimensions } from '@/components/ui/ResponsiveLayout';
+import { 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  COMPONENT,
+  TYPOGRAPHY,
+  responsiveValue,
+  useBreakpoint 
+} from '@/utils/responsive';
 
 export default function LoginScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
-  const [email, setEmail] = useState('');  const [password, setPassword] = useState('');
+  const { isMobile, isCompact, contentPadding } = useResponsiveDimensions();
+  const [email, setEmail] = useState('');  
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -48,7 +60,6 @@ export default function LoginScreen() {
       }
     }, 1500);
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -62,108 +73,144 @@ export default function LoginScreen() {
     scrollContent: {
       flexGrow: 1,
       justifyContent: 'center',
-      padding: Spacing.lg,
+      padding: contentPadding,
+      paddingVertical: LAYOUT.getPadding(24),
     },
     header: {
       alignItems: 'center',
-      marginBottom: Spacing.xl * 2,
-    },    title: {
-      ...typography.h1,
+      marginBottom: responsiveValue({
+        xs: LAYOUT.getPadding(32),
+        sm: LAYOUT.getPadding(40),
+        md: LAYOUT.getPadding(48),
+        lg: LAYOUT.getPadding(56),
+        default: LAYOUT.getPadding(48)
+      }),
+    },    
+    title: {
+      fontSize: TYPOGRAPHY.getHeaderSize(1),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getHeaderSize(1)),
       color: colors.text,
       textAlign: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getPadding(16),
+      fontWeight: '700',
     },
     subtitle: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium')),
       textAlign: 'center',
-      color: colors.textSecondary, // Override the default typography color
+      color: colors.textSecondary,
     },
     loginCard: {
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getPadding(24),
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.xl,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: responsiveValue({
+        xs: LAYOUT.getPadding(20),
+        sm: LAYOUT.getPadding(24),
+        md: LAYOUT.getPadding(28),
+        default: LAYOUT.getPadding(24)
+      }),
       shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 4,
+      shadowOffset: { width: 0, height: responsiveValue({ xs: 2, sm: 4, default: 4 }) },
+      shadowOpacity: responsiveValue({ xs: 0.08, sm: 0.1, default: 0.1 }),
+      shadowRadius: responsiveValue({ xs: 4, sm: 8, default: 8 }),
+      elevation: responsiveValue({ xs: 2, sm: 4, default: 4 }),
+      maxWidth: COMPONENT.card.maxWidth,
+      alignSelf: 'center',
+      width: '100%',
     },
     inputContainer: {
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getPadding(24),
     },
     inputWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.md,
-      marginBottom: Spacing.md,
-      paddingHorizontal: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      marginBottom: LAYOUT.getPadding(16),
+      paddingHorizontal: LAYOUT.getPadding(16),
       borderWidth: 1,
       borderColor: colors.border,
+      minHeight: COMPONENT.input.md,
     },
     inputIcon: {
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getPadding(12),
     },
     input: {
       flex: 1,
       backgroundColor: 'transparent',
       borderWidth: 0,
       paddingHorizontal: 0,
-      ...typography.body,
-      color: colors.text, // Override typography color
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      color: colors.text,
+      paddingVertical: isCompact ? LAYOUT.getPadding(8) : LAYOUT.getPadding(12),
     },
     eyeButton: {
       backgroundColor: 'transparent',
-      padding: Spacing.xs,
-      minHeight: 0,
+      padding: LAYOUT.getPadding(8),
+      minHeight: TOUCH.minTarget,
+      width: TOUCH.minTarget,
+      justifyContent: 'center',
+      alignItems: 'center',
       borderWidth: 0,
     },
     loginButton: {
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getPadding(20),
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.lg,
-      paddingVertical: Spacing.md,
-    },
-    loginButtonText: {
-      ...typography.body,
-      textAlign: 'center',
-      color: colors.surface, // Override typography color
-    },
-    footer: {
-      flexDirection: 'row',
+      borderRadius: LAYOUT.getBorderRadius(12),
+      paddingVertical: LAYOUT.getPadding(16),
+      minHeight: COMPONENT.button.md,
       justifyContent: 'center',
       alignItems: 'center',
     },
+    loginButtonText: {
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      fontWeight: '600',
+      textAlign: 'center',
+      color: colors.surface,
+    },
+    footer: {
+      flexDirection: isMobile ? 'column' : 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: isMobile ? LAYOUT.getPadding(8) : 0,
+    },
     footerText: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      color: colors.text,
     },
     signUpButton: {
       backgroundColor: 'transparent',
       borderWidth: 0,
-      padding: Spacing.xs,
-      minHeight: 0,
-    },    signUpButtonText: {
-      ...typography.bodyMedium,
-      color: colors.primary,
-    },
-    demoInfo: {
+      padding: LAYOUT.getPadding(8),
+      minHeight: TOUCH.minTarget,
+      justifyContent: 'center',
       alignItems: 'center',
-      marginTop: Spacing.lg,
+    },    
+    signUpButtonText: {
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      color: colors.primary,
+      fontWeight: '600',
+    },    demoInfo: {
+      alignItems: 'center',
+      marginTop: LAYOUT.getPadding(20),
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.md,
-      padding: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(16),
+      maxWidth: COMPONENT.card.maxWidth,
+      alignSelf: 'center',
+      width: '100%',
     },
     demoText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
       textAlign: 'center',
       fontStyle: 'italic',
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getCaptionSize()),
     },
   });
-
   return (
-    <SafeAreaView style={styles.container}>
+    <ResponsiveLayout safeArea={true} scrollable={false} padding={false}>
       <LinearGradient
         colors={[colors.primaryLight, colors.background]}
         style={styles.gradient}
@@ -175,16 +222,17 @@ export default function LoginScreen() {
           <ScrollView
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
             <View style={styles.header}>
               <Text style={styles.title}>Welcome Back</Text>
               <Text style={styles.subtitle}>Sign in to continue your fitness journey</Text>
             </View>
 
-            <View style={styles.loginCard}>
+            <ResponsiveCard padding={false} style={styles.loginCard}>
               <View style={styles.inputContainer}>
                 <View style={styles.inputWrapper}>
-                  <Mail size={20} color={colors.textSecondary} style={styles.inputIcon} />
+                  <Mail size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.textSecondary} style={styles.inputIcon} />
                   <Input
                     placeholder="Email address"
                     value={email}
@@ -197,7 +245,7 @@ export default function LoginScreen() {
                 </View>
 
                 <View style={styles.inputWrapper}>
-                  <Lock size={20} color={colors.textSecondary} style={styles.inputIcon} />
+                  <Lock size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.textSecondary} style={styles.inputIcon} />
                   <Input
                     placeholder="Password"
                     value={password}
@@ -209,11 +257,12 @@ export default function LoginScreen() {
                   <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}
                     style={styles.eyeButton}
+                    activeOpacity={0.7}
                   >
                     {showPassword ? (
-                      <EyeOff size={20} color={colors.textSecondary} />
+                      <EyeOff size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.textSecondary} />
                     ) : (
-                      <Eye size={20} color={colors.textSecondary} />
+                      <Eye size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.textSecondary} />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -226,6 +275,7 @@ export default function LoginScreen() {
                   styles.loginButton,
                   { opacity: isLoading ? 0.7 : 1 }
                 ]}
+                activeOpacity={0.8}
               >
                 <Text style={styles.loginButtonText}>
                   {isLoading ? 'Signing In...' : 'Sign In'}
@@ -233,22 +283,26 @@ export default function LoginScreen() {
               </TouchableOpacity>
 
               <View style={styles.footer}>
-                <Text style={styles.footerText}>Don't have an account? </Text>                <TouchableOpacity
+                <Text style={styles.footerText}>Don't have an account? </Text>                
+                <TouchableOpacity
                   onPress={() => router.push('/signup')}
                   style={styles.signUpButton}
+                  activeOpacity={0.7}
                 >
                   <Text style={styles.signUpButtonText}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
-            </View>            <View style={styles.demoInfo}>
+            </ResponsiveCard>            
+
+            <ResponsiveCard padding={false} style={styles.demoInfo}>
               <Text style={styles.demoText}>
                 Demo App - Use any email and password to login{'\n'}
                 Use email with "new" or "first" to see onboarding flow
               </Text>
-            </View>
+            </ResponsiveCard>
           </ScrollView>
         </KeyboardAvoidingView>
       </LinearGradient>
-    </SafeAreaView>
+    </ResponsiveLayout>
   );
 }

@@ -3,11 +3,18 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Ani
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Users, Shield, Clock, CheckCircle, XCircle, Calendar, MapPin, Crown, Star } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { 
+  scale, 
+  verticalScale, 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  responsiveValue 
+} from '@/utils/responsive';
 
 const { width } = Dimensions.get('window');
 
@@ -89,13 +96,12 @@ export default function RequestGroupAccessScreen() {
     container: {
       flex: 1,
       backgroundColor: colors.background,
-    },
-    header: {
+    },    header: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
-      paddingBottom: Spacing.md,
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingTop: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     backButton: {
       width: 40,
@@ -104,9 +110,10 @@ export default function RequestGroupAccessScreen() {
       backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
-    },    headerTitle: {
-      ...TextStyles.h3,
+      marginRight: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+    },
+    headerTitle: {
+      ...typography.h3,
       color: colors.text,
       marginBottom: 2,
     },
@@ -114,17 +121,16 @@ export default function RequestGroupAccessScreen() {
       flex: 1,
     },
     headerSubtitle: {
-      ...TextStyles.caption,
+      ...typography.caption,
       color: colors.textSecondary,
     },
     scrollContent: {
-      padding: Spacing.lg,
-    },
-    groupCard: {
+      padding: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+    },    groupCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.xl,
-      marginBottom: Spacing.lg,
+      borderRadius: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      padding: responsiveValue({ default: 32, sm: 24, md: 32, lg: 40 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.1,
@@ -135,7 +141,7 @@ export default function RequestGroupAccessScreen() {
     },
     groupHeader: {
       alignItems: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     groupIcon: {
       width: 80,
@@ -143,7 +149,7 @@ export default function RequestGroupAccessScreen() {
       borderRadius: 40,
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     groupIconText: {
       fontSize: 40,
@@ -153,28 +159,27 @@ export default function RequestGroupAccessScreen() {
       color: colors.text,
       fontWeight: 'bold',
       textAlign: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
     privateLabel: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.warning + '20',
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.xs,
-      borderRadius: BorderRadius.full,
-      marginBottom: Spacing.md,
+      paddingHorizontal: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingVertical: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
+      borderRadius: responsiveValue({ default: 50, sm: 40, md: 50, lg: 60 }),
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     privateLabelText: {
       ...typography.caption,
       color: colors.warning,
       fontWeight: '600',
-      marginLeft: Spacing.xs,
-    },
-    groupStats: {
+      marginLeft: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
+    },    groupStats: {
       flexDirection: 'row',
       justifyContent: 'center',
-      gap: Spacing.lg,
-      marginBottom: Spacing.lg,
+      gap: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     groupStat: {
       alignItems: 'center',
@@ -194,20 +199,19 @@ export default function RequestGroupAccessScreen() {
       color: colors.text,
       lineHeight: 24,
       textAlign: 'center',
-    },
-    section: {
-      marginBottom: Spacing.lg,
+    },    section: {
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     sectionTitle: {
       ...typography.h4,
       color: colors.text,
       fontWeight: 'bold',
-      marginBottom: Spacing.md,
+      marginBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     adminCard: {
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      padding: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
       flexDirection: 'row',
       alignItems: 'center',
       borderWidth: 1,
@@ -217,7 +221,7 @@ export default function RequestGroupAccessScreen() {
       width: 50,
       height: 50,
       borderRadius: 25,
-      marginRight: Spacing.md,
+      marginRight: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     adminInfo: {
       flex: 1,
@@ -231,16 +235,15 @@ export default function RequestGroupAccessScreen() {
     adminTitle: {
       ...typography.caption,
       color: colors.textSecondary,
-    },
-    requirementsList: {
-      gap: Spacing.sm,
+    },    requirementsList: {
+      gap: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
     requirementItem: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      padding: Spacing.md,
+      padding: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.md,
+      borderRadius: responsiveValue({ default: 12, sm: 8, md: 12, lg: 16 }),
       borderWidth: 1,
       borderColor: colors.border,
     },
@@ -248,16 +251,16 @@ export default function RequestGroupAccessScreen() {
       ...typography.body,
       color: colors.text,
       flex: 1,
-      marginLeft: Spacing.sm,
+      marginLeft: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
       lineHeight: 20,
     },
     eventsContainer: {
-      gap: Spacing.md,
+      gap: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     eventCard: {
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      padding: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
       borderWidth: 1,
       borderColor: colors.border,
     },
@@ -265,12 +268,12 @@ export default function RequestGroupAccessScreen() {
       ...typography.body,
       color: colors.text,
       fontWeight: '600',
-      marginBottom: Spacing.xs,
+      marginBottom: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
     },
     eventDetails: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.lg,
+      gap: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     eventDetail: {
       flexDirection: 'row',
@@ -280,15 +283,14 @@ export default function RequestGroupAccessScreen() {
     eventDetailText: {
       ...typography.caption,
       color: colors.textSecondary,
-    },
-    buttonContainer: {
-      marginTop: Spacing.xl,
-      gap: Spacing.md,
+    },    buttonContainer: {
+      marginTop: responsiveValue({ default: 32, sm: 24, md: 32, lg: 40 }),
+      gap: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     requestButton: {
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.lg,
-      paddingVertical: Spacing.lg,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingVertical: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
       alignItems: 'center',
     },
     requestButtonText: {
@@ -296,11 +298,10 @@ export default function RequestGroupAccessScreen() {
       color: colors.surface,
       fontWeight: '600',
       fontSize: 16,
-    },
-    cancelButton: {
+    },    cancelButton: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      paddingVertical: Spacing.md,
+      borderRadius: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      paddingVertical: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       alignItems: 'center',
       borderWidth: 1,
       borderColor: colors.border,

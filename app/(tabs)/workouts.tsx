@@ -7,12 +7,26 @@ import {
   TouchableOpacity,
   Animated,
   StatusBar,
-  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
+import { getTypography, TextStyles } from '@/theme/typography';
+import { Spacing, BorderRadius, Layout, Grid } from '@/theme/spacing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { 
+  scale, 
+  verticalScale, 
+  moderateScale, 
+  SCREEN, 
+  GRID, 
+  LAYOUT, 
+  COMPONENT,
+  TOUCH,
+  useSafeLayout,
+  responsiveValue,
+  isTablet
+} from '@/utils/responsive';
+import { getDeviceType } from '@/theme/spacing';
 import { 
   Timer, 
   Dumbbell, 
@@ -30,9 +44,7 @@ import {
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const { width } = Dimensions.get('window');
-
-// Exercise Type Card Component
+// Exercise Type Card Component with responsive design
 const ExerciseTypeCard = ({ 
   type, 
   isSelected, 
@@ -86,7 +98,7 @@ const ExerciseTypeCard = ({
           }
         ]}>
           <type.icon 
-            size={24} 
+            size={responsiveValue({ xs: scale(20), sm: scale(22), md: scale(24), default: scale(22) })} 
             color={isSelected ? colors.primary : colors.primary} 
           />
         </View>
@@ -317,139 +329,146 @@ export default function WorkoutsTab() {
   const filteredWorkouts = selectedType === 'all' 
     ? workouts 
     : workouts.filter(workout => workout.type.toLowerCase() === selectedType);
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
     },
     scrollContent: {
-      paddingBottom: insets.bottom + 20,
+      paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.xl,
     },
     header: {
-      paddingHorizontal: 20,
-      paddingTop: 20,
-      marginBottom: 20,
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.lg,
+      marginBottom: Spacing.lg,
     },
     headerTitle: {
-      ...typography.h1,
+      ...TextStyles.h1,
       color: colors.text,
       fontWeight: '700',
-      marginBottom: 4,
+      marginBottom: scale(4),
+      fontSize: responsiveValue({ xs: scale(24), sm: scale(28), md: scale(32), default: scale(28) }),
     },
     headerSubtitle: {
-      ...typography.bodyMedium,
+      ...TextStyles.bodyMedium,
       color: colors.textSecondary,
       opacity: 0.8,
+      fontSize: responsiveValue({ xs: scale(14), sm: scale(16), md: scale(18), default: scale(16) }),
     },
     statsContainer: {
       flexDirection: 'row',
-      paddingHorizontal: 20,
-      marginBottom: 24,
-      gap: 12,
+      paddingHorizontal: Spacing.lg,
+      marginBottom: Spacing.xl,
+      gap: Spacing.md,
     },
     statCard: {
       flex: 1,
       backgroundColor: colors.surface,
-      borderRadius: 16,
-      padding: 16,
+      borderRadius: BorderRadius.lg,
+      padding: responsiveValue({ xs: scale(12), sm: scale(16), md: scale(20), default: scale(16) }),
       shadowColor: colors.text,
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: { width: 0, height: verticalScale(2) },
       shadowOpacity: 0.1,
-      shadowRadius: 8,
+      shadowRadius: scale(8),
       elevation: 4,
+      minHeight: responsiveValue({ xs: verticalScale(70), sm: verticalScale(80), md: verticalScale(90), default: verticalScale(80) }),
+      justifyContent: 'center',
     },
     statValue: {
-      ...typography.h3,
+      ...TextStyles.h3,
       color: colors.text,
       fontWeight: '700',
-      marginBottom: 4,
+      marginBottom: scale(4),
+      fontSize: responsiveValue({ xs: scale(18), sm: scale(20), md: scale(24), default: scale(20) }),
     },
     statLabel: {
-      ...typography.caption,
+      ...TextStyles.caption,
       color: colors.textSecondary,
       fontWeight: '500',
+      fontSize: responsiveValue({ xs: scale(10), sm: scale(12), md: scale(14), default: scale(12) }),
     },
     exerciseTypesContainer: {
-      paddingHorizontal: 20,
-      marginBottom: 24,
+      paddingHorizontal: Spacing.lg,
+      marginBottom: Spacing.xl,
     },
     sectionTitle: {
-      ...typography.h4,
+      ...TextStyles.h4,
       color: colors.text,
       fontWeight: '700',
-      marginBottom: 16,
+      marginBottom: Spacing.lg,
+      fontSize: responsiveValue({ xs: scale(16), sm: scale(18), md: scale(20), default: scale(18) }),
     },
     exerciseTypesScroll: {
-      paddingRight: 20,
+      paddingRight: Spacing.lg,
     },
     exerciseTypeCard: {
-      width: 80,
-      height: 80,
-      borderRadius: 20,
+      width: responsiveValue({ xs: scale(70), sm: scale(80), md: scale(90), default: scale(80) }),
+      height: responsiveValue({ xs: scale(70), sm: scale(80), md: scale(90), default: scale(80) }),      borderRadius: BorderRadius.lg,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: 12,
-      borderWidth: 2,
+      marginRight: scale(12),
+      borderWidth: scale(2),
       shadowColor: colors.text,
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: { width: 0, height: verticalScale(2) },
       shadowOpacity: 0.1,
-      shadowRadius: 8,
+      shadowRadius: scale(8),
       elevation: 4,
     },
     exerciseTypeIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: responsiveValue({ xs: scale(32), sm: scale(36), md: scale(40), default: scale(36) }),
+      height: responsiveValue({ xs: scale(32), sm: scale(36), md: scale(40), default: scale(36) }),
+      borderRadius: responsiveValue({ xs: scale(16), sm: scale(18), md: scale(20), default: scale(18) }),
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: 4,
+      marginBottom: scale(4),
     },
     exerciseTypeName: {
-      ...typography.caption,
-      fontSize: 10,
+      ...TextStyles.caption,
+      fontSize: responsiveValue({ xs: scale(9), sm: scale(10), md: scale(11), default: scale(10) }),
       fontWeight: '600',
+      textAlign: 'center',
     },
     workoutsContainer: {
-      paddingHorizontal: 20,
-      marginBottom: 24,
+      paddingHorizontal: Spacing.lg,
+      marginBottom: Spacing.xl,
     },
     workoutCard: {
-      borderRadius: 20,
-      marginBottom: 16,
+      borderRadius: BorderRadius.lg,
+      marginBottom: Spacing.lg,
       overflow: 'hidden',
       shadowColor: colors.text,
-      shadowOffset: { width: 0, height: 4 },
+      shadowOffset: { width: 0, height: verticalScale(4) },
       shadowOpacity: 0.15,
-      shadowRadius: 12,
+      shadowRadius: scale(12),
       elevation: 8,
     },
     workoutGradient: {
-      padding: 20,
+      padding: responsiveValue({ xs: scale(16), sm: scale(18), md: scale(20), default: scale(18) }),
       position: 'relative',
+      minHeight: responsiveValue({ xs: verticalScale(120), sm: verticalScale(140), md: verticalScale(160), default: verticalScale(140) }),
     },
     workoutCardHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 12,
+      marginBottom: scale(12),
     },
     workoutTypeTag: {
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 12,
+      paddingHorizontal: scale(8),
+      paddingVertical: scale(4),
+      borderRadius: BorderRadius.md,
     },
     workoutDifficulty: {
       flexDirection: 'row',
-      gap: 2,
+      gap: scale(2),
     },
     workoutContent: {
-      marginBottom: 16,
+      marginBottom: Spacing.lg,
     },
     workoutStats: {
       flexDirection: 'row',
-      gap: 16,
-      marginTop: 12,
+      gap: Spacing.lg,
+      marginTop: scale(12),
     },
     workoutStat: {
       flexDirection: 'row',
@@ -457,50 +476,49 @@ export default function WorkoutsTab() {
     },
     playButton: {
       position: 'absolute',
-      bottom: 20,
-      right: 20,
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      bottom: Spacing.lg,
+      right: Spacing.lg,      width: TOUCH.getTouchSize(),
+      height: TOUCH.getTouchSize(),
+      borderRadius: TOUCH.getTouchSize() / 2,
       backgroundColor: 'rgba(255, 255, 255, 0.2)',
       justifyContent: 'center',
       alignItems: 'center',
     },
     progressCard: {
-      margin: 20,
-      borderRadius: 20,
-      padding: 20,
+      margin: Spacing.lg,
+      borderRadius: BorderRadius.lg,
+      padding: responsiveValue({ xs: scale(16), sm: scale(18), md: scale(20), default: scale(18) }),
       shadowColor: colors.text,
-      shadowOffset: { width: 0, height: 4 },
+      shadowOffset: { width: 0, height: verticalScale(4) },
       shadowOpacity: 0.1,
-      shadowRadius: 12,
+      shadowRadius: scale(12),
       elevation: 8,
     },
     progressHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 20,
+      marginBottom: Spacing.lg,
     },
     progressBars: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-end',
-      height: 80,
+      height: responsiveValue({ xs: verticalScale(60), sm: verticalScale(70), md: verticalScale(80), default: verticalScale(70) }),
     },
     progressBarContainer: {
       alignItems: 'center',
       flex: 1,
     },
     progressBarBg: {
-      width: 12,
-      height: 60,
-      borderRadius: 6,
+      width: responsiveValue({ xs: scale(10), sm: scale(12), md: scale(14), default: scale(12) }),
+      height: responsiveValue({ xs: verticalScale(50), sm: verticalScale(55), md: verticalScale(60), default: verticalScale(55) }),
+      borderRadius: responsiveValue({ xs: scale(5), sm: scale(6), md: scale(7), default: scale(6) }),
       justifyContent: 'flex-end',
     },
     progressBarFill: {
-      width: 12,
-      borderRadius: 6,
+      width: responsiveValue({ xs: scale(10), sm: scale(12), md: scale(14), default: scale(12) }),
+      borderRadius: responsiveValue({ xs: scale(5), sm: scale(6), md: scale(7), default: scale(6) }),
     },
   });
 
