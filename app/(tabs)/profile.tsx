@@ -22,7 +22,6 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
 import { userData } from '@/constants/data';
 import { router } from 'expo-router';
@@ -43,6 +42,7 @@ import {
   useBreakpoint,
   responsiveValue 
 } from '@/utils/responsive';
+import Spacing, { BorderRadius } from '@/theme/spacing';
 
 export default function ProfileTab() {
   const { colors, theme, themeMode, setThemeMode, pastelTheme, setPastelTheme } = useTheme();
@@ -80,6 +80,41 @@ export default function ProfileTab() {
       })
     ]).start();
   }, []);
+
+  // Enhanced navigation handlers
+  const navigateToScreen = (screen: string) => {
+    switch (screen) {
+      case 'notifications':
+        router.push('/(tabs)/notifications');
+        break;
+      case 'settings':
+        router.push('/(tabs)/settings');
+        break;
+      case 'explore':
+        router.push('/(tabs)/explore');
+        break;
+      case 'messaging':
+        router.push('/messaging');
+        break;
+      case 'groups':
+        router.push('/discover-groups');
+        break;
+      case 'achievements':
+        router.push('/(tabs)/challenge');
+        break;
+      case 'workouts':
+        router.push('/(tabs)/workouts');
+        break;
+      case 'activity':
+        router.push('/(tabs)/activity');
+        break;
+      case 'edit-profile':
+        router.push('/profile-setup');
+        break;
+      default:
+        break;
+    }
+  };
 
   // Responsive stats configuration
   const stats = [
@@ -268,14 +303,13 @@ export default function ProfileTab() {
       marginBottom: LAYOUT.getPadding(12),
       textAlign: 'center',
       fontFamily: 'Poppins_400Regular',
-    },
-    profileBadge: {
+    },    profileBadge: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.success,
       paddingHorizontal: LAYOUT.getPadding(16),
       paddingVertical: LAYOUT.getPadding(6),
-      borderRadius: BorderRadius.full,
+      borderRadius: LAYOUT.getBorderRadius(50),
       marginBottom: LAYOUT.getPadding(24),
     },
     badgeText: {
@@ -284,14 +318,13 @@ export default function ProfileTab() {
       fontWeight: '600',
       marginLeft: 4,
       fontFamily: 'Poppins_600SemiBold',
-    },
-    editButton: {
+    },    editButton: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.surface,
       paddingHorizontal: LAYOUT.getPadding(32),
       paddingVertical: LAYOUT.getPadding(16),
-      borderRadius: BorderRadius.full,
+      borderRadius: LAYOUT.getBorderRadius(50),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.2,
@@ -312,32 +345,31 @@ export default function ProfileTab() {
         xs: 20, sm: 22, md: 24, lg: 26, xl: 28, default: 24
       }),
       borderTopRightRadius: responsiveValue({
-        xs: 20, sm: 22, md: 24, lg: 26, xl: 28, default: 24
-      }),
+        xs: 20, sm: 22, md: 24, lg: 26, xl: 28, default: 24      }),
       marginTop: -24,
-      paddingTop: Spacing.xl,
-      paddingHorizontal: Spacing.lg,
+      paddingTop: LAYOUT.getPadding(20),
+      paddingHorizontal: LAYOUT.getContentPadding(),
       flex: 1,
     },
     quickActionsContainer: {
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(24),
     },
     sectionTitle: {
       ...typography.h3,
       color: colors.text,
       fontWeight: '700',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(16),
     },
     quickActionsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(12),
     },
     quickActionCard: {
       width: '22%',
       aspectRatio: 1,
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
       justifyContent: 'center',
       alignItems: 'center',
       shadowColor: colors.shadow,
@@ -357,19 +389,18 @@ export default function ProfileTab() {
       textAlign: 'center',
       fontWeight: '500',
       fontSize: 10,
-    },
-    statsContainer: {
-      marginBottom: Spacing.xl,
+    },    statsContainer: {
+      marginBottom: LAYOUT.getMargin(24),
     },
     statsGrid: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: LAYOUT.getMargin(8),
     },
     statCard: {
       flex: 1,
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(16),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,

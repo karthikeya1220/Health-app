@@ -2,14 +2,12 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { LightTheme, DarkTheme } from '@/theme/colors';
 import { getTypography } from '@/theme/typography';
-import { Spacing } from '@/theme/spacing';
 import { userData } from '@/constants/data';
+import { COMPONENT, LAYOUT, TOUCH } from '@/utils/responsive';
 
 export const ProfileHeader: React.FC = () => {
-  const { theme } = useTheme();
-  const colors = theme === 'dark' ? DarkTheme : LightTheme;
+  const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
 
   return (
@@ -23,7 +21,7 @@ export const ProfileHeader: React.FC = () => {
       </View>
       
       <TouchableOpacity style={[styles.notificationButton, { backgroundColor: colors.surface }]}>
-        <Bell size={24} color={colors.text} />
+        <Bell size={COMPONENT.icon.md} color={colors.text} />
       </TouchableOpacity>
     </View>
   );
@@ -42,18 +40,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: Spacing.md,
+    width: COMPONENT.avatar.md,
+    height: COMPONENT.avatar.md,
+    borderRadius: COMPONENT.avatar.md / 2,
+    marginRight: LAYOUT.getMargin(12),
   },
   greeting: {
     flex: 1,
   },
   notificationButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: TOUCH.getTouchSize(),
+    height: TOUCH.getTouchSize(),
+    borderRadius: TOUCH.getTouchSize() / 2,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: {

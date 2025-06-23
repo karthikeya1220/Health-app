@@ -1,8 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Animated, TouchableOpacity, StyleSheet, ViewProps } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { LightTheme, DarkTheme } from '@/theme/colors';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { LAYOUT } from '@/utils/responsive';
 
 interface AnimatedCardProps extends ViewProps {
   children: React.ReactNode;
@@ -19,8 +18,7 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
   style,
   ...props
 }) => {
-  const { theme } = useTheme();
-  const colors = theme === 'dark' ? DarkTheme : LightTheme;
+  const { colors, theme } = useTheme();
   
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -112,8 +110,8 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
+    borderRadius: LAYOUT.getBorderRadius(16),
+    padding: LAYOUT.getPadding(16),
   },
   elevated: {
     shadowOffset: {

@@ -250,9 +250,12 @@ export default function ExploreTab() {
       textAlign: 'center',
     },
   });
-
   const renderGroupCard = ({ item }: { item: typeof groups[0] }) => (
-    <TouchableOpacity style={styles.groupCard}>
+    <TouchableOpacity 
+      style={styles.groupCard}
+      onPress={() => router.push('/group-page')}
+      activeOpacity={0.9}
+    >
       <View style={styles.groupHeader}>
         <View style={styles.groupInfo}>
           <Text style={styles.groupName}>{item.name}</Text>
@@ -284,7 +287,13 @@ export default function ExploreTab() {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.joinButton}>
+      <TouchableOpacity 
+        style={styles.joinButton}
+        onPress={(e) => {
+          e.stopPropagation();
+          router.push('/request-group-access');
+        }}
+      >
         <Text style={styles.joinButtonText}>Join Group</Text>
       </TouchableOpacity>
     </TouchableOpacity>
