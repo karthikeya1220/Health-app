@@ -1,96 +1,341 @@
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import { LightTheme, DarkTheme } from './colors';
+import { moderateScale, ScreenBreakpoints, getDeviceType } from './spacing';
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-// Responsive font scaling
+// Enhanced responsive font scaling with better mobile support
 const getFontScale = () => {
-  if (screenWidth < 375) return 0.9;   // Small devices
-  if (screenWidth > 414) return 1.1;   // Large devices
-  return 1; // Default
+  const deviceType = getDeviceType();
+  
+  // More granular scaling based on enhanced device type detection
+  switch (deviceType) {
+    case 'xs':
+      return 0.8;   // Very small devices - more compact
+    case 'small':
+      return 0.875; // Small devices - slightly compact
+    case 'medium':
+      return 1;     // Standard devices - base size
+    case 'large':
+      return 1.05;  // Large devices - slightly larger
+    case 'xlarge':
+      return 1.1;   // Phablets - larger text
+    case 'xxlarge':
+      return 1.2;   // Tablets - much larger text
+    default:
+      return 1;
+  }
 };
 
 const fontScale = getFontScale();
 
-export const getTypography = (isDark: boolean) => {
-  const colors = isDark ? DarkTheme : LightTheme;
+// Enhanced responsive font size calculation with minimum size protection
+const responsiveFontSize = (baseSize: number): number => {
+  const scaled = moderateScale(baseSize * fontScale, 0.3);
+  // Ensure minimum font size for accessibility (12px minimum)
+  return Math.max(12, Math.round(scaled));
+};
+
+// Enhanced line height calculation with device-specific adjustments
+const calculateLineHeight = (fontSize: number): number => {
+  const deviceType = getDeviceType();
+  let lineHeightRatio = 1.4;
   
-  return {    // Heading styles with responsive scaling
-    h1: {
-      fontSize: Math.round(32 * fontScale),
+  // Adjust line height for mobile readability
+  switch (deviceType) {
+    case 'xs':
+    case 'small':
+      lineHeightRatio = 1.35; // Tighter line height for small screens
+      break;
+    case 'medium':
+      lineHeightRatio = 1.4;  // Standard line height
+      break;
+    case 'large':
+    case 'xlarge':
+      lineHeightRatio = 1.45; // Slightly looser for larger screens
+      break;
+    case 'xxlarge':
+      lineHeightRatio = 1.5;  // More spacious for tablets
+      break;
+  }
+  
+  return Math.round(fontSize * lineHeightRatio);
+};
+
+export const getTypography = (isDark: boolean) => {
+  const colors = isDark ? DarkTheme : LightTheme;  
+  return {
+    // Display styles for hero text
+    display: {
+      fontSize: responsiveFontSize(40),
       fontWeight: '700' as const,
       fontFamily: 'Poppins_700Bold',
       color: colors.text,
-      lineHeight: Math.round(38 * fontScale),
+      lineHeight: calculateLineHeight(responsiveFontSize(40)),
+      letterSpacing: -1,
+    },
+    
+    // Heading styles with responsive scaling
+    h1: {
+      fontSize: responsiveFontSize(32),
+      fontWeight: '700' as const,
+      fontFamily: 'Poppins_700Bold',
+      color: colors.text,
+      lineHeight: calculateLineHeight(responsiveFontSize(32)),
       letterSpacing: -0.5,
     },
     h2: {
-      fontSize: Math.round(24 * fontScale),
+      fontSize: responsiveFontSize(24),
       fontWeight: '600' as const,
       fontFamily: 'Poppins_600SemiBold',
       color: colors.text,
-      lineHeight: Math.round(30 * fontScale),
+      lineHeight: calculateLineHeight(responsiveFontSize(24)),
       letterSpacing: -0.3,
     },
     h3: {
-      fontSize: Math.round(20 * fontScale),
+      fontSize: responsiveFontSize(20),
       fontWeight: '600' as const,
       fontFamily: 'Poppins_600SemiBold',
       color: colors.text,
-      lineHeight: Math.round(26 * fontScale),
-      letterSpacing: -0.2,
-    },
+      lineHeight: calculateLineHeight(responsiveFontSize(20)),
+      letterSpacing: -0.2,    },
     h4: {
-      fontSize: Math.round(18 * fontScale),
+      fontSize: responsiveFontSize(18),
       fontWeight: '500' as const,
       fontFamily: 'Poppins_500Medium',
       color: colors.text,
-      lineHeight: Math.round(24 * fontScale),
+      lineHeight: calculateLineHeight(responsiveFontSize(18)),
     },
-      // Body text styles
+    h5: {
+      fontSize: responsiveFontSize(16),
+      fontWeight: '500' as const,
+      fontFamily: 'Poppins_500Medium',
+      color: colors.text,
+      lineHeight: calculateLineHeight(responsiveFontSize(16)),
+    },
+    
+    // Body text styles with responsive sizing
     body: {
-      fontSize: Math.round(16 * fontScale),
+      fontSize: responsiveFontSize(16),
       fontWeight: '400' as const,
       fontFamily: 'Poppins_400Regular',
       color: colors.text,
-      lineHeight: Math.round(24 * fontScale),
+      lineHeight: calculateLineHeight(responsiveFontSize(16)),
+    },
+    bodyLarge: {
+      fontSize: responsiveFontSize(18),
+      fontWeight: '400' as const,
+      fontFamily: 'Poppins_400Regular',
+      color: colors.text,
+      lineHeight: calculateLineHeight(responsiveFontSize(18)),
     },
     bodyMedium: {
-      fontSize: Math.round(16 * fontScale),
+      fontSize: responsiveFontSize(16),
       fontWeight: '500' as const,
       fontFamily: 'Poppins_500Medium',
       color: colors.text,
-      lineHeight: Math.round(24 * fontScale),
+      lineHeight: calculateLineHeight(responsiveFontSize(16)),
     },
     bodySmall: {
-      fontSize: Math.round(14 * fontScale),
+      fontSize: responsiveFontSize(14),
       fontWeight: '400' as const,
       fontFamily: 'Poppins_400Regular',
-      color: colors.textSecondary,
-      lineHeight: Math.round(20 * fontScale),
+      color: colors.text,
+      lineHeight: calculateLineHeight(responsiveFontSize(14)),
     },
-      // Special text styles
+    
+    // Special text styles
     caption: {
-      fontSize: Math.round(12 * fontScale),
+      fontSize: responsiveFontSize(12),
       fontWeight: '400' as const,
       fontFamily: 'Poppins_400Regular',
       color: colors.textSecondary,
-      lineHeight: Math.round(16 * fontScale),
+      lineHeight: calculateLineHeight(responsiveFontSize(12)),
     },
-    button: {
-      fontSize: Math.round(16 * fontScale),
-      fontWeight: '600' as const,
-      fontFamily: 'Poppins_600SemiBold',
-      lineHeight: Math.round(20 * fontScale),
-    },
-    label: {
-      fontSize: Math.round(14 * fontScale),
+    captionMedium: {
+      fontSize: responsiveFontSize(12),
       fontWeight: '500' as const,
       fontFamily: 'Poppins_500Medium',
       color: colors.textSecondary,
-      lineHeight: Math.round(18 * fontScale),
+      lineHeight: calculateLineHeight(responsiveFontSize(12)),
+    },
+    button: {
+      fontSize: responsiveFontSize(16),
+      fontWeight: '600' as const,
+      fontFamily: 'Poppins_600SemiBold',
+      lineHeight: calculateLineHeight(responsiveFontSize(16)),
+    },
+    buttonLarge: {
+      fontSize: responsiveFontSize(18),
+      fontWeight: '600' as const,
+      fontFamily: 'Poppins_600SemiBold',
+      lineHeight: calculateLineHeight(responsiveFontSize(18)),
+    },
+    buttonSmall: {
+      fontSize: responsiveFontSize(14),
+      fontWeight: '600' as const,      fontFamily: 'Poppins_600SemiBold',
+      lineHeight: calculateLineHeight(responsiveFontSize(14)),
+    },
+    label: {
+      fontSize: responsiveFontSize(14),
+      fontWeight: '500' as const,
+      fontFamily: 'Poppins_500Medium',
+      color: colors.textSecondary,
+      lineHeight: calculateLineHeight(responsiveFontSize(14)),
+    },
+    
+    // Navigation and UI text
+    tabBarLabel: {
+      fontSize: responsiveFontSize(10),
+      fontWeight: '500' as const,
+      fontFamily: 'Poppins_500Medium',
+      textAlign: 'center' as const,
+    },
+    navigationTitle: {
+      fontSize: responsiveFontSize(17),
+      fontWeight: '600' as const,
+      fontFamily: 'Poppins_600SemiBold',
+      color: colors.text,
     },
   };
+};
+
+// Pre-defined text styles for common use cases (responsive)
+export const TextStyles = {
+  // Large display text
+  display: {
+    fontSize: responsiveFontSize(48),
+    fontWeight: '700' as const,
+    fontFamily: 'Poppins_700Bold',
+    lineHeight: calculateLineHeight(responsiveFontSize(48)),
+  },
+  
+  // Headers
+  h1: {
+    fontSize: responsiveFontSize(32),
+    fontWeight: '700' as const,
+    fontFamily: 'Poppins_700Bold',
+    lineHeight: calculateLineHeight(responsiveFontSize(32)),
+    letterSpacing: -0.5,
+  },
+  h2: {
+    fontSize: responsiveFontSize(24),
+    fontWeight: '600' as const,
+    fontFamily: 'Poppins_600SemiBold',
+    lineHeight: calculateLineHeight(responsiveFontSize(24)),
+    letterSpacing: -0.3,
+  },
+  h3: {
+    fontSize: responsiveFontSize(20),
+    fontWeight: '600' as const,
+    fontFamily: 'Poppins_600SemiBold',
+    lineHeight: calculateLineHeight(responsiveFontSize(20)),
+    letterSpacing: -0.2,
+  },
+  h4: {
+    fontSize: responsiveFontSize(18),
+    fontWeight: '500' as const,
+    fontFamily: 'Poppins_500Medium',
+    lineHeight: calculateLineHeight(responsiveFontSize(18)),
+  },
+  h5: {
+    fontSize: responsiveFontSize(16),
+    fontWeight: '500' as const,
+    fontFamily: 'Poppins_500Medium',
+    lineHeight: calculateLineHeight(responsiveFontSize(16)),
+  },
+  
+  // Body text
+  body: {
+    fontSize: responsiveFontSize(16),
+    fontWeight: '400' as const,
+    fontFamily: 'Poppins_400Regular',
+    lineHeight: calculateLineHeight(responsiveFontSize(16)),
+  },
+  bodyLarge: {
+    fontSize: responsiveFontSize(18),
+    fontWeight: '400' as const,
+    fontFamily: 'Poppins_400Regular',
+    lineHeight: calculateLineHeight(responsiveFontSize(18)),
+  },
+  bodyMedium: {
+    fontSize: responsiveFontSize(16),
+    fontWeight: '500' as const,
+    fontFamily: 'Poppins_500Medium',
+    lineHeight: calculateLineHeight(responsiveFontSize(16)),
+  },
+  bodySmall: {
+    fontSize: responsiveFontSize(14),
+    fontWeight: '400' as const,
+    fontFamily: 'Poppins_400Regular',
+    lineHeight: calculateLineHeight(responsiveFontSize(14)),
+  },
+  
+  // Small text
+  caption: {
+    fontSize: responsiveFontSize(12),
+    fontWeight: '400' as const,
+    fontFamily: 'Poppins_400Regular',
+    lineHeight: calculateLineHeight(responsiveFontSize(12)),
+  },
+  captionMedium: {
+    fontSize: responsiveFontSize(12),
+    fontWeight: '500' as const,
+    fontFamily: 'Poppins_500Medium',
+    lineHeight: calculateLineHeight(responsiveFontSize(12)),
+  },
+  overline: {
+    fontSize: responsiveFontSize(10),
+    fontWeight: '600' as const,
+    fontFamily: 'Poppins_600SemiBold',
+    lineHeight: calculateLineHeight(responsiveFontSize(10)),
+    letterSpacing: 1,
+  },
+  
+  // Interactive elements
+  button: {
+    fontSize: responsiveFontSize(16),
+    fontWeight: '600' as const,
+    fontFamily: 'Poppins_600SemiBold',
+    lineHeight: calculateLineHeight(responsiveFontSize(16)),
+  },
+  buttonLarge: {
+    fontSize: responsiveFontSize(18),
+    fontWeight: '600' as const,
+    fontFamily: 'Poppins_600SemiBold',
+    lineHeight: calculateLineHeight(responsiveFontSize(18)),
+  },
+  buttonSmall: {
+    fontSize: responsiveFontSize(14),
+    fontWeight: '600' as const,
+    fontFamily: 'Poppins_600SemiBold',
+    lineHeight: calculateLineHeight(responsiveFontSize(14)),
+  },
+  link: {
+    fontSize: responsiveFontSize(16),
+    fontWeight: '500' as const,
+    fontFamily: 'Poppins_500Medium',
+    lineHeight: calculateLineHeight(responsiveFontSize(16)),
+  },
+  
+  // Navigation and UI
+  tabBarLabel: {
+    fontSize: responsiveFontSize(10),
+    fontWeight: '500' as const,
+    fontFamily: 'Poppins_500Medium',
+    textAlign: 'center' as const,
+  },
+  navigationTitle: {
+    fontSize: responsiveFontSize(17),
+    fontWeight: '600' as const,
+    fontFamily: 'Poppins_600SemiBold',
+  },
+  label: {
+    fontSize: responsiveFontSize(14),
+    fontWeight: '500' as const,
+    fontFamily: 'Poppins_500Medium',
+    lineHeight: calculateLineHeight(responsiveFontSize(14)),
+  },
 };
 
 // Font families
@@ -120,7 +365,7 @@ export const getPoppinsFontFamily = (weight: string | number): string => {
   }
 };
 
-// Utility function to create text styles with Poppins font
+// Utility function to create text styles with Poppins font (updated for responsive)
 export const createTextStyle = (options: {
   fontSize?: number;
   fontWeight?: '400' | '500' | '600' | '700' | 'normal' | 'bold';
@@ -131,46 +376,11 @@ export const createTextStyle = (options: {
   const { fontSize = 16, fontWeight = '400', color, lineHeight, letterSpacing } = options;
   
   return {
-    fontSize: Math.round(fontSize * fontScale),
+    fontSize: responsiveFontSize(fontSize),
     fontFamily: getPoppinsFontFamily(fontWeight),
     fontWeight: fontWeight,
     ...(color && { color }),
-    ...(lineHeight && { lineHeight: Math.round(lineHeight * fontScale) }),
+    ...(lineHeight && { lineHeight: calculateLineHeight(responsiveFontSize(fontSize)) }),
     ...(letterSpacing && { letterSpacing }),
   };
-};
-
-// Pre-defined text styles for common use cases
-export const TextStyles = {
-  // Large display text
-  display: createTextStyle({ fontSize: 48, fontWeight: '700' }),
-  
-  // Headers
-  h1: createTextStyle({ fontSize: 32, fontWeight: '700', lineHeight: 38, letterSpacing: -0.5 }),
-  h2: createTextStyle({ fontSize: 24, fontWeight: '600', lineHeight: 30, letterSpacing: -0.3 }),
-  h3: createTextStyle({ fontSize: 20, fontWeight: '600', lineHeight: 26, letterSpacing: -0.2 }),
-  h4: createTextStyle({ fontSize: 18, fontWeight: '500', lineHeight: 24 }),
-  h5: createTextStyle({ fontSize: 16, fontWeight: '500', lineHeight: 22 }),
-  
-  // Body text
-  body: createTextStyle({ fontSize: 16, fontWeight: '400', lineHeight: 24 }),
-  bodyMedium: createTextStyle({ fontSize: 16, fontWeight: '500', lineHeight: 24 }),
-  bodySmall: createTextStyle({ fontSize: 14, fontWeight: '400', lineHeight: 20 }),
-  
-  // Small text
-  caption: createTextStyle({ fontSize: 12, fontWeight: '400', lineHeight: 16 }),
-  overline: createTextStyle({ fontSize: 10, fontWeight: '600', lineHeight: 14, letterSpacing: 1 }),
-  
-  // Interactive elements
-  button: createTextStyle({ fontSize: 16, fontWeight: '600', lineHeight: 20 }),
-  buttonSmall: createTextStyle({ fontSize: 14, fontWeight: '600', lineHeight: 18 }),
-  link: createTextStyle({ fontSize: 16, fontWeight: '500', lineHeight: 24 }),
-  
-  // Form elements
-  label: createTextStyle({ fontSize: 14, fontWeight: '500', lineHeight: 18 }),
-  input: createTextStyle({ fontSize: 16, fontWeight: '400', lineHeight: 24 }),
-  
-  // Special use cases
-  tabBarLabel: createTextStyle({ fontSize: 11, fontWeight: '500', lineHeight: 14 }),
-  timestamp: createTextStyle({ fontSize: 11, fontWeight: '400', lineHeight: 14 }),
 };

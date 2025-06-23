@@ -3,11 +3,18 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Image, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, MessageSquare, Heart, Share, Bookmark, MoreHorizontal, Send, ThumbsUp } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { 
+  scale, 
+  verticalScale, 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  responsiveValue 
+} from '@/utils/responsive';
 
 export default function ViewAllCommentsScreen() {
   const { colors, themeMode } = useTheme();
@@ -144,9 +151,7 @@ export default function ViewAllCommentsScreen() {
         </View>
       ))}
     </View>
-  );
-
-  const styles = StyleSheet.create({
+  );  const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
@@ -154,20 +159,20 @@ export default function ViewAllCommentsScreen() {
     header: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getPadding(),
+      paddingVertical: LAYOUT.getPadding(12),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
       backgroundColor: colors.surface,
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getTouchSize(),
+      height: TOUCH.getTouchSize(),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(12),
     },
     headerTitle: {
       ...typography.h3,
@@ -182,20 +187,20 @@ export default function ViewAllCommentsScreen() {
     },
     postPreview: {
       backgroundColor: colors.surface,
-      padding: Spacing.lg,
+      padding: LAYOUT.getPadding(),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
     postHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(12),
     },
     postAvatar: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      marginRight: Spacing.md,
+      width: TOUCH.getTouchSize(),
+      height: TOUCH.getTouchSize(),
+      borderRadius: LAYOUT.getBorderRadius(20),
+      marginRight: LAYOUT.getMargin(12),
     },
     postUserInfo: {
       flex: 1,
@@ -212,12 +217,12 @@ export default function ViewAllCommentsScreen() {
     postContent: {
       ...typography.body,
       color: colors.text,
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(12),
     },
     postStats: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingTop: Spacing.md,
+      paddingTop: LAYOUT.getPadding(12),
       borderTopWidth: 1,
       borderTopColor: colors.border,
     },
@@ -228,31 +233,31 @@ export default function ViewAllCommentsScreen() {
     postStatText: {
       ...typography.caption,
       color: colors.textSecondary,
-      marginLeft: Spacing.xs,
+      marginLeft: LAYOUT.getMargin(6),
     },
     commentsContainer: {
       flex: 1,
     },
     commentContainer: {
       flexDirection: 'row',
-      padding: Spacing.lg,
+      padding: LAYOUT.getPadding(),
       borderBottomWidth: 1,
       borderBottomColor: colors.border + '30',
     },
     replyContainer: {
-      paddingLeft: Spacing.xl + Spacing.lg,
+      paddingLeft: responsiveValue({ xs: scale(60), sm: scale(64), md: scale(68), default: scale(64) }),
       backgroundColor: colors.background + '50',
     },
     avatar: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      marginRight: Spacing.md,
+      width: TOUCH.getTouchSize(),
+      height: TOUCH.getTouchSize(),
+      borderRadius: LAYOUT.getBorderRadius(20),
+      marginRight: LAYOUT.getMargin(12),
     },
     replyAvatar: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
+      width: responsiveValue({ xs: scale(28), sm: scale(30), md: scale(32), default: scale(30) }),
+      height: responsiveValue({ xs: scale(28), sm: scale(30), md: scale(32), default: scale(30) }),
+      borderRadius: LAYOUT.getBorderRadius(16),
     },
     commentContent: {
       flex: 1,
@@ -260,13 +265,13 @@ export default function ViewAllCommentsScreen() {
     commentHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: Spacing.xs,
+      marginBottom: LAYOUT.getMargin(6),
     },
     userName: {
       ...typography.body,
       color: colors.text,
       fontWeight: '600',
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getMargin(8),
     },
     commentTime: {
       ...typography.caption,
@@ -275,17 +280,17 @@ export default function ViewAllCommentsScreen() {
     commentText: {
       ...typography.body,
       color: colors.text,
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     commentActions: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.lg,
+      gap: LAYOUT.getMargin(),
     },
     actionButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.xs,
+      gap: LAYOUT.getMargin(6),
     },
     actionText: {
       ...typography.caption,
@@ -295,33 +300,34 @@ export default function ViewAllCommentsScreen() {
     addCommentContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getPadding(),
+      paddingVertical: LAYOUT.getPadding(12),
       backgroundColor: colors.surface,
       borderTopWidth: 1,
       borderTopColor: colors.border,
     },
     addCommentAvatar: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      marginRight: Spacing.md,
+      width: responsiveValue({ xs: scale(28), sm: scale(30), md: scale(32), default: scale(30) }),
+      height: responsiveValue({ xs: scale(28), sm: scale(30), md: scale(32), default: scale(30) }),
+      borderRadius: LAYOUT.getBorderRadius(16),
+      marginRight: LAYOUT.getMargin(12),
     },
     addCommentInput: {
       flex: 1,
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.full,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(20),
+      paddingHorizontal: LAYOUT.getPadding(12),
+      paddingVertical: LAYOUT.getPadding(8),
       ...typography.body,
       color: colors.text,
     },
     sendButton: {
-      marginLeft: Spacing.sm,
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      backgroundColor: colors.primary,      justifyContent: 'center',
+      marginLeft: LAYOUT.getMargin(8),
+      width: responsiveValue({ xs: scale(32), sm: scale(34), md: scale(36), default: scale(34) }),
+      height: responsiveValue({ xs: scale(32), sm: scale(34), md: scale(36), default: scale(34) }),
+      borderRadius: LAYOUT.getBorderRadius(18),
+      backgroundColor: colors.primary,
+      justifyContent: 'center',
       alignItems: 'center',
     },
     sendButtonInner: {
@@ -349,7 +355,7 @@ export default function ViewAllCommentsScreen() {
               <ArrowLeft size={20} color={colors.text} />
             </TouchableOpacity>
             
-            <Text style={[TextStyles.h3, styles.headerTitle]}>Comments</Text>
+            <Text style={styles.headerTitle}>Comments</Text>
             
             <TouchableOpacity>
               <Text style={styles.headerAction}>Share</Text>

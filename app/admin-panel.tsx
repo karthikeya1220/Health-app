@@ -7,11 +7,18 @@ import {
   Star, Trophy, Award, Lock, Unlock, Ban, Eye, ChevronRight
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { 
+  scale, 
+  verticalScale, 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  responsiveValue 
+} from '@/utils/responsive';
 
 export default function AdminPanelScreen() {
   const { colors, theme } = useTheme();
@@ -130,28 +137,27 @@ export default function AdminPanelScreen() {
       `Post has been ${action}`,
       [{ text: 'OK' }]
     );
-  };
-  const styles = StyleSheet.create({
+  };  const styles = StyleSheet.create({
     container: {
       flex: 1,
     },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
-      paddingBottom: Spacing.lg,
-      borderBottomLeftRadius: BorderRadius.xl,
-      borderBottomRightRadius: BorderRadius.xl,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingTop: LAYOUT.getContentPadding(),
+      paddingBottom: LAYOUT.getContentPadding(),
+      borderBottomLeftRadius: LAYOUT.getBorderRadius(24),
+      borderBottomRightRadius: LAYOUT.getBorderRadius(24),
     },
     backButton: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
+      width: TOUCH.getTouchSize(),
+      height: TOUCH.getTouchSize(),
+      borderRadius: TOUCH.getTouchSize() / 2,
       backgroundColor: colors.surface + 'CC',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -159,15 +165,17 @@ export default function AdminPanelScreen() {
       elevation: 3,
     },
     headerTitle: {
+      ...typography.h2,
       color: colors.text,
       fontWeight: 'bold',
-      flex: 1,    },
+      flex: 1,
+    },
     adminBadge: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.xs,
-      borderRadius: BorderRadius.full,
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(4),
+      borderRadius: LAYOUT.getBorderRadius(50),
       gap: 4,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
@@ -176,7 +184,7 @@ export default function AdminPanelScreen() {
       elevation: 4,
     },
     adminBadgeText: {
-      ...TextStyles.caption,
+      ...typography.caption,
       color: colors.surface,
       fontWeight: '700',
       fontSize: 11,
@@ -185,19 +193,20 @@ export default function AdminPanelScreen() {
     tabsContainer: {
       flexDirection: 'row',
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      margin: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(24),
+      margin: LAYOUT.getMargin(24),
       padding: 6,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.1,
       shadowRadius: 8,
       elevation: 6,
-    },    tab: {
+    },
+    tab: {
       flex: 1,
       alignItems: 'center',
-      paddingVertical: Spacing.md,
-      borderRadius: BorderRadius.lg,
+      paddingVertical: LAYOUT.getPadding(16),
+      borderRadius: LAYOUT.getBorderRadius(16),
     },
     activeTab: {
       backgroundColor: colors.primary,
@@ -208,7 +217,7 @@ export default function AdminPanelScreen() {
       elevation: 4,
     },
     tabText: {
-      ...TextStyles.body,
+      ...typography.body,
       color: colors.textSecondary,
       fontWeight: '600',
     },
@@ -218,13 +227,13 @@ export default function AdminPanelScreen() {
     },
     content: {
       flex: 1,
-      paddingHorizontal: Spacing.lg,
+      paddingHorizontal: LAYOUT.getContentPadding(),
     },
     memberCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.lg,
-      marginBottom: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(24),
+      padding: LAYOUT.getPadding(24),
+      marginBottom: LAYOUT.getMargin(16),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.12,
@@ -236,13 +245,13 @@ export default function AdminPanelScreen() {
     memberHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     memberAvatar: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      marginRight: Spacing.md,
+      width: responsiveValue({ xs: 44, sm: 48, md: 50, default: 50 }),
+      height: responsiveValue({ xs: 44, sm: 48, md: 50, default: 50 }),
+      borderRadius: responsiveValue({ xs: 22, sm: 24, md: 25, default: 25 }),
+      marginRight: LAYOUT.getMargin(16),
     },
     memberInfo: {
       flex: 1,
@@ -280,10 +289,10 @@ export default function AdminPanelScreen() {
       color: colors.primary,
     },
     statusBadge: {
-      paddingHorizontal: Spacing.sm,
+      paddingHorizontal: LAYOUT.getPadding(8),
       paddingVertical: 2,
-      borderRadius: BorderRadius.xs,
-      marginLeft: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(4),
+      marginLeft: LAYOUT.getMargin(8),
     },
     activeStatus: {
       backgroundColor: colors.success + '20',
@@ -305,7 +314,7 @@ export default function AdminPanelScreen() {
     memberDetails: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     memberDetail: {
       alignItems: 'center',
@@ -325,16 +334,16 @@ export default function AdminPanelScreen() {
     },
     memberActions: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: LAYOUT.getMargin(8),
     },
     actionButton: {
       flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: Spacing.sm,
-      paddingHorizontal: Spacing.md,
-      borderRadius: BorderRadius.md,
+      paddingVertical: LAYOUT.getPadding(8),
+      paddingHorizontal: LAYOUT.getPadding(16),
+      borderRadius: LAYOUT.getBorderRadius(12),
       gap: 4,
     },
     promoteButton: {
@@ -361,9 +370,9 @@ export default function AdminPanelScreen() {
     },
     postCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      marginBottom: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(24),
+      marginBottom: LAYOUT.getMargin(16),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -374,7 +383,7 @@ export default function AdminPanelScreen() {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     postAuthor: {
       ...typography.body,
@@ -389,15 +398,15 @@ export default function AdminPanelScreen() {
       ...typography.body,
       color: colors.text,
       lineHeight: 20,
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     flaggedBadge: {
       backgroundColor: colors.error + '20',
-      paddingHorizontal: Spacing.sm,
+      paddingHorizontal: LAYOUT.getPadding(8),
       paddingVertical: 2,
-      borderRadius: BorderRadius.xs,
+      borderRadius: LAYOUT.getBorderRadius(4),
       alignSelf: 'flex-start',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     flaggedBadgeText: {
       ...typography.caption,
@@ -409,11 +418,11 @@ export default function AdminPanelScreen() {
       ...typography.caption,
       color: colors.textSecondary,
       fontStyle: 'italic',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     postActions: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: LAYOUT.getMargin(8),
     },
     approveButton: {
       backgroundColor: colors.success + '20',
@@ -428,26 +437,26 @@ export default function AdminPanelScreen() {
       color: colors.error,
     },
     settingsSection: {
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
     },
     sectionTitle: {
       ...typography.h4,
       color: colors.text,
       fontWeight: 'bold',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     settingItem: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      marginBottom: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(24),
+      marginBottom: LAYOUT.getMargin(16),
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
     },
     settingInfo: {
       flex: 1,
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     settingTitle: {
       ...typography.body,
@@ -713,7 +722,7 @@ export default function AdminPanelScreen() {
             >
               <ArrowLeft size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text style={[TextStyles.h2, styles.headerTitle]}>Admin Panel</Text>
+            <Text style={styles.headerTitle}>Admin Panel</Text>
             <LinearGradient
               colors={[colors.error, colors.error + 'DD']}
               style={styles.adminBadge}

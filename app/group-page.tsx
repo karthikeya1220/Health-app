@@ -7,9 +7,8 @@ import {
   TouchableOpacity,
   Image,
   Animated,
-  Dimensions,
+  SafeAreaView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, 
   MoreHorizontal, 
@@ -30,11 +29,18 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
+import { ResponsiveLayout, ResponsiveCard, useResponsiveDimensions } from '@/components/ui/ResponsiveLayout';
+import { 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  COMPONENT,
+  TYPOGRAPHY,
+  responsiveValue,
+  useBreakpoint
+} from '@/utils/responsive';
 
 interface GroupMember {
   id: string;
@@ -66,6 +72,8 @@ interface GroupPost {
 export default function GroupPageScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
+  const dimensions = useResponsiveDimensions();
+  const breakpoint = useBreakpoint();
   const [isJoined, setIsJoined] = useState(false);
   const [isNotificationEnabled, setIsNotificationEnabled] = useState(true);
   const [selectedTab, setSelectedTab] = useState<'posts' | 'events' | 'members'>('posts');
@@ -281,7 +289,6 @@ export default function GroupPageScreen() {
         return null;
     }
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -291,8 +298,8 @@ export default function GroupPageScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingVertical: LAYOUT.getPadding(16),
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
@@ -307,7 +314,7 @@ export default function GroupPageScreen() {
     },
     headerActions: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: LAYOUT.getMargin(8),
     },
     headerButton: {
       width: 40,
@@ -319,12 +326,12 @@ export default function GroupPageScreen() {
     },
     groupHero: {
       backgroundColor: colors.surface,
-      paddingHorizontal: Spacing.lg,
-      paddingBottom: Spacing.xl,
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingBottom: LAYOUT.getPadding(32),
     },
     groupIconContainer: {
       alignItems: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     groupIcon: {
       width: 100,
@@ -333,7 +340,7 @@ export default function GroupPageScreen() {
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     groupIconText: {
       fontSize: 48,
@@ -351,20 +358,20 @@ export default function GroupPageScreen() {
       color: colors.text,
       fontWeight: 'bold',
       textAlign: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     groupCategory: {
       ...typography.body,
       color: colors.primary,
       fontWeight: '600',
       textAlign: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     groupStats: {
       flexDirection: 'row',
       justifyContent: 'center',
-      gap: Spacing.xl,
-      marginBottom: Spacing.lg,
+      gap: LAYOUT.getMargin(32),
+      marginBottom: LAYOUT.getMargin(24),
     },
     groupStat: {
       alignItems: 'center',
@@ -383,17 +390,17 @@ export default function GroupPageScreen() {
       color: colors.textSecondary,
       textAlign: 'center',
       lineHeight: 22,
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     groupActions: {
       flexDirection: 'row',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
     },
     joinButton: {
       flex: 1,
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.lg,
-      paddingVertical: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      paddingVertical: LAYOUT.getPadding(16),
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
@@ -405,7 +412,7 @@ export default function GroupPageScreen() {
       ...typography.bodyMedium,
       color: colors.surface,
       fontWeight: '600',
-      marginLeft: Spacing.sm,
+      marginLeft: LAYOUT.getMargin(8),
     },
     actionButton: {
       width: 50,
@@ -425,7 +432,7 @@ export default function GroupPageScreen() {
     },
     tab: {
       flex: 1,
-      paddingVertical: Spacing.md,
+      paddingVertical: LAYOUT.getPadding(16),
       alignItems: 'center',
       borderBottomWidth: 2,
       borderBottomColor: 'transparent',
@@ -443,14 +450,14 @@ export default function GroupPageScreen() {
       fontWeight: '600',
     },
     tabContent: {
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingTop: LAYOUT.getPadding(24),
     },
     postCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      marginBottom: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(24),
+      marginBottom: LAYOUT.getMargin(16),
       borderWidth: 1,
       borderColor: colors.border,
     },
@@ -458,7 +465,7 @@ export default function GroupPageScreen() {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     postAuthorInfo: {
       flexDirection: 'row',
@@ -471,7 +478,7 @@ export default function GroupPageScreen() {
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getMargin(8),
     },
     postAvatarText: {
       fontSize: 20,
@@ -489,16 +496,16 @@ export default function GroupPageScreen() {
       ...typography.body,
       color: colors.text,
       lineHeight: 22,
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     postActions: {
       flexDirection: 'row',
-      gap: Spacing.lg,
+      gap: LAYOUT.getMargin(24),
     },
     postAction: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.xs,
+      gap: LAYOUT.getMargin(4),
     },
     postActionText: {
       ...typography.caption,
@@ -506,31 +513,31 @@ export default function GroupPageScreen() {
     },
     eventCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      marginBottom: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(24),
+      marginBottom: LAYOUT.getMargin(16),
       borderWidth: 1,
       borderColor: colors.border,
     },
     eventHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
     },
     eventTitle: {
       ...typography.bodyMedium,
       color: colors.text,
       fontWeight: '600',
-      marginLeft: Spacing.sm,
+      marginLeft: LAYOUT.getMargin(8),
     },
     eventDetails: {
-      gap: Spacing.sm,
-      marginBottom: Spacing.md,
+      gap: LAYOUT.getMargin(8),
+      marginBottom: LAYOUT.getMargin(16),
     },
     eventDetail: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.sm,
+      gap: LAYOUT.getMargin(8),
     },
     eventDetailLabel: {
       ...typography.body,
@@ -543,8 +550,8 @@ export default function GroupPageScreen() {
     },
     attendButton: {
       backgroundColor: colors.primary + '20',
-      borderRadius: BorderRadius.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(8),
+      paddingVertical: LAYOUT.getPadding(8),
       alignItems: 'center',
       borderWidth: 1,
       borderColor: colors.primary,
@@ -557,20 +564,20 @@ export default function GroupPageScreen() {
     membersGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
     },
     memberCard: {
-      width: (width - Spacing.lg * 2 - Spacing.md) / 2,
+      width: (dimensions.screenWidth - LAYOUT.getPadding(24) * 2 - LAYOUT.getMargin(16)) / 2,
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(16),
       alignItems: 'center',
       borderWidth: 1,
       borderColor: colors.border,
     },
     memberAvatarContainer: {
       position: 'relative',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     memberAvatar: {
       width: 50,
@@ -599,12 +606,12 @@ export default function GroupPageScreen() {
       color: colors.text,
       fontWeight: '500',
       textAlign: 'center',
-      marginBottom: Spacing.xs,
+      marginBottom: LAYOUT.getMargin(4),
     },
     adminBadge: {
       backgroundColor: colors.warning,
       borderRadius: 8,
-      paddingHorizontal: Spacing.sm,
+      paddingHorizontal: LAYOUT.getPadding(8),
       paddingVertical: 2,
     },
     adminBadgeText: {

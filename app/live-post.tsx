@@ -22,11 +22,9 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { responsiveValue, LAYOUT, TOUCH, SCREEN } from '@/utils/responsive';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const { width, height } = Dimensions.get('window');
 
 interface LiveComment {
   id: string;
@@ -191,17 +189,30 @@ export default function LivePostScreen() {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-    },
-    liveVideoPlaceholder: {
-      width: width * 0.8,
-      height: width * 0.8,
-      borderRadius: 20,
+    },    liveVideoPlaceholder: {
+      width: responsiveValue({
+        xs: SCREEN.width * 0.75,
+        sm: SCREEN.width * 0.8,
+        md: SCREEN.width * 0.82,
+        lg: SCREEN.width * 0.85,
+        default: SCREEN.width * 0.8
+      }),
+      height: responsiveValue({
+        xs: SCREEN.width * 0.75,
+        sm: SCREEN.width * 0.8,
+        md: SCREEN.width * 0.82,
+        lg: SCREEN.width * 0.85,
+        default: SCREEN.width * 0.8
+      }),
+      borderRadius: LAYOUT.getBorderRadius(20),
       justifyContent: 'center',
       alignItems: 'center',
     },
     liveVideoIcon: {
-      fontSize: 80,
-      marginBottom: Spacing.lg,
+      fontSize: responsiveValue({
+        xs: 70, sm: 75, md: 80, lg: 85, xl: 90, default: 80
+      }),
+      marginBottom: LAYOUT.getMargin(24),
     },
     liveVideoText: {
       ...typography.h3,
@@ -215,44 +226,48 @@ export default function LivePostScreen() {
       left: 0,
       right: 0,
       bottom: 0,
-      paddingTop: 60,
-      paddingBottom: 100,
-      paddingHorizontal: Spacing.lg,
+      paddingTop: responsiveValue({
+        xs: 50, sm: 55, md: 60, lg: 65, default: 60
+      }),
+      paddingBottom: responsiveValue({
+        xs: 90, sm: 95, md: 100, lg: 105, default: 100
+      }),
+      paddingHorizontal: LAYOUT.getContentPadding(),
     },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     headerLeft: {
       flexDirection: 'row',
       alignItems: 'center',
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: 'rgba(0,0,0,0.5)',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     liveIndicator: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.error,
-      borderRadius: BorderRadius.md,
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: 4,
-      marginRight: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(8),
+      paddingHorizontal: LAYOUT.getPadding(8),
+      paddingVertical: LAYOUT.getPadding(4),
+      marginRight: LAYOUT.getMargin(16),
     },
     liveIndicatorDot: {
       width: 8,
       height: 8,
       borderRadius: 4,
       backgroundColor: '#fff',
-      marginRight: Spacing.xs,
+      marginRight: LAYOUT.getMargin(4),
     },
     liveText: {
       ...typography.caption,
@@ -263,12 +278,12 @@ export default function LivePostScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: 'rgba(0,0,0,0.5)',
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: 4,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      paddingHorizontal: LAYOUT.getPadding(8),
+      paddingVertical: LAYOUT.getPadding(4),
     },
     viewersIcon: {
-      marginRight: Spacing.xs,
+      marginRight: LAYOUT.getMargin(4),
     },
     viewersCount: {
       ...typography.caption,
@@ -277,12 +292,12 @@ export default function LivePostScreen() {
     },
     headerRight: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: LAYOUT.getMargin(8),
     },
     headerButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: 'rgba(0,0,0,0.5)',
       justifyContent: 'center',
       alignItems: 'center',
@@ -291,23 +306,31 @@ export default function LivePostScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: 'rgba(0,0,0,0.6)',
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md,
-      marginBottom: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(16),
+      marginBottom: LAYOUT.getMargin(24),
     },
     streamerAvatar: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: responsiveValue({
+        xs: 45, sm: 48, md: 50, lg: 52, default: 50
+      }),
+      height: responsiveValue({
+        xs: 45, sm: 48, md: 50, lg: 52, default: 50
+      }),
+      borderRadius: responsiveValue({
+        xs: 22.5, sm: 24, md: 25, lg: 26, default: 25
+      }),
       backgroundColor: colors.primary + '40',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
       borderWidth: 2,
       borderColor: '#fff',
     },
     streamerAvatarText: {
-      fontSize: 24,
+      fontSize: responsiveValue({
+        xs: 20, sm: 22, md: 24, lg: 26, default: 24
+      }),
     },
     streamerDetails: {
       flex: 1,
@@ -325,9 +348,9 @@ export default function LivePostScreen() {
     },
     followButton: {
       backgroundColor: isFollowing ? 'rgba(255,255,255,0.2)' : colors.primary,
-      borderRadius: BorderRadius.md,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(8),
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(8),
       borderWidth: 1,
       borderColor: '#fff',
     },
@@ -337,27 +360,32 @@ export default function LivePostScreen() {
       fontWeight: 'bold',
     },
     viewersContainer: {
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     viewersHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     viewersTitle: {
       ...typography.caption,
       color: '#fff',
       fontWeight: '600',
-      marginLeft: Spacing.xs,
-    },
-    viewersList: {
+      marginLeft: LAYOUT.getMargin(4),
+    },    viewersList: {
       flexDirection: 'row',
       alignItems: 'center',
     },
     viewerAvatar: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
+      width: responsiveValue({
+        xs: 28, sm: 30, md: 32, lg: 34, default: 32
+      }),
+      height: responsiveValue({
+        xs: 28, sm: 30, md: 32, lg: 34, default: 32
+      }),
+      borderRadius: responsiveValue({
+        xs: 14, sm: 15, md: 16, lg: 17, default: 16
+      }),
       backgroundColor: colors.primary + '40',
       justifyContent: 'center',
       alignItems: 'center',
@@ -365,12 +393,20 @@ export default function LivePostScreen() {
       borderColor: '#fff',
     },
     viewerAvatarText: {
-      fontSize: 16,
+      fontSize: responsiveValue({
+        xs: 14, sm: 15, md: 16, lg: 17, default: 16
+      }),
     },
     moreViewers: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
+      width: responsiveValue({
+        xs: 28, sm: 30, md: 32, lg: 34, default: 32
+      }),
+      height: responsiveValue({
+        xs: 28, sm: 30, md: 32, lg: 34, default: 32
+      }),
+      borderRadius: responsiveValue({
+        xs: 14, sm: 15, md: 16, lg: 17, default: 16
+      }),
       backgroundColor: 'rgba(255,255,255,0.2)',
       justifyContent: 'center',
       alignItems: 'center',
@@ -387,27 +423,37 @@ export default function LivePostScreen() {
       justifyContent: 'flex-end',
     },
     commentsList: {
-      maxHeight: 200,
+      maxHeight: responsiveValue({
+        xs: 180, sm: 190, md: 200, lg: 210, default: 200
+      }),
     },
     commentItem: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: 'rgba(0,0,0,0.6)',
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.sm,
-      marginBottom: Spacing.xs,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(8),
+      marginBottom: LAYOUT.getMargin(4),
     },
     commentAvatar: {
-      width: 24,
-      height: 24,
-      borderRadius: 12,
+      width: responsiveValue({
+        xs: 22, sm: 23, md: 24, lg: 25, default: 24
+      }),
+      height: responsiveValue({
+        xs: 22, sm: 23, md: 24, lg: 25, default: 24
+      }),
+      borderRadius: responsiveValue({
+        xs: 11, sm: 11.5, md: 12, lg: 12.5, default: 12
+      }),
       backgroundColor: colors.primary + '40',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getMargin(8),
     },
     commentAvatarText: {
-      fontSize: 12,
+      fontSize: responsiveValue({
+        xs: 11, sm: 11.5, md: 12, lg: 12.5, default: 12
+      }),
     },
     commentContent: {
       flex: 1,
@@ -433,19 +479,25 @@ export default function LivePostScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: Spacing.lg,
+      paddingTop: LAYOUT.getPadding(24),
     },
     actionButtons: {
       flexDirection: 'row',
-      gap: Spacing.lg,
+      gap: LAYOUT.getMargin(24),
     },
     actionButton: {
       alignItems: 'center',
     },
     actionIcon: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: responsiveValue({
+        xs: 45, sm: 47, md: 50, lg: 52, default: 50
+      }),
+      height: responsiveValue({
+        xs: 45, sm: 47, md: 50, lg: 52, default: 50
+      }),
+      borderRadius: responsiveValue({
+        xs: 22.5, sm: 23.5, md: 25, lg: 26, default: 25
+      }),
       backgroundColor: 'rgba(255,255,255,0.1)',
       justifyContent: 'center',
       alignItems: 'center',
@@ -461,9 +513,9 @@ export default function LivePostScreen() {
     },
     giftButton: {
       backgroundColor: colors.warning + '40',
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(8),
       flexDirection: 'row',
       alignItems: 'center',
     },
@@ -471,7 +523,7 @@ export default function LivePostScreen() {
       ...typography.caption,
       color: '#fff',
       fontWeight: 'bold',
-      marginLeft: Spacing.xs,
+      marginLeft: LAYOUT.getMargin(4),
     },
     heartAnimation: {
       position: 'absolute',

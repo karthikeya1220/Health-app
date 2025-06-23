@@ -6,81 +6,36 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Dimensions,
   Animated,
   StatusBar,
   TextInput,
-  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
-
-const { width, height } = Dimensions.get('window');
-
-// Responsive dimensions helper
-const responsive = {
-  // Screen size categories
-  isSmallScreen: width < 360,
-  isMediumScreen: width >= 360 && width < 400,
-  isLargeScreen: width >= 400,
-  
-  // Responsive values
-  spacing: {
-    xs: width < 360 ? 4 : 6,
-    sm: width < 360 ? 6 : 8,
-    md: width < 360 ? 8 : 12,
-    lg: width < 360 ? 12 : 16,
-    xl: width < 360 ? 16 : 20,
-    xxl: width < 360 ? 20 : 24,
-  },
-  
-  // Icon sizes
-  iconSize: {
-    small: width < 360 ? 16 : 20,
-    medium: width < 360 ? 20 : 24,
-    large: width < 360 ? 24 : 28,
-    xlarge: width < 360 ? 28 : 32,
-  },
-  
-  // Text sizes
-  fontSize: {
-    caption: width < 360 ? 10 : 12,
-    small: width < 360 ? 12 : 14,
-    body: width < 360 ? 14 : 16,
-    title: width < 360 ? 16 : 18,
-    large: width < 360 ? 18 : 22,
-    xlarge: width < 360 ? 36 : 42,
-  },
-  
-  // Component sizes
-  avatar: width < 360 ? 44 : 52,
-  button: width < 360 ? 40 : 48,
-  searchHeight: width < 360 ? 44 : 52,
-  progressSize: width < 360 ? 100 : 115,
-  statTileHeight: width < 360 ? 100 : 120,
-  
-  // Padding and margins
-  containerPadding: width < 360 ? 12 : 16,
-  cardPadding: width < 360 ? 16 : 20,
-};
+import { getTypography } from '@/theme/typography';
+import { 
+  scale, 
+  verticalScale, 
+  moderateScale, 
+  SCREEN, 
+  GRID, 
+  LAYOUT,   COMPONENT,
+  TOUCH,
+  useSafeLayout,
+  responsiveValue,
+  isTablet
+} from '@/utils/responsive';
 
 // Enhanced Icon Component with responsive sizing
-const CleanIcon = ({ name, size, color, backgroundColor, style }: {
+const CleanIcon = ({ name, size = COMPONENT.icon.md, color, backgroundColor }: {
   name: string;
   size?: number;
   color?: string;
   backgroundColor?: string;
-  style?: any;
 }) => {
   const { colors } = useTheme();
-  
-  // Use responsive size if not specified
-  const iconSize = size || responsive.iconSize.medium;
-  const containerSize = Math.max(iconSize + 8, 24); // Minimum container size
   
   const iconMap: { [key: string]: string } = {
     'fire': '🔥',
@@ -95,8 +50,10 @@ const CleanIcon = ({ name, size, color, backgroundColor, style }: {
     'arrow': '→',
   };
 
+  const containerSize = size + scale(16);
+
   return (
-    <View style={[{
+    <View style={{
       width: containerSize,
       height: containerSize,
       backgroundColor: backgroundColor || colors.primary + '15',
@@ -110,9 +67,9 @@ const CleanIcon = ({ name, size, color, backgroundColor, style }: {
       elevation: 3,
       borderWidth: 0.5,
       borderColor: 'rgba(255,255,255,0.3)',
-    }, style]}>
+    }}>
       <Text style={{ 
-        fontSize: Math.max(iconSize * 0.7, 12), // Minimum font size
+        fontSize: size * 0.8,
         textShadowColor: 'rgba(0,0,0,0.15)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 2,
@@ -123,11 +80,11 @@ const CleanIcon = ({ name, size, color, backgroundColor, style }: {
   );
 };
 
-// Enhanced Responsive Circular Progress Ring Component
+// Enhanced Circular Progress Ring Component with responsive sizing
 const CircularProgress = ({ 
   progress, 
-  size, 
-  strokeWidth, 
+  size = responsiveValue({ xs: scale(100), sm: scale(120), md: scale(140), default: scale(120) }), 
+  strokeWidth = scale(8), 
   value,
   unit,
   label 
@@ -141,12 +98,8 @@ const CircularProgress = ({
 }) => {
   const { colors } = useTheme();
   
-  // Responsive sizing
-  const progressSize = size || responsive.progressSize;
-  const progressStroke = strokeWidth || (progressSize < 110 ? 6 : 8);
-  
   const animatedValue = useRef(new Animated.Value(0)).current;
-  const circumference = 2 * Math.PI * ((progressSize - progressStroke) / 2);
+  const circumference = 2 * Math.PI * ((size - strokeWidth) / 2);
 
   useEffect(() => {
     Animated.timing(animatedValue, {
@@ -157,20 +110,118 @@ const CircularProgress = ({
   }, [progress]);
 
   return (
-    <View style={{ 
-      width: progressSize, 
-      height: progressSize, 
-      justifyContent: 'center', 
+    <View style={{
+      width: size,
+      height: size,
+      justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
     }}>
-      {/* Background Circle - Premium glass effect */}
+      {/* Background Circle */}
       <View style={{
         position: 'absolute',
-        width: progressSize,
-        height: progressSize,
-        borderRadius: progressSize / 2,
-        borderWidth: progressStroke,
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        borderWidth: strokeWidth,
+        borderColor: colors.border + '30',
+      }} />
+      
+      {/* Progress Circle */}
+      <Animated.View
+        style={{
+          position: 'absolute',
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          borderWidth: strokeWidth,
+          borderColor: 'transparent',
+          borderTopColor: colors.primary,
+          transform: [
+            { rotate: '-90deg' },
+            {
+              rotate: animatedValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0deg', `${360 * (progress / 100)}deg`],
+              }),
+            },
+          ],
+        }}
+      />
+      
+      {/* Center Content */}
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{
+          fontSize: responsiveValue({ xs: scale(20), sm: scale(24), md: scale(28), default: scale(24) }),
+          fontWeight: '700',
+          color: colors.text,
+          fontFamily: 'Poppins_700Bold',
+        }}>
+          {value}
+        </Text>
+        <Text style={{
+          fontSize: responsiveValue({ xs: scale(10), sm: scale(12), md: scale(14), default: scale(12) }),
+          color: colors.textSecondary,
+          fontFamily: 'Poppins_500Medium',
+          textAlign: 'center',
+        }}>
+          {unit}
+        </Text>
+        <Text style={{
+          fontSize: responsiveValue({ xs: scale(8), sm: scale(10), md: scale(12), default: scale(10) }),
+          color: colors.textSecondary,
+          fontFamily: 'Poppins_400Regular',
+          textAlign: 'center',
+          marginTop: 2,
+        }}>
+          {label}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+  
+  
+  const EnhancedCircularProgress = ({ 
+    progress, 
+    size, 
+    strokeWidth, 
+    value,
+    unit,
+    label 
+  }: {
+    progress: number;
+    size: number;
+    strokeWidth: number;
+    value: string | number;
+    unit: string;
+    label: string;
+  }) => {
+    const animatedValue = useRef(new Animated.Value(0)).current;
+  
+    useEffect(() => {
+      Animated.timing(animatedValue, {
+        toValue: progress,
+        duration: 2000,
+        useNativeDriver: false,
+      }).start();
+    }, [progress]);
+  
+    return (
+      <View style={{ 
+        width: size, 
+        height: size, 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        position: 'relative',
+      }}>      {/* Background Circle - Premium glass effect */}
+        <View style={{
+        position: 'absolute',
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        borderWidth: strokeWidth,
         borderColor: '#F8FAFC',
         backgroundColor: 'rgba(248, 250, 252, 0.4)',
         shadowColor: '#000',
@@ -183,10 +234,10 @@ const CircularProgress = ({
       {/* Progress Circle - Enhanced gradient with glow effect */}
       <Animated.View style={{
         position: 'absolute',
-        width: progressSize,
-        height: progressSize,
-        borderRadius: progressSize / 2,
-        borderWidth: progressStroke,
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        borderWidth: strokeWidth,
         borderColor: 'transparent',
         borderTopColor: '#6366F1',
         borderRightColor: '#8B5CF6',
@@ -206,9 +257,9 @@ const CircularProgress = ({
       {/* Inner glow effect */}
       <View style={{
         position: 'absolute',
-        width: progressSize - progressStroke * 2,
-        height: progressSize - progressStroke * 2,
-        borderRadius: (progressSize - progressStroke * 2) / 2,
+        width: size - strokeWidth * 2,
+        height: size - strokeWidth * 2,
+        borderRadius: (size - strokeWidth * 2) / 2,
         backgroundColor: 'rgba(99, 102, 241, 0.05)',
         shadowColor: '#6366F1',
         shadowOffset: { width: 0, height: 0 },
@@ -222,9 +273,9 @@ const CircularProgress = ({
         position: 'absolute', 
         alignItems: 'center',
         backgroundColor: 'rgba(99, 102, 241, 0.95)',
-        paddingHorizontal: progressSize < 110 ? 12 : 16,
-        paddingVertical: progressSize < 110 ? 8 : 12,
-        borderRadius: progressSize < 110 ? 20 : 28,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 28,
         shadowColor: '#6366F1',
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.4,
@@ -232,23 +283,19 @@ const CircularProgress = ({
         elevation: 8,
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.2)',
-        minWidth: progressSize * 0.6,
-        maxWidth: progressSize * 0.8,
-      }}>
-        <Text style={{
-          fontSize: progressSize < 110 ? 14 : 18,
+      }}>        <Text style={{
+          fontSize: 18,
           fontWeight: '900',
           color: '#FFFFFF',
           letterSpacing: 0.8,
           textShadowColor: 'rgba(0,0,0,0.3)',
           textShadowOffset: { width: 0, height: 1 },
           textShadowRadius: 2,
-          textAlign: 'center',
         }}>
           {value}
         </Text>
         <Text style={{
-          fontSize: progressSize < 110 ? 10 : 12,
+          fontSize: 12,
           fontWeight: '700',
           color: '#FFFFFF',
           opacity: 0.95,
@@ -256,7 +303,6 @@ const CircularProgress = ({
           textShadowColor: 'rgba(0,0,0,0.2)',
           textShadowOffset: { width: 0, height: 0.5 },
           textShadowRadius: 1,
-          textAlign: 'center',
         }}>
           {unit}
         </Text>
@@ -265,7 +311,7 @@ const CircularProgress = ({
   );
 };
 
-// Enhanced Responsive Stat Tile Component
+// Enhanced Stat Tile Component with premium glass morphism
 const StatTile = ({ 
   icon, 
   title, 
@@ -297,14 +343,10 @@ const StatTile = ({
       tension: 150,
       friction: 6,
     }).start();
-  };
-
-  return (
+  };  return (
     <Animated.View style={{ 
       transform: [{ scale: scaleAnim }], 
       flex: 1,
-      minWidth: responsive.isSmallScreen ? 90 : 100,
-      maxWidth: width / 3 - responsive.spacing.lg,
     }}>
       <TouchableOpacity
         onPressIn={handlePressIn}
@@ -312,20 +354,20 @@ const StatTile = ({
         activeOpacity={1}
         style={{
           backgroundColor: backgroundColor || colors.card,
-          borderRadius: responsive.isSmallScreen ? 16 : 20,
-          padding: responsive.spacing.md,
-          paddingVertical: responsive.spacing.lg,
+          borderRadius: 24,          padding: LAYOUT.getPadding(24) + 2,
+          paddingVertical: LAYOUT.getPadding(24) + 6,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 6 },
+          shadowOffset: { width: 0, height: 8 },
           shadowOpacity: 0.15,
-          shadowRadius: 16,
-          elevation: 6,
-          height: responsive.statTileHeight,
+          shadowRadius: 20,
+          elevation: 8,
+          height: 120,
           justifyContent: 'center',
           alignItems: 'center',
           borderWidth: 1,
           borderColor: 'rgba(255,255,255,0.9)',
           overflow: 'hidden',
+          minWidth: 0, // Ensure tiles can shrink evenly
         }}
       >
         {/* Subtle inner glow */}
@@ -336,43 +378,33 @@ const StatTile = ({
           right: 0,
           height: 1,
           backgroundColor: 'rgba(255,255,255,0.6)',
-        }} />
-          
-        <View style={{ 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          flex: 1,
-          paddingHorizontal: 4,
-        }}>
+        }} />          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
           <CleanIcon 
             name={icon}
-            size={responsive.iconSize.large}
+            size={32}
             backgroundColor="transparent"
-          />
-          <Text style={{
+          />          <Text style={{
+            ...typography.caption,
             color: colors.text,
-            marginTop: responsive.spacing.sm,
-            fontSize: responsive.fontSize.caption,
+            marginTop: LAYOUT.getMargin(8) + 4,
+            fontSize: 12,
             fontWeight: '600',
             letterSpacing: 0.3,
             opacity: 0.8,
             textAlign: 'center',
-            numberOfLines: 1,
           }}>
             {title}
-          </Text>
-          <Text style={{
+          </Text>          <Text style={{
+            ...typography.body,
             color: colors.text,
             fontWeight: '800',
-            fontSize: responsive.fontSize.small,
-            marginTop: 2,
+            fontSize: 15,
+            marginTop: 4,
             letterSpacing: 0.2,
             textShadowColor: 'rgba(0,0,0,0.1)',
             textShadowOffset: { width: 0, height: 0.5 },
             textShadowRadius: 1,
             textAlign: 'center',
-            numberOfLines: 1,
-            adjustsFontSizeToFit: true,
           }}>
             {value}
           </Text>
@@ -382,44 +414,36 @@ const StatTile = ({
   );
 };
 
-// Main Dashboard Component with Responsive Design
+// Main Dashboard Component
 export default function HealthDashboard() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
   const insets = useSafeAreaInsets();
   const [searchText, setSearchText] = useState('');
-
-  const styles = StyleSheet.create({
-    container: {
+  const styles = StyleSheet.create({    container: {
       flex: 1,
       backgroundColor: colors.background,
-    },
-    scrollContent: {
-      padding: responsive.containerPadding,
-      paddingTop: responsive.spacing.lg,
-      paddingBottom: Math.max(insets.bottom, responsive.spacing.lg) + responsive.spacing.xxl * 2,
-    },
-    header: {
-      marginBottom: responsive.spacing.xl,
+    },    scrollContent: {      padding: LAYOUT.getPadding(24) + 4,
+      paddingTop: LAYOUT.getPadding(24),
+      paddingBottom: Math.max(insets.bottom, LAYOUT.getPadding(24)) + LAYOUT.getPadding(48) + LAYOUT.getPadding(32),    },header: {
+      marginBottom: LAYOUT.getMargin(32),
     },
     greeting: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: responsive.spacing.lg,
-      paddingHorizontal: responsive.spacing.xs,
+      marginBottom: LAYOUT.getMargin(24),
     },
     greetingLeft: {
       flexDirection: 'row',
       alignItems: 'center',
-      flex: 1,
     },
     avatar: {
-      width: responsive.avatar,
-      height: responsive.avatar,
-      borderRadius: responsive.avatar / 2,
+      width: 52,
+      height: 52,
+      borderRadius: 26,
       backgroundColor: colors.primary,
-      marginRight: responsive.spacing.md,
+      marginRight: LAYOUT.getMargin(16),
       overflow: 'hidden',
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
@@ -428,28 +452,24 @@ export default function HealthDashboard() {
       elevation: 6,
       borderWidth: 2,
       borderColor: 'rgba(255,255,255,0.9)',
-    },
-    greetingTextContainer: {
-      flex: 1,
-      paddingRight: responsive.spacing.sm,
-    },
-    greetingText: {
+    },    greetingText: {
+      ...typography.bodySmall,
       color: colors.textSecondary,
-      marginBottom: 2,
-      fontSize: responsive.fontSize.small,
+      marginBottom: 3,
+      fontSize: 14,
       fontWeight: '500',
       letterSpacing: 0.2,
-    },
-    userName: {
+    },    userName: {
+      ...typography.h3,
       color: colors.text,
       fontWeight: '700',
-      fontSize: responsive.fontSize.large,
+      fontSize: 22,
       letterSpacing: 0.3,
     },
     notificationButton: {
-      width: responsive.button,
-      height: responsive.button,
-      borderRadius: responsive.button / 2,
+      width: 48,
+      height: 48,
+      borderRadius: 24,
       backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
@@ -460,24 +480,18 @@ export default function HealthDashboard() {
       elevation: 6,
       borderWidth: 1,
       borderColor: 'rgba(255,255,255,0.8)',
-    },
-    searchContainer: {
+    },    searchContainer: {
       flexDirection: 'row',
-      alignItems: 'center',
-      gap: responsive.spacing.md,
-      marginBottom: responsive.spacing.xl,
-    },
-    searchInputContainer: {
-      flex: 1,
-      position: 'relative',
-    },
+      alignItems: 'center',      gap: LAYOUT.getMargin(16),
+      marginBottom: LAYOUT.getMargin(32),
+    },    
     searchInput: {
-      flex: 1,
-      height: responsive.searchHeight,
+      flex: 1,      height: LAYOUT.getPadding(48) + 4,
       backgroundColor: colors.surface,
-      borderRadius: responsive.searchHeight / 2,
-      paddingHorizontal: responsive.spacing.lg,
-      paddingLeft: responsive.searchHeight,
+      borderRadius: 28,
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingLeft: 48,
+      ...typography.body,
       color: colors.text,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
@@ -486,20 +500,16 @@ export default function HealthDashboard() {
       elevation: 3,
       borderWidth: 1,
       borderColor: 'rgba(255,255,255,0.8)',
-      fontSize: responsive.fontSize.body,
+      fontSize: 15,
       fontWeight: '500',
     },
     searchIcon: {
       position: 'absolute',
-      left: responsive.spacing.lg,
-      top: '50%',
-      transform: [{ translateY: -responsive.iconSize.small / 2 }],
+      left: LAYOUT.getPadding(24),
       zIndex: 1,
-    },
-    filterButton: {
-      width: responsive.searchHeight,
-      height: responsive.searchHeight,
-      borderRadius: responsive.searchHeight / 2,
+    },    filterButton: {      width: LAYOUT.getPadding(48) + 4,
+      height: LAYOUT.getPadding(48) + 4,
+      borderRadius: 26,
       backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
@@ -510,12 +520,10 @@ export default function HealthDashboard() {
       elevation: 4,
       borderWidth: 1,
       borderColor: 'rgba(255,255,255,0.8)',
-    },
-    progressSection: {
+    },    progressSection: {
       backgroundColor: colors.surface,
-      borderRadius: responsive.isSmallScreen ? 20 : 24,
-      padding: responsive.cardPadding,
-      marginBottom: responsive.spacing.xl,
+      borderRadius: 28,      padding: LAYOUT.getPadding(32) + 4,
+      marginBottom: LAYOUT.getMargin(32) + 4,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 0.12,
@@ -527,98 +535,72 @@ export default function HealthDashboard() {
       overflow: 'hidden',
     },
     progressContent: {
-      flexDirection: responsive.isSmallScreen ? 'column' : 'row',
+      flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      gap: responsive.spacing.lg,
     },
     progressLeft: {
-      flex: responsive.isSmallScreen ? 0 : 1,
+      flex: 1,
       justifyContent: 'center',
-      alignItems: responsive.isSmallScreen ? 'center' : 'flex-start',
     },
     progressRight: {
       alignItems: 'center',
       justifyContent: 'center',
-    },
-    progressTitle: {
+    },    progressTitle: {
+      ...typography.bodyMedium,
       color: colors.text,
-      marginBottom: responsive.spacing.sm,
+      marginBottom: 10,
       fontWeight: '600',
-      fontSize: responsive.fontSize.title,
+      fontSize: 17,
       letterSpacing: 0.3,
-      textAlign: responsive.isSmallScreen ? 'center' : 'left',
     },
     progressPercentage: {
+      ...typography.h1,
       color: colors.text,
       fontWeight: '800',
-      fontSize: responsive.fontSize.xlarge,
-      marginBottom: responsive.spacing.xs,
+      fontSize: 42,
+      marginBottom: 6,
       letterSpacing: 0.5,
       textShadowColor: 'rgba(0,0,0,0.1)',
       textShadowOffset: { width: 0, height: 1 },
       textShadowRadius: 2,
-      textAlign: responsive.isSmallScreen ? 'center' : 'left',
     },
     progressDate: {
+      ...typography.bodySmall,
       color: colors.textSecondary,
-      fontSize: responsive.fontSize.body,
+      fontSize: 15,
       fontWeight: '500',
       letterSpacing: 0.2,
-      textAlign: responsive.isSmallScreen ? 'center' : 'left',
-    },
-    statsGrid: {
-      flexDirection: 'row',
-      gap: responsive.spacing.md,
-      marginBottom: responsive.spacing.xl,
+    },    statsGrid: {
+      flexDirection: 'row',      gap: LAYOUT.getMargin(24),
+      marginBottom: LAYOUT.getMargin(32) + 4,
       justifyContent: 'space-between',
-      paddingHorizontal: 2,
+      paddingHorizontal: 4,
+    },expandedSection: {      marginBottom: LAYOUT.getMargin(32) + 4,
     },
-    expandedSection: {
-      marginBottom: responsive.spacing.xl,
-    },
-    expandedGrid: {
+    sectionTitle: {
+      ...typography.h4,
+      color: colors.text,
+      marginBottom: LAYOUT.getMargin(24),
+      fontWeight: '700',
+      fontSize: 18,
+      letterSpacing: 0.3,
+    },    expandedGrid: {
       flexDirection: 'column',
-      gap: responsive.spacing.lg,
+      gap: LAYOUT.getMargin(24),
     },
     expandedTile: {
       backgroundColor: colors.surface,
-      borderRadius: responsive.isSmallScreen ? 16 : 20,
-      padding: responsive.cardPadding,
+      borderRadius: LAYOUT.getBorderRadius(24),
+      padding: LAYOUT.getPadding(24),
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.1,
       shadowRadius: 16,
       elevation: 6,
-      minHeight: responsive.isSmallScreen ? 70 : 80,
+      minHeight: 80,
       borderWidth: 1,
       borderColor: 'rgba(255,255,255,0.8)',
-    },
-    expandedTileContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    expandedTileLeft: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      flex: 1,
-    },
-    expandedTileText: {
-      marginLeft: responsive.spacing.lg,
-      flex: 1,
-    },
-    expandedTileTitle: {
-      color: colors.text,
-      fontWeight: '700',
-      fontSize: responsive.fontSize.title,
-      letterSpacing: 0.2,
-    },
-    expandedTileSubtitle: {
-      color: colors.textSecondary,
-      fontSize: responsive.fontSize.body,
-      fontWeight: '500',
-      marginTop: 4,
     },
   });
 
@@ -644,10 +626,7 @@ export default function HealthDashboard() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar 
-        barStyle={theme === 'dark' ? "light-content" : "dark-content"} 
-        backgroundColor={colors.background} 
-      />
+      <StatusBar barStyle="dark-content" backgroundColor={styles.container.backgroundColor} />
       
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -664,9 +643,9 @@ export default function HealthDashboard() {
                   resizeMode="cover"
                 />
               </View>
-              <View style={styles.greetingTextContainer}>
+              <View>
                 <Text style={styles.greetingText}>{getGreeting()}</Text>
-                <Text style={styles.userName} numberOfLines={1}>Raju!</Text>
+                <Text style={styles.userName}>Raju!</Text>
               </View>
             </View>
             
@@ -674,11 +653,10 @@ export default function HealthDashboard() {
               style={styles.notificationButton}
               onPress={() => router.push('/notifications')}
             >
-              <CleanIcon name="bell" size={responsive.iconSize.small} />
-              <View style={{
+              <CleanIcon name="bell" size={20} />              <View style={{
                 position: 'absolute',
-                top: 6,
-                right: 6,
+                top: 8,
+                right: 8,
                 width: 8,
                 height: 8,
                 borderRadius: 4,
@@ -689,13 +667,9 @@ export default function HealthDashboard() {
 
           {/* Search Bar */}
           <View style={styles.searchContainer}>
-            <View style={styles.searchInputContainer}>
+            <View style={{ flex: 1, position: 'relative' }}>
               <View style={styles.searchIcon}>
-                <CleanIcon 
-                  name="search" 
-                  size={responsive.iconSize.small}
-                  backgroundColor="transparent"
-                />
+                <CleanIcon name="search" size={18} />
               </View>
               <TextInput
                 style={styles.searchInput}
@@ -706,16 +680,10 @@ export default function HealthDashboard() {
               />
             </View>
             <TouchableOpacity style={styles.filterButton}>
-              <CleanIcon 
-                name="filter" 
-                size={responsive.iconSize.small}
-                backgroundColor="transparent"
-              />
+              <CleanIcon name="filter" size={18} />
             </TouchableOpacity>
           </View>
-        </View>
-
-        {/* Progress Overview - Enhanced with responsive layout */}
+        </View>        {/* Progress Overview - Enhanced with subtle background pattern */}
         <View style={styles.progressSection}>
           {/* Subtle top highlight */}
           <View style={{
@@ -725,8 +693,8 @@ export default function HealthDashboard() {
             right: 0,
             height: 2,
             backgroundColor: 'rgba(255,255,255,0.4)',
-            borderTopLeftRadius: responsive.isSmallScreen ? 20 : 24,
-            borderTopRightRadius: responsive.isSmallScreen ? 20 : 24,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
           }} />
           
           <View style={styles.progressContent}>
@@ -738,17 +706,15 @@ export default function HealthDashboard() {
             <View style={styles.progressRight}>
               <CircularProgress
                 progress={91}
-                size={responsive.progressSize}
-                strokeWidth={responsive.progressSize < 110 ? 6 : 8}
+                size={115}
+                strokeWidth={9}
                 value="500"
                 unit="kcal"
                 label="Calories"
               />
             </View>
           </View>
-        </View>
-
-        {/* Stats Grid - Responsive 3 columns */}
+        </View>        {/* Stats Grid - 3 columns in a row with perfect spacing */}
         <View style={styles.statsGrid}>
           <StatTile
             icon="fire"
@@ -768,124 +734,122 @@ export default function HealthDashboard() {
             value="+74mins"
             backgroundColor="#FFE5F1"
           />
-        </View>
-
-        {/* Expanded Health Stats - Enhanced with responsive styling */}
+        </View>{/* Expanded Health Stats - Enhanced with premium styling */}
         <View style={styles.expandedSection}>
           <View style={styles.expandedGrid}>
-            {/* Sleep Tile */}
-            <View style={styles.expandedTile}>
-              {/* Subtle top highlight */}
-              <View style={{
+            <View style={[styles.expandedTile, { backgroundColor: '#FAFAFA' }]}>
+              {/* Subtle top highlight */}              <View style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
                 height: 1,
                 backgroundColor: 'rgba(255,255,255,0.6)',
-                borderTopLeftRadius: responsive.isSmallScreen ? 16 : 20,
-                borderTopRightRadius: responsive.isSmallScreen ? 16 : 20,
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
               }} />
               
-              <View style={styles.expandedTileContent}>
-                <View style={styles.expandedTileLeft}>
-                  <CleanIcon 
-                    name="sleep" 
-                    size={responsive.iconSize.medium} 
-                    color="#8b5cf6" 
-                    backgroundColor="rgba(139, 92, 246, 0.1)" 
-                  />
-                  <View style={styles.expandedTileText}>
-                    <Text style={styles.expandedTileTitle} numberOfLines={1}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>                  <CleanIcon name="sleep" size={24} color="#8b5cf6" backgroundColor="rgba(139, 92, 246, 0.1)" />
+                  <View style={{ marginLeft: 18 }}>
+                    <Text style={{
+                      ...typography.body,
+                      color: colors.text,
+                      fontWeight: '700',
+                      fontSize: 18,
+                      letterSpacing: 0.2,
+                    }}>
                       Sleep
                     </Text>
-                    <Text style={styles.expandedTileSubtitle} numberOfLines={1}>
+                    <Text style={{
+                      ...typography.caption,
+                      color: colors.textSecondary,
+                      fontSize: 15,
+                      fontWeight: '500',
+                      marginTop: 4,
+                    }}>
                       8 Hrs 12 Mins
                     </Text>
                   </View>
                 </View>
-                <Text style={{ 
-                  fontSize: responsive.fontSize.large, 
-                  color: colors.textSecondary, 
-                  fontWeight: '600' 
-                }}>⋯</Text>
+                <Text style={{ fontSize: 22, color: colors.textSecondary, fontWeight: '600' }}>⋯</Text>
               </View>
             </View>
 
-            {/* Standing Tile */}
-            <View style={styles.expandedTile}>
-              <View style={{
+            <View style={[styles.expandedTile, { backgroundColor: '#FAFAFA' }]}>
+              {/* Subtle top highlight */}              <View style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
                 height: 1,
                 backgroundColor: 'rgba(255,255,255,0.6)',
-                borderTopLeftRadius: responsive.isSmallScreen ? 16 : 20,
-                borderTopRightRadius: responsive.isSmallScreen ? 16 : 20,
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
               }} />
               
-              <View style={styles.expandedTileContent}>
-                <View style={styles.expandedTileLeft}>
-                  <CleanIcon 
-                    name="standing" 
-                    size={responsive.iconSize.medium} 
-                    color="#10b981" 
-                    backgroundColor="rgba(16, 185, 129, 0.1)" 
-                  />
-                  <View style={styles.expandedTileText}>
-                    <Text style={styles.expandedTileTitle} numberOfLines={1}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>                  <CleanIcon name="standing" size={24} color="#10b981" backgroundColor="rgba(16, 185, 129, 0.1)" />
+                  <View style={{ marginLeft: 18 }}>
+                    <Text style={{
+                      ...typography.body,
+                      color: colors.text,
+                      fontWeight: '700',
+                      fontSize: 18,
+                      letterSpacing: 0.2,
+                    }}>
                       Standing
                     </Text>
-                    <Text style={styles.expandedTileSubtitle} numberOfLines={1}>
+                    <Text style={{
+                      ...typography.caption,
+                      color: colors.textSecondary,
+                      fontSize: 15,
+                      fontWeight: '500',
+                      marginTop: 4,
+                    }}>
                       6 Hrs 10 Mins
                     </Text>
                   </View>
                 </View>
-                <Text style={{ 
-                  fontSize: responsive.fontSize.large, 
-                  color: colors.textSecondary, 
-                  fontWeight: '600' 
-                }}>⋯</Text>
               </View>
             </View>
 
-            {/* Heart Tile */}
-            <View style={styles.expandedTile}>
-              <View style={{
+            <View style={[styles.expandedTile, { backgroundColor: '#FAFAFA' }]}>
+              {/* Subtle top highlight */}              <View style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
                 height: 1,
                 backgroundColor: 'rgba(255,255,255,0.6)',
-                borderTopLeftRadius: responsive.isSmallScreen ? 16 : 20,
-                borderTopRightRadius: responsive.isSmallScreen ? 16 : 20,
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
               }} />
               
-              <View style={styles.expandedTileContent}>
-                <View style={styles.expandedTileLeft}>
-                  <CleanIcon 
-                    name="heart" 
-                    size={responsive.iconSize.medium} 
-                    color="#ef4444" 
-                    backgroundColor="rgba(239, 68, 68, 0.1)" 
-                  />
-                  <View style={styles.expandedTileText}>
-                    <Text style={styles.expandedTileTitle} numberOfLines={1}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>                  <CleanIcon name="heart" size={24} color="#ef4444" backgroundColor="rgba(239, 68, 68, 0.1)" />
+                  <View style={{ marginLeft: 18 }}>
+                    <Text style={{
+                      ...typography.body,
+                      color: colors.text,
+                      fontWeight: '700',
+                      fontSize: 18,
+                      letterSpacing: 0.2,
+                    }}>
                       Heart
                     </Text>
-                    <Text style={styles.expandedTileSubtitle} numberOfLines={1}>
+                    <Text style={{
+                      ...typography.caption,
+                      color: colors.textSecondary,
+                      fontSize: 15,
+                      fontWeight: '500',
+                      marginTop: 4,
+                    }}>
                       Add heart data
                     </Text>
                   </View>
                 </View>
-                <CleanIcon 
-                  name="heart" 
-                  size={responsive.iconSize.small} 
-                  color="#ef4444" 
-                  backgroundColor="rgba(239, 68, 68, 0.1)" 
-                />
+                <CleanIcon name="heart" size={20} color="#ef4444" backgroundColor="rgba(239, 68, 68, 0.1)" />
               </View>
             </View>
           </View>

@@ -1,3 +1,5 @@
+import { Spacing } from '@/theme/spacing';
+import { BorderRadius } from '@/theme/spacing';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
@@ -35,12 +37,19 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { GradientButton } from '@/components/ui/GradientButton';
+import { 
+  scale, 
+  verticalScale, 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  responsiveValue 
+} from '@/utils/responsive';
 
 const { width, height } = Dimensions.get('window');
 
@@ -87,8 +96,7 @@ const ChallengeStatsCard = ({
       <TouchableOpacity
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        activeOpacity={1}
-        style={{
+        activeOpacity={1}        style={{
           borderRadius: BorderRadius.xl,
           overflow: 'hidden',
           shadowColor: colors.text,
@@ -107,8 +115,7 @@ const ChallengeStatsCard = ({
           }}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-        >
-          <View style={{
+        >          <View style={{
             width: 48,
             height: 48,
             borderRadius: 24,

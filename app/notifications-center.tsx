@@ -6,8 +6,8 @@ import {
   UserPlus, CheckCircle, XCircle, Clock, Star, Activity 
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
+import { responsiveValue, LAYOUT, TOUCH, SCREEN } from '@/utils/responsive';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -135,7 +135,6 @@ export default function NotificationsCenterScreen() {
   const handleNotificationAction = (notificationId: string, action: 'accept' | 'decline') => {
     console.log(`${action} notification ${notificationId}`);
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -144,18 +143,18 @@ export default function NotificationsCenterScreen() {
     header: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
-      paddingBottom: Spacing.md,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingTop: LAYOUT.getPadding(24),
+      paddingBottom: LAYOUT.getPadding(16),
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     headerTitle: {
       ...typography.h2,
@@ -165,24 +164,28 @@ export default function NotificationsCenterScreen() {
     },
     unreadCount: {
       backgroundColor: colors.error,
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: 4,
-      borderRadius: BorderRadius.full,
-      minWidth: 24,
+      paddingHorizontal: LAYOUT.getPadding(8),
+      paddingVertical: LAYOUT.getPadding(4),
+      borderRadius: LAYOUT.getBorderRadius(9999),
+      minWidth: responsiveValue({
+        xs: 22, sm: 23, md: 24, lg: 25, default: 24
+      }),
       alignItems: 'center',
     },
     unreadCountText: {
       ...typography.caption,
       color: colors.surface,
       fontWeight: '600',
-      fontSize: 12,
+      fontSize: responsiveValue({
+        xs: 11, sm: 11.5, md: 12, lg: 12.5, default: 12
+      }),
     },
     tabsContainer: {
       flexDirection: 'row',
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      margin: Spacing.lg,
-      padding: 4,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      margin: LAYOUT.getMargin(24),
+      padding: LAYOUT.getPadding(4),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -192,8 +195,8 @@ export default function NotificationsCenterScreen() {
     tab: {
       flex: 1,
       alignItems: 'center',
-      paddingVertical: Spacing.sm,
-      borderRadius: BorderRadius.md,
+      paddingVertical: LAYOUT.getPadding(8),
+      borderRadius: LAYOUT.getBorderRadius(8),
     },
     activeTab: {
       backgroundColor: colors.primary,
@@ -206,15 +209,14 @@ export default function NotificationsCenterScreen() {
     },
     activeTabText: {
       color: colors.surface,
-    },
-    notificationsContainer: {
-      paddingHorizontal: Spacing.lg,
+    },    notificationsContainer: {
+      paddingHorizontal: LAYOUT.getContentPadding(),
     },
     notificationCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      marginBottom: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(24),
+      marginBottom: LAYOUT.getMargin(16),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
@@ -230,22 +232,22 @@ export default function NotificationsCenterScreen() {
     notificationHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     notificationIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     notificationAvatar: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      marginRight: Spacing.md,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
+      marginRight: LAYOUT.getMargin(16),
     },
     notificationContent: {
       flex: 1,
@@ -264,25 +266,25 @@ export default function NotificationsCenterScreen() {
     notificationTimestamp: {
       ...typography.caption,
       color: colors.textSecondary,
-      marginTop: Spacing.xs,
+      marginTop: LAYOUT.getMargin(4),
     },
     unreadIndicator: {
       width: 8,
       height: 8,
       borderRadius: 4,
       backgroundColor: colors.primary,
-      marginLeft: Spacing.sm,
+      marginLeft: LAYOUT.getMargin(8),
     },
     actionButtons: {
       flexDirection: 'row',
-      gap: Spacing.sm,
-      marginTop: Spacing.md,
+      gap: LAYOUT.getMargin(8),
+      marginTop: LAYOUT.getMargin(16),
     },
     actionButton: {
       flex: 1,
-      paddingVertical: Spacing.sm,
-      paddingHorizontal: Spacing.md,
-      borderRadius: BorderRadius.md,
+      paddingVertical: LAYOUT.getPadding(8),
+      paddingHorizontal: LAYOUT.getPadding(16),
+      borderRadius: LAYOUT.getBorderRadius(8),
       alignItems: 'center',
     },
     acceptButton: {
@@ -304,16 +306,16 @@ export default function NotificationsCenterScreen() {
     },
     emptyState: {
       alignItems: 'center',
-      paddingVertical: Spacing.xl * 2,
+      paddingVertical: LAYOUT.getPadding(64),
     },
     emptyStateIcon: {
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     emptyStateTitle: {
       ...typography.h4,
       color: colors.text,
       fontWeight: 'bold',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     emptyStateMessage: {
       ...typography.body,
@@ -399,7 +401,7 @@ export default function NotificationsCenterScreen() {
             >
               <ArrowLeft size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text style={[TextStyles.h2, styles.headerTitle]}>Notifications</Text>
+            <Text style={styles.headerTitle}>Notifications</Text>
             {unreadCount > 0 && (
               <LinearGradient
                 colors={[colors.error, colors.error + 'DD']}

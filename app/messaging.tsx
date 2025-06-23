@@ -24,6 +24,16 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
 import { Spacing, BorderRadius } from '@/theme/spacing';
 import { router } from 'expo-router';
+import { ResponsiveLayout, ResponsiveCard, useResponsiveDimensions } from '@/components/ui/ResponsiveLayout';
+import { 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  COMPONENT,
+  TYPOGRAPHY,
+  responsiveValue,
+  useBreakpoint 
+} from '@/utils/responsive';
 
 interface Conversation {
   id: string;
@@ -40,6 +50,7 @@ interface Conversation {
 export default function MessagingScreen() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
+  const { isMobile, isCompact, contentPadding } = useResponsiveDimensions();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState<'all' | 'groups' | 'direct'>('all');
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -164,7 +175,6 @@ export default function MessagingScreen() {
       </TouchableOpacity>
     </Animated.View>
   );
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -174,81 +184,87 @@ export default function MessagingScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: contentPadding,
+      paddingVertical: LAYOUT.getPadding(16),
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
+      minHeight: COMPONENT.getHeaderHeight(),
     },
     headerLeft: {
       flexDirection: 'row',
       alignItems: 'center',
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getTouchSize(40),
+      height: TOUCH.getTouchSize(40),
+      borderRadius: TOUCH.getTouchSize(40) / 2,
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getPadding(16),
     },
     headerTitle: {
-      ...typography.h2,
+      fontSize: TYPOGRAPHY.getHeaderSize(2),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getHeaderSize(2)),
       color: colors.text,
       fontWeight: 'bold',
     },
     headerActions: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: LAYOUT.getPadding(8),
     },
     headerButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getTouchSize(40),
+      height: TOUCH.getTouchSize(40),
+      borderRadius: TOUCH.getTouchSize(40) / 2,
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
     },
     searchContainer: {
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: contentPadding,
+      paddingVertical: LAYOUT.getPadding(16),
       backgroundColor: colors.surface,
     },
     searchWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.background,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(12),
+      minHeight: COMPONENT.input.md,
     },
     searchInput: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium')),
       color: colors.text,
       flex: 1,
-      marginLeft: Spacing.sm,
-      paddingVertical: Spacing.xs,
+      marginLeft: LAYOUT.getPadding(12),
+      paddingVertical: LAYOUT.getPadding(8),
     },
     tabContainer: {
       flexDirection: 'row',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
+      paddingHorizontal: contentPadding,
+      paddingVertical: LAYOUT.getPadding(12),
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
     tab: {
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
-      marginRight: Spacing.sm,
-      borderRadius: BorderRadius.lg,
+      paddingHorizontal: LAYOUT.getPadding(20),
+      paddingVertical: LAYOUT.getPadding(12),
+      marginRight: LAYOUT.getPadding(12),
+      borderRadius: LAYOUT.getBorderRadius(12),
+      minHeight: TOUCH.minTarget,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     activeTab: {
       backgroundColor: colors.primary,
-    },
-    tabText: {
-      ...typography.body,
+    },    tabText: {
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.textSecondary,
       fontWeight: '500',
     },
@@ -257,24 +273,25 @@ export default function MessagingScreen() {
     },
     conversationsList: {
       flex: 1,
-      paddingTop: Spacing.sm,
+      paddingTop: LAYOUT.getPadding(8),
     },
     conversationItem: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: contentPadding,
+      paddingVertical: LAYOUT.getPadding(16),
       borderBottomWidth: 1,
       borderBottomColor: colors.border + '30',
+      minHeight: LAYOUT.getListItemHeight(),
     },
     avatarContainer: {
       position: 'relative',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getPadding(16),
     },
     avatar: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: responsiveValue({ xs: 44, sm: 50, default: 50 }),
+      height: responsiveValue({ xs: 44, sm: 50, default: 50 }),
+      borderRadius: responsiveValue({ xs: 22, sm: 25, default: 25 }),
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
@@ -283,15 +300,15 @@ export default function MessagingScreen() {
       backgroundColor: colors.success + '20',
     },
     avatarText: {
-      fontSize: 24,
+      fontSize: responsiveValue({ xs: 20, sm: 24, default: 24 }),
     },
     onlineIndicator: {
       position: 'absolute',
       bottom: 2,
       right: 2,
-      width: 14,
-      height: 14,
-      borderRadius: 7,
+      width: responsiveValue({ xs: 12, sm: 14, default: 14 }),
+      height: responsiveValue({ xs: 12, sm: 14, default: 14 }),
+      borderRadius: responsiveValue({ xs: 6, sm: 7, default: 7 }),
       backgroundColor: colors.success,
       borderWidth: 2,
       borderColor: colors.surface,
@@ -303,56 +320,56 @@ export default function MessagingScreen() {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 4,
+      marginBottom: LAYOUT.getPadding(4),
     },
     conversationName: {
-      ...typography.bodyMedium,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium')),
       color: colors.text,
       fontWeight: '600',
       flex: 1,
     },
     timestamp: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getCaptionSize()),
       color: colors.textSecondary,
     },
     conversationFooter: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 2,
+      marginBottom: LAYOUT.getPadding(2),
     },
     lastMessage: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
+      lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium')),
       color: colors.textSecondary,
       flex: 1,
     },
     unreadBadge: {
       backgroundColor: colors.primary,
       borderRadius: 10,
-      minWidth: 20,
-      height: 20,
-      justifyContent: 'center',
+      minWidth: responsiveValue({ xs: 18, sm: 20, default: 20 }),
+      height: responsiveValue({ xs: 18, sm: 20, default: 20 }),      justifyContent: 'center',
       alignItems: 'center',
-      paddingHorizontal: 6,
+      paddingHorizontal: responsiveValue({ xs: 4, sm: 6, default: 6 }),
     },
     unreadCount: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.surface,
-      fontSize: 11,
       fontWeight: 'bold',
     },
     memberCount: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
-      fontSize: 11,
     },
     fab: {
       position: 'absolute',
-      bottom: 20,
-      right: 20,
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      bottom: responsiveValue({ xs: 16, sm: 20, default: 20 }),
+      right: responsiveValue({ xs: 16, sm: 20, default: 20 }),
+      width: TOUCH.getTouchSize(56),
+      height: TOUCH.getTouchSize(56),
+      borderRadius: TOUCH.getTouchSize(56) / 2,
       backgroundColor: colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
@@ -363,24 +380,27 @@ export default function MessagingScreen() {
       elevation: 8,
     },
   });
-
   return (
-    <SafeAreaView style={styles.container}>
+    <ResponsiveLayout safeArea={true} scrollable={false} padding={false}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <ArrowLeft size={20} color={colors.text} />
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+          >
+            <ArrowLeft size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Messages</Text>
         </View>
         
         <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerButton}>
-            <Phone size={20} color={colors.text} />
+          <TouchableOpacity style={styles.headerButton} activeOpacity={0.7}>
+            <Phone size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton}>
-            <Video size={20} color={colors.text} />
+          <TouchableOpacity style={styles.headerButton} activeOpacity={0.7}>
+            <Video size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.text} />
           </TouchableOpacity>
         </View>
       </View>
@@ -388,7 +408,7 @@ export default function MessagingScreen() {
       {/* Search */}
       <View style={styles.searchContainer}>
         <View style={styles.searchWrapper}>
-          <Search size={20} color={colors.textSecondary} />
+          <Search size={responsiveValue({ xs: 18, sm: 20, default: 20 })} color={colors.textSecondary} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search conversations..."
@@ -406,6 +426,7 @@ export default function MessagingScreen() {
             key={tab}
             style={[styles.tab, selectedTab === tab && styles.activeTab]}
             onPress={() => setSelectedTab(tab)}
+            activeOpacity={0.7}
           >
             <Text style={[
               styles.tabText,
@@ -423,10 +444,16 @@ export default function MessagingScreen() {
         showsVerticalScrollIndicator={false}
       >
         {filteredConversations.map(renderConversation)}
-      </ScrollView>      {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} onPress={() => router.push('/new-message')}>
-        <Edit size={24} color={colors.surface} />
+      </ScrollView>      
+      
+      {/* Floating Action Button */}
+      <TouchableOpacity 
+        style={styles.fab} 
+        onPress={() => router.push('/new-message')}
+        activeOpacity={0.8}
+      >
+        <Edit size={responsiveValue({ xs: 22, sm: 24, default: 24 })} color={colors.surface} />
       </TouchableOpacity>
-    </SafeAreaView>
+    </ResponsiveLayout>
   );
 }

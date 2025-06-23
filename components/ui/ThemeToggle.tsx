@@ -3,10 +3,10 @@ import { TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { Sun, Moon } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { LightTheme, DarkTheme } from '@/theme/colors';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { LAYOUT, TOUCH } from '@/utils/responsive';
 
 export const ThemeToggle: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, themeMode, setThemeMode } = useTheme();
   const colors = theme === 'dark' ? DarkTheme : LightTheme;
   
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -33,9 +33,9 @@ export const ThemeToggle: React.FC = () => {
       ]),
     ]).start();
   }, [theme, rotateAnim, scaleAnim]);
-
   const handlePress = () => {
-    toggleTheme();
+    const newMode = theme === 'dark' ? 'light' : 'dark';
+    setThemeMode(newMode);
   };
 
   const rotation = rotateAnim.interpolate({
@@ -69,9 +69,9 @@ export const ThemeToggle: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 48,
-    height: 48,
-    borderRadius: BorderRadius.full,
+    width: TOUCH.getTouchSize(48),
+    height: TOUCH.getTouchSize(48),
+    borderRadius: TOUCH.getTouchSize(48) / 2,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: {

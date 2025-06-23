@@ -8,10 +8,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
-  Dimensions,
   Alert,
+  SafeAreaView,
+  Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { 
@@ -38,14 +38,21 @@ import {
 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography, TextStyles } from '@/theme/typography';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { GradientButton } from '@/components/ui/GradientButton';
-
-const { width, height } = Dimensions.get('window');
+import { ResponsiveLayout, ResponsiveCard, useResponsiveDimensions } from '@/components/ui/ResponsiveLayout';
+import { 
+  SCREEN, 
+  LAYOUT, 
+  TOUCH,
+  COMPONENT,
+  TYPOGRAPHY,
+  responsiveValue,
+  useBreakpoint
+} from '@/utils/responsive';
 
 interface OnboardingData {
   name: string;
@@ -59,8 +66,10 @@ interface OnboardingData {
 }
 
 const OnboardingScreen: React.FC = () => {
-  const { colors, theme } = useTheme();
-  const typography = getTypography(theme === 'dark');
+  const { colors, theme } = useTheme();  const typography = getTypography(theme === 'dark');
+  const dimensions = useResponsiveDimensions();
+  const { width, height } = Dimensions.get('window');
+  const breakpoint = useBreakpoint();
   const [currentStep, setCurrentStep] = useState(0);
   const [userData, setUserData] = useState<OnboardingData>({
     name: '',
@@ -87,36 +96,14 @@ const OnboardingScreen: React.FC = () => {
   const particle3Anim = useRef(new Animated.Value(0)).current;
   const floatingIcon1 = useRef(new Animated.Value(0)).current;
   const floatingIcon2 = useRef(new Animated.Value(0)).current;
-    // Achievement animations
+  
+  // Achievement animations
   const achievementScale = useRef(new Animated.Value(0)).current;
   const achievementOpacity = useRef(new Animated.Value(0)).current;
   const confettiAnim = useRef(new Animated.Value(0)).current;
 
-  // Pre-create all animation refs to avoid hook ordering issues
-  const optionScaleAnims = useRef(
-    Array.from({ length: 10 }, () => new Animated.Value(1))
-  ).current;
-  const optionGlowAnims = useRef(
-    Array.from({ length: 10 }, () => new Animated.Value(0))
-  ).current;
-  const dayScaleAnims = useRef(
-    Array.from({ length: 7 }, () => new Animated.Value(1))
-  ).current;
-  const dayPulseAnims = useRef(
-    Array.from({ length: 7 }, () => new Animated.Value(1))
-  ).current;
-  const timeScaleAnims = useRef(
-    Array.from({ length: 3 }, () => new Animated.Value(1))
-  ).current;  const timeGlowAnims = useRef(
-    Array.from({ length: 3 }, () => new Animated.Value(0))
-  ).current;
-
-  // StepWrapper animation refs
-  const stepIconScaleAnim = useRef(new Animated.Value(0)).current;
-  const stepTitleSlideAnim = useRef(new Animated.Value(30)).current;
-  const stepContentFadeAnim = useRef(new Animated.Value(0)).current;
-
   const totalSteps = 6;
+
   React.useEffect(() => {
     // Start ambient animations
     startAmbientAnimations();
@@ -126,35 +113,6 @@ const OnboardingScreen: React.FC = () => {
       triggerAchievement();
     }
   }, []);
-
-  // Animate step changes
-  React.useEffect(() => {
-    // Reset and animate step wrapper elements
-    stepIconScaleAnim.setValue(0);
-    stepTitleSlideAnim.setValue(30);
-    stepContentFadeAnim.setValue(0);
-
-    Animated.sequence([
-      Animated.timing(stepIconScaleAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      Animated.parallel([
-        Animated.spring(stepTitleSlideAnim, {
-          toValue: 0,
-          tension: 80,
-          friction: 8,
-          useNativeDriver: true,
-        }),
-        Animated.timing(stepContentFadeAnim, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
-  }, [currentStep]);
 
   const startAmbientAnimations = () => {
     // Floating particles
@@ -246,7 +204,7 @@ const OnboardingScreen: React.FC = () => {
     ]).start();
   };
   const animateStep = (direction: 'next' | 'prev') => {
-    const toValue = direction === 'next' ? -width : width;
+    const toValue = direction === 'next' ? -dimensions.screenWidth : dimensions.screenWidth;
     
     // Enhanced transition with multiple animations
     Animated.parallel([
@@ -266,7 +224,7 @@ const OnboardingScreen: React.FC = () => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      slideAnim.setValue(direction === 'next' ? width : -width);
+      slideAnim.setValue(direction === 'next' ? dimensions.screenWidth : -dimensions.screenWidth);
       
       Animated.parallel([
         Animated.timing(slideAnim, {
@@ -436,15 +394,13 @@ const OnboardingScreen: React.FC = () => {
   );
 
   const renderStep = () => {
-    switch (currentStep) {      case 0:
+    switch (currentStep) {
+      case 0:
         return (
           <StepWrapper
             title="Let's Get Acquainted"
             subtitle="What should we call you?"
             icon={User}
-            iconScaleAnim={stepIconScaleAnim}
-            titleSlideAnim={stepTitleSlideAnim}
-            contentFadeAnim={stepContentFadeAnim}
           >
             <View style={styles.inputContainer}>
               <Input
@@ -455,15 +411,14 @@ const OnboardingScreen: React.FC = () => {
               />
             </View>
           </StepWrapper>
-        );      case 1:
+        );
+
+      case 1:
         return (
           <StepWrapper
             title="Tell Us About Yourself"
             subtitle="Help us personalize your experience"
             icon={Calendar}
-            iconScaleAnim={stepIconScaleAnim}
-            titleSlideAnim={stepTitleSlideAnim}
-            contentFadeAnim={stepContentFadeAnim}
           >
             <View style={styles.inputContainer}>
               <Input
@@ -491,22 +446,22 @@ const OnboardingScreen: React.FC = () => {
               </View>
             </View>
           </StepWrapper>
-        );      case 2:        return (
+        );
+
+      case 2:        return (
           <StepWrapper
             title="What's Your Fitness Level?"
             subtitle="This helps us recommend the right workouts"
             icon={Activity}
-            iconScaleAnim={stepIconScaleAnim}
-            titleSlideAnim={stepTitleSlideAnim}
-            contentFadeAnim={stepContentFadeAnim}
           >
             <View style={styles.optionsContainer}>
               {[
                 { value: 'beginner', label: 'Beginner', subtitle: 'New to fitness', icon: Heart, gradient: ['#FF6B6B', '#FF8E8E'] },
                 { value: 'intermediate', label: 'Intermediate', subtitle: 'Some experience', icon: Zap, gradient: ['#4ECDC4', '#7FDBDA'] },
-                { value: 'advanced', label: 'Advanced', subtitle: 'Regular athlete', icon: Trophy, gradient: ['#45B7D1', '#6CC6E0'] },              ].map((option, index) => {
+                { value: 'advanced', label: 'Advanced', subtitle: 'Regular athlete', icon: Trophy, gradient: ['#45B7D1', '#6CC6E0'] },
+              ].map((option) => {
                 const isSelected = userData.fitnessLevel === option.value;
-                const scaleAnim = optionScaleAnims[index];
+                const scaleAnim = useRef(new Animated.Value(1)).current;
                 
                 const handlePressIn = () => {
                   Animated.spring(scaleAnim, {
@@ -591,9 +546,6 @@ const OnboardingScreen: React.FC = () => {
             title="What Are Your Goals?"
             subtitle="Select all that apply - the more specific, the better!"
             icon={Target}
-            iconScaleAnim={stepIconScaleAnim}
-            titleSlideAnim={stepTitleSlideAnim}
-            contentFadeAnim={stepContentFadeAnim}
           >
             <View style={styles.optionsGrid}>
               {[
@@ -602,24 +554,27 @@ const OnboardingScreen: React.FC = () => {
                 { value: 'endurance', label: 'Endurance', icon: Heart, gradient: ['#45B7D1', '#6CC6E0'] },
                 { value: 'strength', label: 'Strength', icon: Zap, gradient: ['#F7B731', '#F2C94C'] },
                 { value: 'flexibility', label: 'Flexibility', icon: Activity, gradient: ['#A8E6CF', '#88D8A3'] },
-                { value: 'general-fitness', label: 'Wellness', icon: Users, gradient: ['#D63384', '#F06292'] },              ].map((goal, index) => {
+                { value: 'general-fitness', label: 'Wellness', icon: Users, gradient: ['#D63384', '#F06292'] },
+              ].map((goal) => {
                 const isSelected = userData.goals.includes(goal.value);
-                const scaleAnim = optionScaleAnims[index + 3]; // offset by 3 for fitness level options
-                const glowAnim = optionGlowAnims[index];
-                  // Handle glow animation based on selection state
-                if (isSelected) {
-                  Animated.timing(glowAnim, {
-                    toValue: 1,
-                    duration: 300,
-                    useNativeDriver: true,
-                  }).start();
-                } else {
-                  Animated.timing(glowAnim, {
-                    toValue: 0,
-                    duration: 300,
-                    useNativeDriver: true,
-                  }).start();
-                }
+                const scaleAnim = useRef(new Animated.Value(1)).current;
+                const glowAnim = useRef(new Animated.Value(0)).current;
+                
+                React.useEffect(() => {
+                  if (isSelected) {
+                    Animated.timing(glowAnim, {
+                      toValue: 1,
+                      duration: 300,
+                      useNativeDriver: true,
+                    }).start();
+                  } else {
+                    Animated.timing(glowAnim, {
+                      toValue: 0,
+                      duration: 300,
+                      useNativeDriver: true,
+                    }).start();
+                  }
+                }, [isSelected]);
                 
                 const handlePress = () => {
                   toggleArrayItem('goals', goal.value);
@@ -703,9 +658,6 @@ const OnboardingScreen: React.FC = () => {
             title="When Do You Want to Workout?"
             subtitle="Choose your preferred days - consistency is key!"
             icon={Calendar}
-            iconScaleAnim={stepIconScaleAnim}
-            titleSlideAnim={stepTitleSlideAnim}
-            contentFadeAnim={stepContentFadeAnim}
           >
             <View style={styles.daysContainer}>
               {[
@@ -715,32 +667,32 @@ const OnboardingScreen: React.FC = () => {
                 { short: 'Thu', full: 'Thursday', emoji: '🎯' },
                 { short: 'Fri', full: 'Friday', emoji: '🚀' },
                 { short: 'Sat', full: 'Saturday', emoji: '🏆' },
-                { short: 'Sun', full: 'Sunday', emoji: '🌟' },              ].map((day, index) => {                const isSelected = userData.workoutDays.includes(day.short);
-                const scaleAnim = dayScaleAnims[index];
-                const pulseAnim = dayPulseAnims[index];
-                  // Handle pulse animation based on selection state
-                if (isSelected) {
-                  // Simple approach without checking animation state
-                  const pulse = Animated.loop(
-                    Animated.sequence([
-                      Animated.timing(pulseAnim, {
-                        toValue: 1.1,
-                        duration: 1000,
-                        useNativeDriver: true,
-                      }),
-                      Animated.timing(pulseAnim, {
-                        toValue: 1,
-                        duration: 1000,
-                        useNativeDriver: true,
-                      }),
-                    ])
-                  );
-                  pulse.start();
-                } else {
-                  // Stop animation if deselected
-                  pulseAnim.stopAnimation();
-                  pulseAnim.setValue(1);
-                }
+                { short: 'Sun', full: 'Sunday', emoji: '🌟' },
+              ].map((day) => {
+                const isSelected = userData.workoutDays.includes(day.short);
+                const scaleAnim = useRef(new Animated.Value(1)).current;
+                const pulseAnim = useRef(new Animated.Value(1)).current;
+                
+                React.useEffect(() => {
+                  if (isSelected) {
+                    const pulse = Animated.loop(
+                      Animated.sequence([
+                        Animated.timing(pulseAnim, {
+                          toValue: 1.1,
+                          duration: 1000,
+                          useNativeDriver: true,
+                        }),
+                        Animated.timing(pulseAnim, {
+                          toValue: 1,
+                          duration: 1000,
+                          useNativeDriver: true,
+                        }),
+                      ])
+                    );
+                    pulse.start();
+                    return () => pulse.stop();
+                  }
+                }, [isSelected]);
                 
                 const handlePress = () => {
                   toggleArrayItem('workoutDays', day.short);
@@ -792,7 +744,7 @@ const OnboardingScreen: React.FC = () => {
             </View>
             {userData.workoutDays.length > 0 && (
               <Animated.View style={{ 
-                marginTop: Spacing.lg,
+                marginTop: LAYOUT.getPadding(24),
                 opacity: fadeAnim,
                 transform: [{ translateY: 10 }],
               }}>
@@ -813,9 +765,6 @@ const OnboardingScreen: React.FC = () => {
             title="Perfect Timing!"
             subtitle="When do you feel most energetic for workouts?"
             icon={Timer}
-            iconScaleAnim={stepIconScaleAnim}
-            titleSlideAnim={stepTitleSlideAnim}
-            contentFadeAnim={stepContentFadeAnim}
           >
             <View style={styles.optionsContainer}>
               {[
@@ -842,24 +791,27 @@ const OnboardingScreen: React.FC = () => {
                   emoji: '🌙',
                   benefit: 'Stress relief & better sleep',
                   gradient: ['#A8E6CF', '#88D8A3']
-                },              ].map((time, index) => {                const isSelected = userData.preferredTime === time.value;
-                const scaleAnim = timeScaleAnims[index];
-                const glowAnim = timeGlowAnims[index];
+                },
+              ].map((time) => {
+                const isSelected = userData.preferredTime === time.value;
+                const scaleAnim = useRef(new Animated.Value(1)).current;
+                const glowAnim = useRef(new Animated.Value(0)).current;
                 
-                // Handle glow animation based on selection state
-                if (isSelected) {
-                  Animated.timing(glowAnim, {
-                    toValue: 1,
-                    duration: 300,
-                    useNativeDriver: true,
-                  }).start();
-                } else {
-                  Animated.timing(glowAnim, {
-                    toValue: 0,
-                    duration: 300,
-                    useNativeDriver: true,
-                  }).start();
-                }
+                React.useEffect(() => {
+                  if (isSelected) {
+                    Animated.timing(glowAnim, {
+                      toValue: 1,
+                      duration: 300,
+                      useNativeDriver: true,
+                    }).start();
+                  } else {
+                    Animated.timing(glowAnim, {
+                      toValue: 0,
+                      duration: 300,
+                      useNativeDriver: true,
+                    }).start();
+                  }
+                }, [isSelected]);
                 
                 const handlePress = () => {
                   updateUserData('preferredTime', time.value);
@@ -899,8 +851,8 @@ const OnboardingScreen: React.FC = () => {
                           end={{ x: 1, y: 1 }}
                         />
                       )}
-                      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.sm }}>
-                        <Text style={{ fontSize: 24, marginRight: Spacing.sm }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: LAYOUT.getPadding(8) }}>
+                        <Text style={{ fontSize: responsiveValue({xs: 20, sm: 22, md: 24, lg: 26, xl: 28, xxl: 30, xxxl: 32, default: 24}), marginRight: LAYOUT.getPadding(8) }}>
                           {time.emoji}
                         </Text>
                         <View style={{ flex: 1 }}>
@@ -942,14 +894,13 @@ const OnboardingScreen: React.FC = () => {
             </View>
             {userData.preferredTime && (
               <Animated.View style={{ 
-                marginTop: Spacing.xl,
+                marginTop: LAYOUT.getPadding(32),
                 opacity: fadeAnim,
                 alignItems: 'center',
               }}>
                 <View style={{
-                  backgroundColor: colors.success + '20',
-                  borderRadius: BorderRadius.lg,
-                  padding: Spacing.md,
+                  backgroundColor: colors.success + '20',                  borderRadius: LAYOUT.getBorderRadius(16),
+                  padding: LAYOUT.getPadding(12),
                   alignItems: 'center',
                 }}>
                   <Rocket size={24} color={colors.success} />
@@ -957,7 +908,7 @@ const OnboardingScreen: React.FC = () => {
                     ...typography.bodyMedium,
                     color: colors.success,
                     fontWeight: '600',
-                    marginTop: Spacing.xs,
+                    marginTop: LAYOUT.getPadding(4),
                   }}>
                     Ready to start your journey! 🚀
                   </Text>
@@ -970,8 +921,7 @@ const OnboardingScreen: React.FC = () => {
       default:
         return null;
     }
-  };
-  const styles = StyleSheet.create({
+  };  const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
@@ -984,7 +934,7 @@ const OnboardingScreen: React.FC = () => {
     },
     scrollContent: {
       flexGrow: 1,
-      padding: Spacing.lg,
+      padding: LAYOUT.getContentPadding(),
       position: 'relative',
     },
     // Floating background elements
@@ -1005,20 +955,28 @@ const OnboardingScreen: React.FC = () => {
     },
     floatingIcon: {
       position: 'absolute',
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: responsiveValue({
+        xs: 32, sm: 36, md: 40, lg: 44, xl: 48, xxl: 52, xxxl: 56, default: 40
+      }),
+      height: responsiveValue({
+        xs: 32, sm: 36, md: 40, lg: 44, xl: 48, xxl: 52, xxxl: 56, default: 40
+      }),
+      borderRadius: responsiveValue({
+        xs: 16, sm: 18, md: 20, lg: 22, xl: 24, xxl: 26, xxxl: 28, default: 20
+      }),
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: colors.primary + '15',
     },
     // Enhanced progress bar
     progressContainer: {
-      marginTop: Spacing.md,
-      marginBottom: Spacing.xl,
+      marginTop: LAYOUT.getPadding(12),
+      marginBottom: LAYOUT.getPadding(32),
     },
     progressBar: {
-      height: 6,
+      height: responsiveValue({
+        xs: 4, sm: 5, md: 6, lg: 7, xl: 8, xxl: 9, xxxl: 10, default: 6
+      }),
       backgroundColor: colors.border,
       borderRadius: 3,
       overflow: 'hidden',
@@ -1046,23 +1004,26 @@ const OnboardingScreen: React.FC = () => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginTop: Spacing.sm,
+      marginTop: LAYOUT.getPadding(8),
     },
     progressText: {
-      ...typography.caption,
+      fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
       fontWeight: '600',
     },
     stepIndicators: {
       flexDirection: 'row',
-      gap: Spacing.xs,
+      gap: LAYOUT.getPadding(4),
     },
     stepDot: {
-      width: 8,
-      height: 8,
+      width: responsiveValue({
+        xs: 6, sm: 7, md: 8, lg: 9, xl: 10, xxl: 11, xxxl: 12, default: 8
+      }),
+      height: responsiveValue({
+        xs: 6, sm: 7, md: 8, lg: 9, xl: 10, xxl: 11, xxxl: 12, default: 8
+      }),
       borderRadius: 4,
-    },
-    // Achievement overlay
+    },    // Achievement overlay
     achievementOverlay: {
       position: 'absolute',
       top: 0,
@@ -1076,8 +1037,8 @@ const OnboardingScreen: React.FC = () => {
     },
     achievementCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.xl,
+      borderRadius: LAYOUT.getBorderRadius(24),
+      padding: LAYOUT.getPadding(32),
       alignItems: 'center',
       shadowColor: colors.primary,
       shadowOffset: { width: 0, height: 8 },
@@ -1088,17 +1049,17 @@ const OnboardingScreen: React.FC = () => {
       borderColor: colors.primary + '30',
     },
     achievementIcon: {
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getPadding(12),
     },
     achievementTitle: {
-      ...typography.h3,
+      fontSize: TYPOGRAPHY.getHeaderSize(3),
       color: colors.text,
       fontWeight: 'bold',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getPadding(8),
       textAlign: 'center',
     },
     achievementSubtitle: {
-      ...typography.body,
+      fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.textSecondary,
       textAlign: 'center',
     },
@@ -1107,19 +1068,18 @@ const OnboardingScreen: React.FC = () => {
       width: 8,
       height: 8,
       backgroundColor: colors.primary,
-    },
-    stepContainer: {
+    },    stepContainer: {
       flex: 1,
       transform: [{ translateX: slideAnim }],
     },
     stepHeader: {
       alignItems: 'center',
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
       position: 'relative',
     },
     stepIconContainer: {
       position: 'relative',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     stepIcon: {
       width: 100,
@@ -1141,15 +1101,14 @@ const OnboardingScreen: React.FC = () => {
       width: 120,
       height: 120,
       borderRadius: 60,
-      backgroundColor: colors.primary + '10',
-      top: -10,
+      backgroundColor: colors.primary + '10',      top: -10,
       left: -10,
     },
     stepTitle: {
       ...typography.h2,
       color: colors.text,
       textAlign: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
       fontWeight: 'bold',
       textShadowColor: colors.shadow,
       textShadowOffset: { width: 0, height: 1 },
@@ -1162,14 +1121,13 @@ const OnboardingScreen: React.FC = () => {
       lineHeight: 22,
     },
     inputContainer: {
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
     },
     input: {
-      marginBottom: Spacing.md,
-      backgroundColor: colors.surface,
+      marginBottom: LAYOUT.getMargin(16),      backgroundColor: colors.surface,
       borderWidth: 2,
       borderColor: colors.border,
-      borderRadius: BorderRadius.lg,
+      borderRadius: LAYOUT.getBorderRadius(12),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -1178,18 +1136,17 @@ const OnboardingScreen: React.FC = () => {
     },
     inputRow: {
       flexDirection: 'row',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
     },
     halfInput: {
       flex: 1,
-    },
-    optionsContainer: {
-      gap: Spacing.md,
+    },    optionsContainer: {
+      gap: LAYOUT.getMargin(16),
     },
     optionCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(20),
+      padding: LAYOUT.getPadding(24),
       borderWidth: 2,
       borderColor: colors.border,
       alignItems: 'center',
@@ -1220,8 +1177,7 @@ const OnboardingScreen: React.FC = () => {
       borderRadius: 30,
       backgroundColor: colors.primary + '20',
       justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom: Spacing.sm,
+      alignItems: 'center',      marginBottom: LAYOUT.getMargin(8),
       shadowColor: colors.primary,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.2,
@@ -1231,7 +1187,7 @@ const OnboardingScreen: React.FC = () => {
     optionLabel: {
       ...typography.bodyMedium,
       color: colors.text,
-      marginBottom: Spacing.xs,
+      marginBottom: LAYOUT.getMargin(4),
       fontWeight: '600',
     },
     selectedLabel: {
@@ -1243,18 +1199,17 @@ const OnboardingScreen: React.FC = () => {
     },
     selectedSubtitle: {
       color: colors.surface + '80',
-    },
-    optionsGrid: {
+    },    optionsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
       justifyContent: 'space-between',
     },
     gridOption: {
-      width: (width - Spacing.lg * 2 - Spacing.md) / 2,
+      width: (width - LAYOUT.getPadding(24) * 2 - LAYOUT.getMargin(16)) / 2,
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(20),
+      padding: LAYOUT.getPadding(24),
       borderWidth: 2,
       borderColor: colors.border,
       alignItems: 'center',
@@ -1276,11 +1231,10 @@ const OnboardingScreen: React.FC = () => {
     gridOptionIcon: {
       width: 50,
       height: 50,
-      borderRadius: 25,
-      backgroundColor: colors.primary + '20',
+      borderRadius: 25,      backgroundColor: colors.primary + '20',
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     selectedGridOptionIcon: {
       backgroundColor: colors.surface + '20',
@@ -1298,11 +1252,10 @@ const OnboardingScreen: React.FC = () => {
       position: 'absolute',
       top: 8,
       right: 8,
-    },
-    daysContainer: {
+    },    daysContainer: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.sm,
+      gap: LAYOUT.getMargin(8),
       justifyContent: 'center',
     },
     dayOption: {
@@ -1333,11 +1286,10 @@ const OnboardingScreen: React.FC = () => {
     },
     selectedDayLabel: {
       color: colors.surface,
-    },
-    timeOption: {
+    },    timeOption: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(20),
+      padding: LAYOUT.getPadding(24),
       borderWidth: 2,
       borderColor: colors.border,
       shadowColor: colors.shadow,
@@ -1351,11 +1303,10 @@ const OnboardingScreen: React.FC = () => {
       backgroundColor: colors.primary + '10',
       shadowColor: colors.primary,
       shadowOpacity: 0.3,
-    },
-    timeLabel: {
+    },    timeLabel: {
       ...typography.bodyMedium,
       color: colors.text,
-      marginBottom: Spacing.xs,
+      marginBottom: LAYOUT.getMargin(4),
       fontWeight: '600',
     },
     selectedTimeLabel: {
@@ -1372,14 +1323,14 @@ const OnboardingScreen: React.FC = () => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingTop: Spacing.lg,
+      paddingTop: LAYOUT.getPadding(24),
       position: 'relative',
     },
     backButton: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(20),
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingVertical: LAYOUT.getPadding(16),
       borderWidth: 2,
       borderColor: colors.border,
       shadowColor: colors.shadow,
@@ -1392,10 +1343,9 @@ const OnboardingScreen: React.FC = () => {
       ...typography.body,
       color: colors.text,
       fontWeight: '600',
-    },
-    nextButton: {
-      paddingHorizontal: Spacing.xl,
-      paddingVertical: Spacing.md,
+    },    nextButton: {
+      paddingHorizontal: LAYOUT.getPadding(32),
+      paddingVertical: LAYOUT.getPadding(16),
       shadowColor: colors.primary,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
@@ -1523,8 +1473,7 @@ const OnboardingScreen: React.FC = () => {
                 <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                   <TouchableOpacity onPress={prevStep} style={styles.backButton}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <ChevronLeft size={18} color={colors.text} />
-                      <Text style={[styles.backButtonText, { marginLeft: Spacing.xs }]}>
+                      <ChevronLeft size={18} color={colors.text} />                      <Text style={[styles.backButtonText, { marginLeft: LAYOUT.getMargin(4) }]}>
                         Back
                       </Text>
                     </View>
@@ -1612,35 +1561,50 @@ interface StepWrapperProps {
   subtitle: string;
   icon: React.ComponentType<any>;
   children: React.ReactNode;
-  iconScaleAnim: Animated.Value;
-  titleSlideAnim: Animated.Value;
-  contentFadeAnim: Animated.Value;
 }
 
-const StepWrapper: React.FC<StepWrapperProps> = ({ 
-  title, 
-  subtitle, 
-  icon: Icon, 
-  children,
-  iconScaleAnim,
-  titleSlideAnim,
-  contentFadeAnim
-}) => {
+const StepWrapper: React.FC<StepWrapperProps> = ({ title, subtitle, icon: Icon, children }) => {
   const { colors } = useTheme();
   const typography = getTypography(colors.text === '#000000' ? false : true);
+  
+  const iconScaleAnim = useRef(new Animated.Value(0)).current;
+  const titleSlideAnim = useRef(new Animated.Value(30)).current;
+  const contentFadeAnim = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.sequence([
+      Animated.timing(iconScaleAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.parallel([
+        Animated.spring(titleSlideAnim, {
+          toValue: 0,
+          tension: 80,
+          friction: 8,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentFadeAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, []);
 
   const styles = StyleSheet.create({
     stepContainer: {
       flex: 1,
-    },
-    stepHeader: {
+    },    stepHeader: {
       alignItems: 'center',
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
       position: 'relative',
     },
     stepIconContainer: {
       position: 'relative',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     stepIconGlow: {
       position: 'absolute',
@@ -1665,12 +1629,11 @@ const StepWrapper: React.FC<StepWrapperProps> = ({
       elevation: 8,
       borderWidth: 3,
       borderColor: colors.primary + '30',
-    },
-    stepTitle: {
+    },    stepTitle: {
       ...typography.h2,
       color: colors.text,
       textAlign: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
       fontWeight: 'bold',
       textShadowColor: colors.shadow,
       textShadowOffset: { width: 0, height: 1 },

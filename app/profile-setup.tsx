@@ -4,13 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Camera, Upload, User, Target, Calendar, MapPin, Edit, CheckCircle, ChevronRight } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
+import { responsiveValue, LAYOUT, TOUCH, SCREEN } from '@/utils/responsive';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
-
-const { width } = Dimensions.get('window');
 
 export default function ProfileSetupScreen() {
   const { colors, theme } = useTheme();
@@ -73,7 +71,6 @@ export default function ProfileSetupScreen() {
       ]);
     }, 1500);
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -83,23 +80,29 @@ export default function ProfileSetupScreen() {
     },
     scrollContent: {
       flexGrow: 1,
-      padding: Spacing.lg,
+      padding: LAYOUT.getContentPadding(),
     },
     header: {
       alignItems: 'center',
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
     },
     progressContainer: {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     progressDot: {
-      width: 12,
-      height: 12,
-      borderRadius: 6,
-      marginHorizontal: 4,
+      width: responsiveValue({
+        xs: 10, sm: 11, md: 12, lg: 13, default: 12
+      }),
+      height: responsiveValue({
+        xs: 10, sm: 11, md: 12, lg: 13, default: 12
+      }),
+      borderRadius: responsiveValue({
+        xs: 5, sm: 5.5, md: 6, lg: 6.5, default: 6
+      }),
+      marginHorizontal: LAYOUT.getMargin(4),
     },
     progressDotActive: {
       backgroundColor: colors.primary,
@@ -111,29 +114,34 @@ export default function ProfileSetupScreen() {
       ...typography.h1,
       color: colors.text,
       textAlign: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
       fontWeight: 'bold',
     },
     subtitle: {
       ...typography.body,
       textAlign: 'center',
       color: colors.textSecondary,
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
     },
     stepContainer: {
       flex: 1,
     },
     profileImageContainer: {
       alignItems: 'center',
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
     },    profileImageWrapper: {
-      width: 120,
-      height: 120,
-      borderRadius: 60,
-      backgroundColor: colors.surface,
+      width: responsiveValue({
+        xs: 110, sm: 115, md: 120, lg: 125, default: 120
+      }),
+      height: responsiveValue({
+        xs: 110, sm: 115, md: 120, lg: 125, default: 120
+      }),
+      borderRadius: responsiveValue({
+        xs: 55, sm: 57.5, md: 60, lg: 62.5, default: 60
+      }),      backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: Spacing.md,
+      marginBottom: LAYOUT.getMargin(16),
       borderWidth: 4,
       borderColor: colors.primary,
       shadowColor: colors.primary,
@@ -145,36 +153,38 @@ export default function ProfileSetupScreen() {
     profileImage: {
       width: '100%',
       height: '100%',
-      borderRadius: 57,
+      borderRadius: responsiveValue({
+        xs: 55, sm: 57.5, md: 60, lg: 62.5, default: 57
+      }),
     },
     uploadButton: {
       backgroundColor: colors.primary,
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
-      borderRadius: BorderRadius.md,
+      paddingHorizontal: LAYOUT.getPadding(24),
+      paddingVertical: LAYOUT.getPadding(8),
+      borderRadius: LAYOUT.getBorderRadius(8),
       flexDirection: 'row',
       alignItems: 'center',
     },
     uploadButtonText: {
       color: colors.surface,
       fontWeight: '600',
-      marginLeft: Spacing.sm,
+      marginLeft: LAYOUT.getMargin(8),
     },
     inputContainer: {
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
     },
     inputWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.md,
-      marginBottom: Spacing.md,
-      paddingHorizontal: Spacing.md,
+      borderRadius: LAYOUT.getBorderRadius(8),
+      marginBottom: LAYOUT.getMargin(16),
+      paddingHorizontal: LAYOUT.getPadding(16),
       borderWidth: 1,
       borderColor: colors.border,
     },
     inputIcon: {
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getMargin(8),
     },
     input: {
       flex: 1,
@@ -185,18 +195,19 @@ export default function ProfileSetupScreen() {
       color: colors.text,
     },
     goalContainer: {
-      marginBottom: Spacing.xl,
-    },
-    goalGrid: {
+      marginBottom: LAYOUT.getMargin(32),
+    },    goalGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
       justifyContent: 'space-between',
     },    goalCard: {
-      width: '48%',
+      width: responsiveValue({
+        xs: '47%', sm: '48%', md: '48%', lg: '48%', default: '48%'
+      }),
       backgroundColor: colors.surface,
-      padding: Spacing.lg,
-      borderRadius: BorderRadius.xl,
+      padding: LAYOUT.getPadding(24),
+      borderRadius: LAYOUT.getBorderRadius(20),
       alignItems: 'center',
       borderWidth: 2,
       borderColor: colors.border,
@@ -212,8 +223,10 @@ export default function ProfileSetupScreen() {
       shadowOpacity: 0.25,
     },
     goalIcon: {
-      fontSize: 32,
-      marginBottom: Spacing.sm,
+      fontSize: responsiveValue({
+        xs: 28, sm: 30, md: 32, lg: 34, default: 32
+      }),
+      marginBottom: LAYOUT.getMargin(8),
     },
     goalText: {
       ...typography.body,
@@ -223,14 +236,14 @@ export default function ProfileSetupScreen() {
     },
     buttonContainer: {
       flexDirection: 'row',
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(16),
       marginTop: 'auto',
-      paddingTop: Spacing.xl,
+      paddingTop: LAYOUT.getPadding(32),
     },
     button: {
       flex: 1,
-      paddingVertical: Spacing.md,
-      borderRadius: BorderRadius.lg,
+      paddingVertical: LAYOUT.getPadding(16),
+      borderRadius: LAYOUT.getBorderRadius(16),
       alignItems: 'center',
     },
     primaryButton: {

@@ -3,13 +3,11 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Image, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, TrendingUp, Heart, MessageCircle, Share, Bookmark, MoreHorizontal, Zap, Star } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
+import { responsiveValue, LAYOUT, TOUCH, SCREEN } from '@/utils/responsive';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
 
 export default function TrendingPostsScreen() {
   const { colors, theme } = useTheme();
@@ -122,19 +120,17 @@ export default function TrendingPostsScreen() {
     },
     header: {
       flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingTop: Spacing.lg,
-      paddingBottom: Spacing.md,
-    },
-    backButton: {
+      alignItems: 'center',      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingTop: LAYOUT.getPadding(24),
+      paddingBottom: LAYOUT.getPadding(16),
+    },    backButton: {
       width: 40,
       height: 40,
       borderRadius: 20,
       backgroundColor: colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     headerTitle: {
       ...typography.h2,
@@ -143,22 +139,19 @@ export default function TrendingPostsScreen() {
       flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
-    },
-    trendingIcon: {
-      marginRight: Spacing.sm,
-    },
-    categoriesContainer: {
-      paddingLeft: Spacing.lg,
-      marginBottom: Spacing.lg,
-    },
-    categoriesScroll: {
+    },    trendingIcon: {
+      marginRight: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+    },    categoriesContainer: {
+      paddingLeft: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+    },    categoriesScroll: {
       flexDirection: 'row',
-      gap: Spacing.sm,
+      gap: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
     categoryChip: {
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.sm,
-      borderRadius: BorderRadius.full,
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingVertical: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
+      borderRadius: responsiveValue({ default: 50, sm: 40, md: 50, lg: 60 }),
       backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: colors.border,
@@ -174,14 +167,13 @@ export default function TrendingPostsScreen() {
     },
     categoryChipTextActive: {
       color: colors.surface,
-    },
-    postsContainer: {
-      paddingHorizontal: Spacing.lg,
+    },    postsContainer: {
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     postCard: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.xl,
-      marginBottom: Spacing.lg,
+      borderRadius: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      marginBottom: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -194,14 +186,14 @@ export default function TrendingPostsScreen() {
     postHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: Spacing.lg,
-      paddingBottom: Spacing.md,
+      padding: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     avatar: {
       width: 44,
       height: 44,
       borderRadius: 22,
-      marginRight: Spacing.md,
+      marginRight: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     authorInfo: {
       flex: 1,
@@ -227,21 +219,20 @@ export default function TrendingPostsScreen() {
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-    },
-    postContent: {
-      paddingHorizontal: Spacing.lg,
-      paddingBottom: Spacing.md,
+    },    postContent: {
+      paddingHorizontal: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingBottom: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
     },
     contentText: {
       ...typography.body,
       color: colors.text,
       lineHeight: 22,
-      marginBottom: Spacing.sm,
+      marginBottom: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
     },
     hashtags: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.xs,
+      gap: responsiveValue({ default: 4, sm: 3, md: 4, lg: 5 }),
     },
     hashtag: {
       ...typography.caption,
@@ -252,35 +243,33 @@ export default function TrendingPostsScreen() {
       width: '100%',
       height: 200,
       backgroundColor: colors.border,
-    },
-    categoryBadge: {
+    },    categoryBadge: {
       position: 'absolute',
-      top: Spacing.md,
-      right: Spacing.md,
+      top: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
+      right: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       backgroundColor: colors.primary,
-      paddingHorizontal: Spacing.sm,
+      paddingHorizontal: responsiveValue({ default: 8, sm: 6, md: 8, lg: 10 }),
       paddingVertical: 4,
-      borderRadius: BorderRadius.sm,
+      borderRadius: responsiveValue({ default: 6, sm: 4, md: 6, lg: 8 }),
     },
     categoryBadgeText: {
       ...typography.caption,
       color: colors.surface,
       fontWeight: '600',
       fontSize: 10,
-    },
-    postActions: {
+    },    postActions: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: Spacing.lg,
-      paddingTop: Spacing.md,
+      padding: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
+      paddingTop: responsiveValue({ default: 16, sm: 12, md: 16, lg: 20 }),
       borderTopWidth: 1,
       borderTopColor: colors.border,
     },
     actionGroup: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.lg,
+      gap: responsiveValue({ default: 24, sm: 18, md: 24, lg: 30 }),
     },
     actionButton: {
       flexDirection: 'row',

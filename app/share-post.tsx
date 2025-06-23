@@ -6,8 +6,8 @@ import {
   Facebook, Instagram, Link, Mail, Download, Bookmark, Heart, ChevronRight
 } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTypography, TextStyles } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { getTypography } from '@/theme/typography';
+import { responsiveValue, LAYOUT, TOUCH, SCREEN } from '@/utils/responsive';
 import { Card } from '@/components/ui/Card';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -180,7 +180,6 @@ export default function SharePostScreen() {
       </TouchableOpacity>
     );
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -189,20 +188,20 @@ export default function SharePostScreen() {
     header: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getContentPadding(),
+      paddingVertical: LAYOUT.getPadding(16),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
       backgroundColor: colors.surface,
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     headerTitle: {
       ...typography.h3,
@@ -211,16 +210,16 @@ export default function SharePostScreen() {
       flex: 1,
     },
     scrollContent: {
-      padding: Spacing.lg,
+      padding: LAYOUT.getContentPadding(),
     },
     section: {
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(32),
     },
     sectionTitle: {
       ...typography.h3,
       color: colors.text,
       fontWeight: 'bold',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     shareGrid: {
       flexDirection: 'row',
@@ -228,43 +227,50 @@ export default function SharePostScreen() {
       justifyContent: 'space-between',
     },
     shareOption: {
-      width: '30%',
+      width: responsiveValue({
+        xs: '32%', sm: '30%', md: '30%', lg: '30%', default: '30%'
+      }),
       alignItems: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: LAYOUT.getMargin(24),
     },
     shareIconContainer: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
+      width: responsiveValue({
+        xs: 55, sm: 58, md: 60, lg: 62, default: 60
+      }),
+      height: responsiveValue({
+        xs: 55, sm: 58, md: 60, lg: 62, default: 60
+      }),
+      borderRadius: responsiveValue({
+        xs: 27.5, sm: 29, md: 30, lg: 31, default: 30
+      }),
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     shareOptionText: {
       ...typography.caption,
       color: colors.text,
       textAlign: 'center',
       fontWeight: '500',
-    },
-    actionsContainer: {
+    },    actionsContainer: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(24),
     },
     actionItem: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: Spacing.md,
+      paddingVertical: LAYOUT.getPadding(16),
       borderBottomWidth: 1,
       borderBottomColor: colors.border + '30',
     },
     actionIconContainer: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: TOUCH.getButtonSize('medium'),
+      height: TOUCH.getButtonSize('medium'),
+      borderRadius: LAYOUT.getBorderRadius(20),
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(16),
     },
     actionText: {
       ...typography.body,
@@ -274,31 +280,31 @@ export default function SharePostScreen() {
     },
     nativeShareButton: {
       backgroundColor: colors.primary,
-      borderRadius: BorderRadius.lg,
-      paddingVertical: Spacing.md,
-      paddingHorizontal: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      paddingVertical: LAYOUT.getPadding(16),
+      paddingHorizontal: LAYOUT.getPadding(24),
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginTop: Spacing.lg,
+      marginTop: LAYOUT.getMargin(24),
     },
     nativeShareButtonText: {
       ...typography.body,
       color: colors.surface,
       fontWeight: '600',
-      marginLeft: Spacing.sm,
+      marginLeft: LAYOUT.getMargin(8),
     },
     postPreview: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      marginBottom: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(24),
+      marginBottom: LAYOUT.getMargin(24),
     },
     postTitle: {
       ...typography.body,
       color: colors.text,
       fontWeight: '600',
-      marginBottom: Spacing.sm,
+      marginBottom: LAYOUT.getMargin(8),
     },
     postDescription: {
       ...typography.body,
