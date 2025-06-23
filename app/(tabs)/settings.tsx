@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronRight, Bell, Shield, CircleHelp as HelpCircle, Info, Palette } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
 import { Card } from '@/components/ui/Card';
+import { LAYOUT, COMPONENT, TYPOGRAPHY } from '@/utils/responsive';
 
 const settingsOptions = [
   {
@@ -64,7 +64,6 @@ export default function SettingsTab() {
         return 'System';
     }
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -72,15 +71,15 @@ export default function SettingsTab() {
     },
     scrollView: {
       flex: 1,
-      padding: Spacing.lg,
+      padding: LAYOUT.getContentPadding(),
     },
     title: {
       ...typography.h2,
       color: colors.text,
-      marginBottom: Spacing.xl,
+      marginBottom: LAYOUT.getMargin(24),
     },
     settingsContainer: {
-      gap: Spacing.md,
+      gap: LAYOUT.getMargin(12),
     },
     settingCard: {
       padding: 0,
@@ -89,7 +88,7 @@ export default function SettingsTab() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: Spacing.lg,
+      padding: LAYOUT.getPadding(16),
     },
     settingLeft: {
       flexDirection: 'row',
@@ -97,13 +96,13 @@ export default function SettingsTab() {
       flex: 1,
     },
     iconContainer: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: COMPONENT.avatar.sm,
+      height: COMPONENT.avatar.sm,
+      borderRadius: COMPONENT.avatar.sm / 2,
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: Spacing.md,
+      marginRight: LAYOUT.getMargin(12),
     },
     settingText: {
       flex: 1,
@@ -117,12 +116,11 @@ export default function SettingsTab() {
     settingSubtitle: {
       ...typography.caption,
       color: colors.textSecondary,
-    },
-    themeValue: {
+    },    themeValue: {
       ...typography.body,
       color: colors.primary,
       fontWeight: '600',
-      marginRight: Spacing.sm,
+      marginRight: LAYOUT.getMargin(8),
     },
   });
 

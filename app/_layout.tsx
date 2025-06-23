@@ -25,32 +25,213 @@ export default function RootLayout() {
   if (!fontsLoaded) {
     return null;
   }
+  return (
+    <ThemeProvider>
+      <Stack screenOptions={{ 
+        headerShown: false,
+        animation: 'slide_from_right',
+        animationDuration: 300,
+      }}>
+        {/* Authentication & Onboarding Flow */}
+        <Stack.Screen 
+          name="splash" 
+          options={{ 
+            animation: 'fade',
+            animationDuration: 500 
+          }} 
+        />
+        <Stack.Screen 
+          name="login" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_bottom' 
+          }} 
+        />
+        <Stack.Screen 
+          name="signup" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_bottom' 
+          }} 
+        />
+        <Stack.Screen 
+          name="onboarding" 
+          options={{ 
+            gestureEnabled: false,
+            animation: 'fade' 
+          }} 
+        />
+        <Stack.Screen 
+          name="profile-setup" 
+          options={{ 
+            gestureEnabled: false,
+            animation: 'slide_from_right' 
+          }} 
+        />
 
-  return (    <ThemeProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="splash" />
-        <Stack.Screen name="login" />
-        <Stack.Screen name="signup" />
-        <Stack.Screen name="profile-setup" />
-        <Stack.Screen name="onboarding" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="chat" />
-        <Stack.Screen name="messaging" />
-        <Stack.Screen name="new-message" />
-        <Stack.Screen name="group-page" />
-        <Stack.Screen name="user-profile" />
-        <Stack.Screen name="live-post" />
-        <Stack.Screen name="create-post" />
-        <Stack.Screen name="view-post" />
-        <Stack.Screen name="discover-groups" />
-        <Stack.Screen name="trending-posts" />
-        <Stack.Screen name="request-group-access" />        <Stack.Screen name="feed-tab" />        <Stack.Screen name="admin-panel" />
-        <Stack.Screen name="notifications-center" />
-        <Stack.Screen name="manage-member-roles" />        <Stack.Screen name="direct-message" />
-        <Stack.Screen name="view-all-comments" />
-        <Stack.Screen name="share-post" />
-        <Stack.Screen name="group-chat" />
-        <Stack.Screen name="+not-found" />
+        {/* Main Tab Navigation */}
+        <Stack.Screen 
+          name="(tabs)" 
+          options={{ 
+            animation: 'fade',
+            animationDuration: 400 
+          }} 
+        />
+
+        {/* Social & Community Screens */}
+        <Stack.Screen 
+          name="messaging" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="chat" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="direct-message" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="group-chat" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="new-message" 
+          options={{ 
+            presentation: 'modal',
+            animation: 'slide_from_bottom' 
+          }} 
+        />
+
+        {/* Group & Community Management */}
+        <Stack.Screen 
+          name="discover-groups" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="group-page" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="feed-tab" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="request-group-access" 
+          options={{ 
+            presentation: 'modal',
+            animation: 'slide_from_bottom' 
+          }} 
+        />
+
+        {/* Admin & Management */}
+        <Stack.Screen 
+          name="admin-panel" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="manage-member-roles" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+
+        {/* Content & Posts */}
+        <Stack.Screen 
+          name="create-post" 
+          options={{ 
+            presentation: 'modal',
+            animation: 'slide_from_bottom' 
+          }} 
+        />
+        <Stack.Screen 
+          name="view-post" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="live-post" 
+          options={{ 
+            presentation: 'fullScreenModal',
+            animation: 'fade',
+            gestureEnabled: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="trending-posts" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+        <Stack.Screen 
+          name="view-all-comments" 
+          options={{ 
+            presentation: 'modal',
+            animation: 'slide_from_bottom' 
+          }} 
+        />
+        <Stack.Screen 
+          name="share-post" 
+          options={{ 
+            presentation: 'modal',
+            animation: 'slide_from_bottom' 
+          }} 
+        />
+
+        {/* User Profiles */}
+        <Stack.Screen 
+          name="user-profile" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+
+        {/* Notifications */}
+        <Stack.Screen 
+          name="notifications-center" 
+          options={{ 
+            presentation: 'card',
+            animation: 'slide_from_right' 
+          }} 
+        />
+
+        {/* Error Handling */}
+        <Stack.Screen 
+          name="+not-found" 
+          options={{ 
+            presentation: 'modal',
+            animation: 'fade' 
+          }} 
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

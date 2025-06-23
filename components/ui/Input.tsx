@@ -2,7 +2,7 @@ import React from 'react';
 import { TextInput, StyleSheet, TextInputProps } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { LAYOUT, TOUCH } from '@/utils/responsive';
 
 interface InputProps extends TextInputProps {
   variant?: 'default' | 'filled';
@@ -15,19 +15,19 @@ export const Input: React.FC<InputProps> = ({
 }) => {
   const { colors, themeMode } = useTheme();
   const typography = getTypography(themeMode === 'dark');
-
   const styles = StyleSheet.create({
     base: {
       ...typography.body,
       color: colors.text,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.md,
-      borderRadius: BorderRadius.md,
+      paddingHorizontal: LAYOUT.getPadding(12),
+      paddingVertical: LAYOUT.getPadding(12),
+      borderRadius: LAYOUT.getBorderRadius(12),
       borderWidth: 1,
+      minHeight: TOUCH.getButtonSize('medium'),
     },
     default: {
       backgroundColor: colors.surface,
-      borderColor: colors.backgroundDark,
+      borderColor: colors.border,
     },
     filled: {
       backgroundColor: colors.background,

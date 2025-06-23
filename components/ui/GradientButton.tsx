@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, StyleSheet, Animated, TouchableOpacityProps } f
 import { LinearGradient } from 'expo-linear-gradient';
 import { Gradients } from '@/theme/colors';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius, Layout } from '@/theme/spacing';
+import { LAYOUT, TOUCH } from '@/utils/responsive';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface GradientButtonProps extends TouchableOpacityProps {
@@ -106,24 +106,24 @@ export const GradientButton: React.FC<GradientButtonProps> = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: BorderRadius.lg,
+    borderRadius: LAYOUT.getBorderRadius(16),
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 44, // Use fixed value instead of Layout.minTouchTarget
+    minHeight: TOUCH.minTarget,
   },
   
   // Sizes
   small: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: LAYOUT.getPadding(12),
+    paddingVertical: LAYOUT.getPadding(8),
   },
   medium: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: LAYOUT.getPadding(16),
+    paddingVertical: LAYOUT.getPadding(12),
   },
   large: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.lg,
+    paddingHorizontal: LAYOUT.getPadding(20),
+    paddingVertical: LAYOUT.getPadding(16),
   },
   
   // Variants

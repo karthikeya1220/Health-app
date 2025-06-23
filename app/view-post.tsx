@@ -349,12 +349,11 @@ export default function ViewPostScreen() {
       elevation: 4,
       borderWidth: 2,
       borderColor: colors.primary + '30',
-    },
-    authorAvatarText: {
+    },    authorAvatarText: {
       fontSize: responsiveValue({
         xs: 20, sm: 22, md: 24, lg: 26, xl: 28, xxl: 30, xxxl: 32, default: 24
       }),
-      fontWeight: '600',
+      fontWeight: '600' as const,
     },
     verifiedBadge: {
       position: 'absolute',
@@ -373,11 +372,10 @@ export default function ViewPostScreen() {
     },
     authorInfo: {
       flex: 1,
-    },
-    authorName: {
+    },    authorName: {
       fontSize: TYPOGRAPHY.getBodySize('medium'),
       color: colors.text,
-      fontWeight: 'bold',
+      fontWeight: '600' as const,
     },
     authorUsername: {
       fontSize: TYPOGRAPHY.getCaptionSize(),
@@ -397,11 +395,10 @@ export default function ViewPostScreen() {
     },
     followingButton: {
       backgroundColor: colors.success,
-    },
-    followButtonText: {
+    },    followButtonText: {
       fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.surface,
-      fontWeight: 'bold',
+      fontWeight: '600' as const,
     },
     postContent: {
       paddingHorizontal: LAYOUT.getContentPadding(),
@@ -412,12 +409,11 @@ export default function ViewPostScreen() {
       color: colors.text,
       lineHeight: TYPOGRAPHY.getLineHeight(TYPOGRAPHY.getBodySize('medium')),
       marginBottom: LAYOUT.getPadding(8),
-    },
-    postLocation: {
+    },    postLocation: {
       fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.primary,
-      fontWeight: '500',
-    },    postStats: {
+      fontWeight: '500' as const,
+    },postStats: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingHorizontal: LAYOUT.getContentPadding(),
@@ -451,12 +447,11 @@ export default function ViewPostScreen() {
     },
     likedButton: {
       color: colors.error,
-    },
-    actionText: {
+    },    actionText: {
       fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
       marginLeft: LAYOUT.getPadding(4),
-      fontWeight: '500',
+      fontWeight: '500' as const,
     },
     likedText: {
       color: colors.error,
@@ -494,11 +489,10 @@ export default function ViewPostScreen() {
         xs: 20, sm: 22, md: 24, lg: 26, xl: 28, xxl: 30, xxxl: 32, default: 24
       }),
       marginBottom: 4,
-    },
-    reactionCount: {
+    },    reactionCount: {
       fontSize: TYPOGRAPHY.getCaptionSize(),
       color: colors.textSecondary,
-      fontWeight: '500',
+      fontWeight: '500' as const,
     },
     selectedReactionCount: {
       color: colors.primary,
@@ -710,7 +704,11 @@ export default function ViewPostScreen() {
                     <Text style={styles.authorAvatarText}>{postData.avatar}</Text>
                     {postData.isVerified && (
                       <View style={styles.verifiedBadge}>
-                        <Text style={{ color: colors.surface, fontSize: 8 }}>✓</Text>
+                        <Text style={{ 
+                          color: colors.surface, 
+                          fontSize: TYPOGRAPHY.getCaptionSize() * 0.7,
+                          fontWeight: '600'
+                        }}>✓</Text>
                       </View>
                     )}
                   </View>

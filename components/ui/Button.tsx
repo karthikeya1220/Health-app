@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, TouchableOpacityProps } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { LAYOUT, TOUCH } from '@/utils/responsive';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -20,12 +20,12 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const { colors, themeMode } = useTheme();
   const typography = getTypography(themeMode === 'dark');
-
   const styles = StyleSheet.create({
     base: {
-      borderRadius: BorderRadius.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
       alignItems: 'center',
       justifyContent: 'center',
+      minHeight: TOUCH.getButtonSize(size),
     },
     
     // Variants
@@ -43,16 +43,16 @@ export const Button: React.FC<ButtonProps> = ({
     
     // Sizes
     small: {
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
+      paddingHorizontal: LAYOUT.getPadding(12),
+      paddingVertical: LAYOUT.getPadding(8),
     },
     medium: {
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
+      paddingHorizontal: LAYOUT.getPadding(16),
+      paddingVertical: LAYOUT.getPadding(12),
     },
     large: {
-      paddingHorizontal: Spacing.xl,
-      paddingVertical: Spacing.lg,
+      paddingHorizontal: LAYOUT.getPadding(20),
+      paddingVertical: LAYOUT.getPadding(16),
     },
     
     // Text styles

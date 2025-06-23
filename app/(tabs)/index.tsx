@@ -23,10 +23,13 @@ import {
   GRID, 
   LAYOUT,   COMPONENT,
   TOUCH,
+  TYPOGRAPHY,
   useSafeLayout,
   responsiveValue,
   isTablet
 } from '@/utils/responsive';
+import { NavigationService } from '@/utils/navigation';
+import HealthAppNavigation, { enhancedQuickActions } from '@/utils/navigationEnhancement';
 
 // Enhanced Icon Component with responsive sizing
 const CleanIcon = ({ name, size = COMPONENT.icon.md, color, backgroundColor }: {
@@ -182,8 +185,7 @@ const CircularProgress = ({
 };
 
   
-  
-  const EnhancedCircularProgress = ({ 
+    const EnhancedCircularProgress = ({ 
     progress, 
     size, 
     strokeWidth, 
@@ -198,6 +200,7 @@ const CircularProgress = ({
     unit: string;
     label: string;
   }) => {
+    const { colors } = useTheme();
     const animatedValue = useRef(new Animated.Value(0)).current;
   
     useEffect(() => {
@@ -254,14 +257,13 @@ const CircularProgress = ({
         }],
       }} />
       
-      {/* Inner glow effect */}
-      <View style={{
+      {/* Inner glow effect */}      <View style={{
         position: 'absolute',
         width: size - strokeWidth * 2,
         height: size - strokeWidth * 2,
         borderRadius: (size - strokeWidth * 2) / 2,
-        backgroundColor: 'rgba(99, 102, 241, 0.05)',
-        shadowColor: '#6366F1',
+        backgroundColor: colors.primary + '05',
+        shadowColor: colors.primary,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.3,
         shadowRadius: 20,
@@ -272,19 +274,19 @@ const CircularProgress = ({
       <View style={{ 
         position: 'absolute', 
         alignItems: 'center',
-        backgroundColor: 'rgba(99, 102, 241, 0.95)',
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        borderRadius: 28,
-        shadowColor: '#6366F1',
+        backgroundColor: colors.primary + 'F5',
+        paddingHorizontal: LAYOUT.getPadding(20),
+        paddingVertical: LAYOUT.getPadding(12),
+        borderRadius: LAYOUT.getBorderRadius(28),
+        shadowColor: colors.primary,
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.4,
         shadowRadius: 16,
         elevation: 8,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.2)',
+        borderColor: colors.surface + '30',
       }}>        <Text style={{
-          fontSize: 18,
+          fontSize: TYPOGRAPHY.getFontSize(18),
           fontWeight: '900',
           color: '#FFFFFF',
           letterSpacing: 0.8,
@@ -351,21 +353,21 @@ const StatTile = ({
       <TouchableOpacity
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        activeOpacity={1}
-        style={{
+        activeOpacity={1}        style={{
           backgroundColor: backgroundColor || colors.card,
-          borderRadius: 24,          padding: LAYOUT.getPadding(24) + 2,
+          borderRadius: LAYOUT.getBorderRadius(24),
+          padding: LAYOUT.getPadding(24) + 2,
           paddingVertical: LAYOUT.getPadding(24) + 6,
-          shadowColor: '#000',
+          shadowColor: colors.shadow,
           shadowOffset: { width: 0, height: 8 },
           shadowOpacity: 0.15,
           shadowRadius: 20,
           elevation: 8,
-          height: 120,
+          height: responsiveValue({ xs: 100, sm: 110, md: 120, lg: 130, default: 120 }),
           justifyContent: 'center',
           alignItems: 'center',
           borderWidth: 1,
-          borderColor: 'rgba(255,255,255,0.9)',
+          borderColor: colors.border + '90',
           overflow: 'hidden',
           minWidth: 0, // Ensure tiles can shrink evenly
         }}
@@ -412,6 +414,40 @@ const StatTile = ({
       </TouchableOpacity>
     </Animated.View>
   );
+};
+
+// Enhanced navigation functions for better UX
+const navigateToScreen = (screenName: string) => {
+  try {
+    router.push(screenName as any);
+  } catch (error) {
+    console.warn(`Navigation to ${screenName} failed:`, error);
+  }
+};
+
+const handleQuickAction = (action: string) => {
+  switch (action) {
+    case 'workout':
+      HealthAppNavigation.tabNavigation.fromHome.toWorkouts();
+      break;
+    case 'challenge':
+      HealthAppNavigation.tabNavigation.fromHome.toChallenge();
+      break;
+    case 'social':
+      HealthAppNavigation.tabNavigation.fromHome.findGroups();
+      break;
+    case 'nutrition':
+      HealthAppNavigation.tabNavigation.fromHome.logActivity();
+      break;
+    case 'timer':
+      HealthAppNavigation.tabNavigation.fromHome.startTimer();
+      break;
+    case 'progress':
+      HealthAppNavigation.tabNavigation.fromHome.viewProgress();
+      break;
+    default:
+      break;
+  }
 };
 
 // Main Dashboard Component
@@ -602,6 +638,105 @@ export default function HealthDashboard() {
       borderWidth: 1,
       borderColor: 'rgba(255,255,255,0.8)',
     },
+    quickActionsSection: {
+      marginBottom: LAYOUT.getMargin(32),
+      paddingHorizontal: LAYOUT.getContentPadding(),
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: LAYOUT.getMargin(16),
+    },
+    seeAllText: {
+      ...typography.body,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    quickActionsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: LAYOUT.getMargin(12),
+      justifyContent: 'space-between',
+    },
+    quickActionCard: {
+      backgroundColor: colors.surface,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(16),
+      alignItems: 'center',
+      width: '48%',
+      minHeight: 100,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    quickActionIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: LAYOUT.getMargin(8),
+    },
+    quickActionText: {
+      ...typography.bodyMedium,
+      color: colors.text,
+      textAlign: 'center',
+      fontWeight: '600',
+    },
+    recentActivitySection: {
+      marginBottom: LAYOUT.getMargin(32),
+      paddingHorizontal: LAYOUT.getContentPadding(),
+    },
+    activityCards: {
+      gap: LAYOUT.getMargin(8),
+    },
+    activityCard: {
+      backgroundColor: colors.surface,
+      borderRadius: LAYOUT.getBorderRadius(12),
+      padding: LAYOUT.getPadding(16),
+      borderLeftWidth: 4,
+      borderLeftColor: colors.primary,
+    },
+    activityTitle: {
+      ...typography.bodyMedium,
+      color: colors.text,
+      fontWeight: '600',
+      marginBottom: 4,
+    },
+    activityTime: {
+      ...typography.caption,
+      color: colors.textSecondary,
+    },
+    socialPreviewSection: {
+      marginBottom: LAYOUT.getMargin(32),
+      paddingHorizontal: LAYOUT.getContentPadding(),
+    },
+    socialPreviewCard: {
+      backgroundColor: colors.surface,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(20),
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    socialPreviewText: {
+      ...typography.body,
+      color: colors.textSecondary,
+      marginBottom: LAYOUT.getMargin(12),
+      lineHeight: 22,
+    },
+    socialPreviewAction: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    socialPreviewActionText: {
+      ...typography.bodyMedium,
+      color: colors.primary,
+      fontWeight: '600',
+    },
   });
 
   const getCurrentDate = () => {
@@ -648,10 +783,9 @@ export default function HealthDashboard() {
                 <Text style={styles.userName}>Raju!</Text>
               </View>
             </View>
-            
-            <TouchableOpacity 
+              <TouchableOpacity 
               style={styles.notificationButton}
-              onPress={() => router.push('/notifications')}
+              onPress={() => HealthAppNavigation.tabNavigation.fromHome.toNotifications()}
             >
               <CleanIcon name="bell" size={20} />              <View style={{
                 position: 'absolute',
@@ -853,6 +987,116 @@ export default function HealthDashboard() {
               </View>
             </View>
           </View>
+        </View>
+        
+        {/* Quick Actions Section - Enhanced Navigation */}
+        <View style={styles.quickActionsSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <TouchableOpacity onPress={() => HealthAppNavigation.tabNavigation.fromHome.toExplore()}>
+              <Text style={styles.seeAllText}>Explore More</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.quickActionsGrid}>
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => handleQuickAction('workout')}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: colors.primary + '20' }]}>
+                <CleanIcon name="dumbbell" size={24} color={colors.primary} />
+              </View>
+              <Text style={styles.quickActionText}>Start Workout</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => handleQuickAction('challenge')}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: colors.accent + '20' }]}>
+                <CleanIcon name="trophy" size={24} color={colors.accent} />
+              </View>
+              <Text style={styles.quickActionText}>Join Challenge</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => handleQuickAction('social')}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: colors.success + '20' }]}>
+                <CleanIcon name="users" size={24} color={colors.success} />
+              </View>
+              <Text style={styles.quickActionText}>Find Groups</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => handleQuickAction('timer')}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: colors.info + '20' }]}>
+                <CleanIcon name="timer" size={24} color={colors.info} />
+              </View>
+              <Text style={styles.quickActionText}>Start Timer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Recent Activity Section with Navigation */}
+        <View style={styles.recentActivitySection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Recent Activity</Text>
+            <TouchableOpacity onPress={() => HealthAppNavigation.tabNavigation.fromHome.toActivity()}>
+              <Text style={styles.seeAllText}>View All</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.activityCards}>
+            <TouchableOpacity 
+              style={styles.activityCard}
+              onPress={() => NavigationService.content.viewPost()}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.activityTitle}>Morning Run Completed</Text>
+              <Text style={styles.activityTime}>2 hours ago</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.activityCard}
+              onPress={() => NavigationService.content.trendingPosts()}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.activityTitle}>New Achievement Unlocked</Text>
+              <Text style={styles.activityTime}>5 hours ago</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Social Feed Preview with Navigation */}
+        <View style={styles.socialPreviewSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Community</Text>
+            <TouchableOpacity onPress={() => NavigationService.social.messaging()}>
+              <Text style={styles.seeAllText}>Messages</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <TouchableOpacity 
+            style={styles.socialPreviewCard}
+            onPress={() => NavigationService.social.discoverGroups()}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.socialPreviewText}>
+              Join fitness communities and connect with like-minded people
+            </Text>
+            <View style={styles.socialPreviewAction}>
+              <Text style={styles.socialPreviewActionText}>Discover Groups</Text>
+              <CleanIcon name="arrow-right" size={16} color={colors.primary} />
+            </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

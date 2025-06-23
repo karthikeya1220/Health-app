@@ -43,6 +43,8 @@ import {
   ChevronRight
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { NavigationService } from '@/utils/navigation';
+import { NavigationButton, QuickActionGrid } from '@/components/ui/NavigationButton';
 
 // Exercise Type Card Component with responsive design
 const ExerciseTypeCard = ({ 
@@ -521,6 +523,23 @@ export default function WorkoutsTab() {
       borderRadius: responsiveValue({ xs: scale(5), sm: scale(6), md: scale(7), default: scale(6) }),
     },
   });
+
+  // Enhanced navigation handlers
+  const handleNavigateToTimer = () => {
+    NavigationService.shortcuts.goToTimer();
+  };
+
+  const handleStartWorkout = (workoutId?: string) => {
+    NavigationService.navigate('/(tabs)/timer', { workoutId });
+  };
+
+  const handleViewActivity = () => {
+    NavigationService.shortcuts.goToActivity();
+  };
+
+  const handleCreateCustomWorkout = () => {
+    NavigationService.navigate('/create-post', { type: 'workout' });
+  };
 
   return (
     <SafeAreaView style={styles.container}>

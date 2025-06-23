@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTypography } from '@/theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { 
   TrendingUp, 
   Footprints, 
@@ -241,7 +242,7 @@ export default function ActivityPage() {
   const { colors, theme } = useTheme();
   const typography = getTypography(theme === 'dark');
   const insets = useSafeAreaInsets();
-  const barAnim = useRef(Array.from({ length: 7 }, () => new Animated.Value(0))).current;
+  const [barAnim] = useState(() => Array.from({ length: 7 }, () => new Animated.Value(0)));
 
   const barData = [
     { height: 50, calories: 100, label: 'Wed' },
@@ -269,14 +270,14 @@ export default function ActivityPage() {
   ];
 
   const quickActions = [
-    { title: 'Start Workout', icon: Play, color: '#3B82F6', onPress: () => console.log('Start Workout') },
-    { title: 'Log Activity', icon: Plus, color: '#10B981', onPress: () => console.log('Log Activity') },
-    { title: 'View History', icon: Calendar, color: '#F59E0B', onPress: () => console.log('View History') },
-    { title: 'Heart Rate', icon: Heart, color: '#EF4444', onPress: () => console.log('Heart Rate') },
+    { title: 'Start Workout', icon: Play, color: '#3B82F6', onPress: () => router.push('/(tabs)/workouts') },
+    { title: 'Log Activity', icon: Plus, color: '#10B981', onPress: () => router.push('/(tabs)/activity') },
+    { title: 'View History', icon: Calendar, color: '#F59E0B', onPress: () => router.push('/(tabs)/activity') },
+    { title: 'Heart Rate', icon: Heart, color: '#EF4444', onPress: () => router.push('/(tabs)/activity') },
   ];
 
   useEffect(() => {
-    const animations = barAnim.map((animValue, index) =>
+    const animations = barAnim.map((animValue: Animated.Value, index: number) =>
       Animated.timing(animValue, {
         toValue: barData[index].height,
         duration: 800 + index * 100,
@@ -284,7 +285,32 @@ export default function ActivityPage() {
       })
     );
     Animated.stagger(100, animations).start();
-  }, []);
+  }, [barAnim, barData]);
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'start_workout':
+        router.push('/(tabs)/workouts');
+        break;
+      case 'log_meal':
+        router.push('/(tabs)/activity');
+        break;
+      case 'join_challenge':
+        router.push('/(tabs)/challenge');
+        break;
+      case 'view_progress':
+        // Stay on current screen
+        break;
+      case 'social_feed':
+        router.push('/(tabs)/explore');
+        break;
+      case 'timer':
+        router.push('/(tabs)/timer');
+        break;
+      default:
+        break;
+    }
+  };
 
   const [selectedDay, setSelectedDay] = useState('06');
   const days = [
@@ -296,6 +322,7 @@ export default function ActivityPage() {
     { day: 'Mon', date: '05' },
     { day: 'Tue', date: '06' },
   ];
+
   const styles = StyleSheet.create({
     calendarStrip: {
       flexDirection: 'row',
@@ -356,7 +383,8 @@ export default function ActivityPage() {
       shadowOpacity: 0.1,
       shadowRadius: 8,
       elevation: 4,
-    },    chartHeader: {
+    },
+    chartHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -373,7 +401,8 @@ export default function ActivityPage() {
       width: responsiveValue({ xs: 12, sm: 13, md: 14, default: 14 }),
       borderRadius: responsiveValue({ xs: 6, sm: 6.5, md: 7, default: 7 }),
       marginBottom: LAYOUT.getMargin(6),
-    },tooltip: {
+    },
+    tooltip: {
       fontSize: responsiveValue({ xs: 9, sm: 10, md: 11, default: 11 }),
       paddingHorizontal: LAYOUT.getPadding(8),
       paddingVertical: LAYOUT.getPadding(4),
@@ -412,7 +441,8 @@ export default function ActivityPage() {
     quickActionSection: {
       paddingHorizontal: LAYOUT.getContentPadding(),
       marginBottom: LAYOUT.getMargin(24),
-    },    quickActionGrid: {
+    },
+    quickActionGrid: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       gap: LAYOUT.getMargin(12),
@@ -425,7 +455,8 @@ export default function ActivityPage() {
       <ScrollView contentContainerStyle={{ 
         paddingBottom: insets.bottom + LAYOUT.getMargin(20) 
       }}>
-        {/* Header */}        <Text style={[typography.h1, { 
+        {/* Header */}
+        <Text style={[typography.h1, { 
           marginTop: LAYOUT.getMargin(20), 
           marginLeft: LAYOUT.getContentPadding(), 
           color: colors.text, 
@@ -439,103 +470,80 @@ export default function ActivityPage() {
           {days.map(({ day, date }) => (
             <TouchableOpacity
               key={date}
+              style={[
+                styles.calendarItem,
+                {
+                  backgroundColor: selectedDay === date ? colors.primary : colors.surface,
+                },
+              ]}
               onPress={() => setSelectedDay(date)}
-              style={[styles.calendarItem, {
-                backgroundColor: selectedDay === date ? colors.primary : colors.surface,
-              }]}
             >
-              <Text style={[typography.bodyMedium, { 
-                color: selectedDay === date ? colors.surface : colors.text,
-                fontWeight: '700'
-              }]}>
-                {date}
-              </Text>
-              <Text style={[typography.caption, { 
-                color: selectedDay === date ? colors.surface : colors.textSecondary,
-                fontSize: 12,
-                fontWeight: '500'
-              }]}>
+              <Text style={[
+                typography.caption,
+                {
+                  color: selectedDay === date ? colors.surface : colors.textSecondary,
+                  fontWeight: '500',
+                  fontSize: responsiveValue({ xs: 11, sm: 12, md: 13, default: 13 }),
+                },
+              ]}>
                 {day}
+              </Text>
+              <Text style={[
+                typography.bodyMedium,
+                {
+                  color: selectedDay === date ? colors.surface : colors.text,
+                  fontWeight: '600',
+                  marginTop: 2,
+                  fontSize: responsiveValue({ xs: 14, sm: 15, md: 16, default: 16 }),
+                },
+              ]}>
+                {date}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Activity Cards - Spacious Layout */}
-        <View style={styles.activitySection}>
-          {/* Steps & Water Row */}
-          <View style={styles.activityRow}>
-            <View style={[styles.activityCard, { backgroundColor: colors.surface }]}>
-              <View style={styles.activityHeader}>
-                <Footprints size={20} color="#3B82F6" />
-                <Text style={[typography.bodyMedium, { color: colors.textSecondary, fontWeight: '600' }]}>
-                  Steps
-                </Text>
-              </View>
-              <Text style={[typography.h2, { color: colors.text, fontWeight: 'bold', marginTop: 8 }]}>
-                +9000
-              </Text>
-            </View>
-            
-            <View style={[styles.activityCard, { backgroundColor: colors.surface }]}>
-              <View style={styles.activityHeader}>
-                <Clock size={20} color="#10B981" />
-                <Text style={[typography.bodyMedium, { color: colors.textSecondary, fontWeight: '600' }]}>
-                  Moving
-                </Text>
-              </View>
-              <Text style={[typography.h2, { color: colors.text, fontWeight: 'bold', marginTop: 8 }]}>
-                +74mins
-              </Text>
-            </View>
-          </View>
-
-          {/* Calories Card - Full Width */}
-          <View style={[styles.calorieCard, { backgroundColor: colors.surface }]}>
-            <View style={styles.activityHeader}>
-              <Flame size={20} color="#F59E0B" />
-              <Text style={[typography.bodyMedium, { color: colors.textSecondary, fontWeight: '600' }]}>
-                Calories
-              </Text>
-            </View>
-            <Text style={[typography.h1, { color: colors.text, fontWeight: 'bold', marginTop: 12 }]}>
-              +500kcal
-            </Text>
-          </View>
-        </View>
-
-        {/* Bar Chart */}
+        {/* Activity Chart */}
         <View style={[styles.chartContainer, { backgroundColor: colors.surface }]}>
           <View style={styles.chartHeader}>
-            <Text style={[typography.h3, { color: colors.text, fontWeight: '600' }]}>
-              Statistic
+            <Text style={[typography.h3, { color: colors.text, fontWeight: '700' }]}>
+              Weekly Calories
             </Text>
-            <View style={[styles.trendIcon, { backgroundColor: colors.primary + '20' }]}>
-              <TrendingUp size={16} color={colors.primary} />
+            <View style={[styles.trendIcon, { backgroundColor: colors.success + '20' }]}>
+              <TrendingUp size={16} color={colors.success} />
             </View>
           </View>
           
           <View style={styles.chartBars}>
-            {barData.map((bar, i) => (
-              <View key={i} style={{ alignItems: 'center' }}>
-                {i === 6 && (
-                  <Text style={[styles.tooltip, { 
+            {barData.map((item, index) => (
+              <View key={index} style={{ alignItems: 'center' }}>
+                <Text style={[
+                  styles.tooltip,
+                  {
+                    backgroundColor: colors.primary,
                     color: colors.surface,
-                    backgroundColor: colors.primary 
-                  }]}>
-                    180 Kcal
-                  </Text>
-                )}
-                <Animated.View style={[styles.bar, { 
-                  backgroundColor: i === 6 ? colors.primary : colors.primary + '60',
-                  height: barAnim[i] 
-                }]} />
-                <Text style={[typography.caption, { 
-                  color: colors.textSecondary,
-                  fontWeight: '600',
-                  fontSize: 11
-                }]}>
-                  {bar.label}
+                  }
+                ]}>
+                  {item.calories}
+                </Text>
+                <Animated.View
+                  style={[
+                    styles.bar,
+                    {
+                      height: barAnim[index],
+                      backgroundColor: colors.primary,
+                    }
+                  ]}
+                />
+                <Text style={[
+                  typography.caption,
+                  {
+                    color: colors.textSecondary,
+                    marginTop: 8,
+                    fontSize: responsiveValue({ xs: 10, sm: 11, md: 12, default: 12 }),
+                  }
+                ]}>
+                  {item.label}
                 </Text>
               </View>
             ))}
@@ -545,7 +553,7 @@ export default function ActivityPage() {
         {/* Daily Goals Section */}
         <View style={styles.sectionTitle}>
           <Text style={[typography.h3, { color: colors.text, fontWeight: '700' }]}>
-            Today's Goals
+            Daily Goals
           </Text>
         </View>
         <View style={styles.goalSection}>
@@ -641,77 +649,81 @@ const goalStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: LAYOUT.getMargin(12),
+    gap: LAYOUT.getMargin(8),
   },
   goalIcon: {
-    width: responsiveValue({ xs: 28, sm: 30, md: 32, default: 32 }),
-    height: responsiveValue({ xs: 28, sm: 30, md: 32, default: 32 }),
-    borderRadius: responsiveValue({ xs: 14, sm: 15, md: 16, default: 16 }),
+    width: responsiveValue({ xs: 32, sm: 34, md: 36, default: 36 }),
+    height: responsiveValue({ xs: 32, sm: 34, md: 36, default: 36 }),
+    borderRadius: responsiveValue({ xs: 16, sm: 17, md: 18, default: 18 }),
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: LAYOUT.getMargin(8),
   },
   goalProgress: {
     marginBottom: LAYOUT.getMargin(12),
   },
   progressBar: {
-    height: responsiveValue({ xs: 4, sm: 5, md: 6, default: 6 }),
-    borderRadius: responsiveValue({ xs: 2, sm: 2.5, md: 3, default: 3 }),
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
     marginBottom: LAYOUT.getMargin(8),
   },
   progressFill: {
-    height: responsiveValue({ xs: 4, sm: 5, md: 6, default: 6 }),
-    borderRadius: responsiveValue({ xs: 2, sm: 2.5, md: 3, default: 3 }),
+    height: '100%',
+    borderRadius: 3,
   },
 });
 
 // Styles for Achievement Cards
 const achievementStyles = StyleSheet.create({
   achievementCard: {
-    width: responsiveValue({
-      xs: SCREEN.width * 0.75,
-      sm: SCREEN.width * 0.7,
-      md: SCREEN.width * 0.65,
-      default: 280
-    }),
+    width: responsiveValue({ xs: 240, sm: 260, md: 280, default: 280 }),
     borderRadius: LAYOUT.getBorderRadius(16),
     padding: LAYOUT.getPadding(16),
     marginRight: LAYOUT.getMargin(16),
-    flexDirection: 'row',
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
+    position: 'relative',
   },
   achievementIcon: {
-    width: responsiveValue({ xs: 40, sm: 44, md: 48, default: 48 }),
-    height: responsiveValue({ xs: 40, sm: 44, md: 48, default: 48 }),
-    borderRadius: responsiveValue({ xs: 20, sm: 22, md: 24, default: 24 }),
+    width: responsiveValue({ xs: 48, sm: 52, md: 56, default: 56 }),
+    height: responsiveValue({ xs: 48, sm: 52, md: 56, default: 56 }),
+    borderRadius: responsiveValue({ xs: 24, sm: 26, md: 28, default: 28 }),
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: LAYOUT.getMargin(12),
+    marginBottom: LAYOUT.getMargin(12),
   },
   achievementContent: {
     flex: 1,
   },
   progressContainer: {
+    marginTop: LAYOUT.getMargin(8),
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: LAYOUT.getMargin(8),
     gap: LAYOUT.getMargin(8),
   },
   progressBar: {
     flex: 1,
-    height: responsiveValue({ xs: 3, sm: 3.5, md: 4, default: 4 }),
-    borderRadius: responsiveValue({ xs: 1.5, sm: 1.75, md: 2, default: 2 }),
+    height: 4,
+    borderRadius: 2,
+    overflow: 'hidden',
   },
   progressFill: {
-    height: responsiveValue({ xs: 3, sm: 3.5, md: 4, default: 4 }),
-    borderRadius: responsiveValue({ xs: 1.5, sm: 1.75, md: 2, default: 2 }),
+    height: '100%',
+    borderRadius: 2,
   },
   completedBadge: {
-    marginLeft: LAYOUT.getMargin(8),
+    position: 'absolute',
+    top: LAYOUT.getPadding(12),
+    right: LAYOUT.getPadding(12),
+    width: responsiveValue({ xs: 24, sm: 26, md: 28, default: 28 }),
+    height: responsiveValue({ xs: 24, sm: 26, md: 28, default: 28 }),
+    borderRadius: responsiveValue({ xs: 12, sm: 13, md: 14, default: 14 }),
+    backgroundColor: '#F0FDF4',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -720,8 +732,8 @@ const quickActionStyles = StyleSheet.create({
   actionButton: {
     flex: 1,
     alignItems: 'center',
-    padding: LAYOUT.getPadding(16),
     borderRadius: LAYOUT.getBorderRadius(16),
+    padding: LAYOUT.getPadding(16),
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

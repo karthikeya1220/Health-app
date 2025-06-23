@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ViewProps } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Spacing, BorderRadius } from '@/theme/spacing';
+import { LAYOUT } from '@/utils/responsive';
 
 interface CardProps extends ViewProps {
   elevated?: boolean;
@@ -14,12 +14,11 @@ export const Card: React.FC<CardProps> = ({
   ...props
 }) => {
   const { colors } = useTheme();
-
   const styles = StyleSheet.create({
     base: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
+      borderRadius: LAYOUT.getBorderRadius(16),
+      padding: LAYOUT.getPadding(16),
     },
     elevated: {
       shadowColor: colors.text,

@@ -205,30 +205,33 @@ export default function TabLayout() {
           ),
         }}
       />
-      
-      {/* Hidden tabs */}
+        {/* Hidden tabs - accessible through navigation */}
       <Tabs.Screen
         name="notifications"
         options={{
           href: null,
+          title: 'Notifications',
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
           href: null,
+          title: 'Explore',
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           href: null,
+          title: 'Settings',
         }}
       />
       <Tabs.Screen
         name="timer"
         options={{
           href: null,
+          title: 'Timer',
         }}
       />
     </Tabs>

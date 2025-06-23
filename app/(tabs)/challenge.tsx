@@ -50,6 +50,7 @@ import {
   TOUCH,
   responsiveValue 
 } from '@/utils/responsive';
+import { NavigationService } from '@/utils/navigation';
 
 const { width, height } = Dimensions.get('window');
 
@@ -781,6 +782,23 @@ export default function ChallengePage() {
       paddingBottom: insets.bottom + 20,
     },
   });
+
+  // Navigation handlers for challenges
+  const handleJoinChallenge = (challengeId?: string) => {
+    NavigationService.navigate('/view-post', { type: 'challenge', id: challengeId });
+  };
+
+  const handleViewLeaderboard = (challengeId?: string) => {
+    NavigationService.navigate('/trending-posts', { filter: 'challenges' });
+  };
+
+  const handleCreateChallenge = () => {
+    NavigationService.navigate('/create-post', { type: 'challenge' });
+  };
+
+  const handleViewProgress = () => {
+    NavigationService.shortcuts.goToActivity();
+  };
 
   const renderTabContent = () => {
     if (selectedTab === 'active') {
